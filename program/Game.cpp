@@ -8,7 +8,7 @@
 
 Camera MainCamera;
 
-//Map
+//Map ƒ}ƒbƒv
 Image mapImage; 
 
 //Render in global (calculated based on camera)
