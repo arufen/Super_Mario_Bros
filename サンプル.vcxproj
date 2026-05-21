@@ -151,6 +151,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="program\Camera.cpp" />
     <ClCompile Include="program\Float2.cpp" />
     <ClCompile Include="program\Game.cpp" />
     <ClCompile Include="program\HelpfulFunc.cpp" />
@@ -159,6 +160,7 @@
     <ClCompile Include="program\Random.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="program\Camera.h" />
     <ClInclude Include="program\Float2.h" />
     <ClInclude Include="program\Game.h" />
     <ClInclude Include="program\HelpfulFunc.h" />

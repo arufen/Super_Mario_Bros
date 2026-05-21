@@ -1,4 +1,5 @@
 #pragma once
+#include "Float2.h"
 
 class Timer
 {
@@ -34,15 +35,15 @@ class Image
 {
 public:
 	int image;
-	float x, y;
+	Float2 pos;
 	int sizeX, sizeY;
 
 	//Method
 	void InitialImageAndSize(int Loadimage);
 	void RenderCenter();
-	void RenderCenter(float x, float y);
+	void RenderCenter(Float2 targetPos);
 
-	Image() : image(-1), x(0), y(0), sizeX(0), sizeY(0) {}
+	Image() : image(-1), pos(0.0f, 0.0f), sizeX(0), sizeY(0) {}
 };
 
 enum class AnimationState

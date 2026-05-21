@@ -1,7 +1,8 @@
 #pragma once
 
-#define SCREEN_W	800
-#define SCREEN_H	450
+// 4x scale
+#define SCREEN_W	1280
+#define SCREEN_H	960
 
 void GameInit();	//	‰Šú‰»ˆ—
 void GameUpdate();	//	XVˆ—

@@ -30,6 +30,9 @@
     <ClCompile Include="program\HelpfulFunc.cpp">
       <Filter>program\system</Filter>
     </ClCompile>
+    <ClCompile Include="program\Camera.cpp">
+      <Filter>program\system</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="program\Game.h">
@@ -48,6 +51,9 @@
       <Filter>program\system</Filter>
     </ClInclude>
     <ClInclude Include="program\HelpfulFunc.h">
+      <Filter>program\system</Filter>
+    </ClInclude>
+    <ClInclude Include="program\Camera.h">
       <Filter>program\system</Filter>
     </ClInclude>
   </ItemGroup>

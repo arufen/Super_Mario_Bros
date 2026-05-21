@@ -182,12 +182,12 @@ void Image::InitialImageAndSize(int Loadimage)
 
 void Image::RenderCenter()
 {
-	DrawRotaGraphF(x, y, 1.0f, 0, image, 1, 0, 0);
+	DrawRotaGraphF(pos.x, pos.y, 1.0f, 0, image, 1, 0, 0);
 }
 
-void Image::RenderCenter(float x, float y)
+void Image::RenderCenter(Float2 targetPos)
 {
-	DrawRotaGraphF(x, y, 1.0f, 0, image, 1, 0, 0);
+	DrawRotaGraphF(targetPos.x, targetPos.y, 1.0f, 0, image, 1, 0, 0);
 }
 
 float easeOutBounceFunc(float t) {
