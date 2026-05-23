@@ -126,7 +126,8 @@ void Animation::AnimationRenderCenter(bool reverseFlag)
 	float sizeX = (float)sprite.sizeX;
 	float sizeY = (float)sprite.sizeY;
 	int image = sprite.image;
-	DrawRectGraphF(x - (sizeX / 2), y - (sizeY / 2), currentImage, 0, sizeX, sizeY, image, true, reverseFlag);
+    // Render with top-left origin (no center offset)
+	DrawRectGraphF(x, y, currentImage, 0, sizeX, sizeY, image, true, reverseFlag);
 }
 
 //TIMER
@@ -180,14 +181,22 @@ void Image::InitialImageAndSize(int Loadimage)
 	GetGraphSize(image, &sizeX, &sizeY);
 }
 
-void Image::RenderCenter()
+void Image::Render()const
 {
-	DrawRotaGraphF(pos.x, pos.y, 1.0f, 0, image, 1, 0, 0);
+    // Draw with top-left as origin
+	DrawExtendGraphF(pos.x, pos.y, pos.x + (float)sizeX, pos.y + (float)sizeY, image, true);
 }
 
-void Image::RenderCenter(Float2 targetPos)
+void Image::Render(Float2 targetPos)const
 {
-	DrawRotaGraphF(targetPos.x, targetPos.y, 1.0f, 0, image, 1, 0, 0);
+    // Draw with top-left at targetPos
+	DrawExtendGraphF(targetPos.x, targetPos.y, targetPos.x + (float)sizeX, targetPos.y + (float)sizeY, image, true);
+}
+
+void Image::Render(Float2 targetPos, float scale)const
+{
+    // Draw scaled with top-left at targetPos
+	DrawExtendGraphF(targetPos.x, targetPos.y, targetPos.x + (float)sizeX * scale, targetPos.y + (float)sizeY * scale, image, true);
 }
 
 float easeOutBounceFunc(float t) {

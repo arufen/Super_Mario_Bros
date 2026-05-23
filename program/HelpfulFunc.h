@@ -40,8 +40,9 @@ public:
 
 	//Method
 	void InitialImageAndSize(int Loadimage);
-	void RenderCenter();
-	void RenderCenter(Float2 targetPos);
+	void Render() const;
+    void Render(Float2 targetPos) const;
+	void Render(Float2 targetPos, float scale) const;
 
 	Image() : image(-1), pos(0.0f, 0.0f), sizeX(0), sizeY(0) {}
 };

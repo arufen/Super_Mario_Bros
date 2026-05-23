@@ -1,0 +1,10 @@
+﻿#pragma once
+
+// 4x scale
+#define SCREEN_W	1024
+#define SCREEN_H	960
+
+void GameInit();	//	初期化処理
+void GameUpdate();	//	更新処理
+void GameRender();	//	描画処理
+void GameExit();	//	終了処理

@@ -33,6 +33,63 @@
     <ClCompile Include="program\Camera.cpp">
       <Filter>program\system</Filter>
     </ClCompile>
+    <ClCompile Include="program\Debug.cpp">
+      <Filter>program</Filter>
+    </ClCompile>
+    <ClCompile Include="program\Map.cpp">
+      <Filter>program</Filter>
+    </ClCompile>
+    <ClCompile Include="program\Mario.cpp">
+      <Filter>program\game</Filter>
+    </ClCompile>
+    <ClCompile Include="program\Goomba.cpp">
+      <Filter>program\game</Filter>
+    </ClCompile>
+    <ClCompile Include="program\Koopa_Troopa.cpp">
+      <Filter>program\game</Filter>
+    </ClCompile>
+    <ClCompile Include="program\Super_Mushroom.cpp">
+      <Filter>program\game</Filter>
+    </ClCompile>
+    <ClCompile Include="program\1-Up_Mushroom.cpp">
+      <Filter>program\game</Filter>
+    </ClCompile>
+    <ClCompile Include="program\Coin.cpp">
+      <Filter>program\game</Filter>
+    </ClCompile>
+    <ClCompile Include="program\Brick_Block.cpp">
+      <Filter>program\game</Filter>
+    </ClCompile>
+    <ClCompile Include="program\Hidden_Block.cpp">
+      <Filter>program\game</Filter>
+    </ClCompile>
+    <ClCompile Include="program\Question_Block.cpp">
+      <Filter>program\game</Filter>
+    </ClCompile>
+    <ClCompile Include="program\Super_Star.cpp">
+      <Filter>program\game</Filter>
+    </ClCompile>
+    <ClCompile Include="program\Fire_Flower.cpp">
+      <Filter>program\game</Filter>
+    </ClCompile>
+    <ClCompile Include="program\Warp_Pipe.cpp">
+      <Filter>program\game</Filter>
+    </ClCompile>
+    <ClCompile Include="program\Goal_Pole.cpp">
+      <Filter>program\game</Filter>
+    </ClCompile>
+    <ClCompile Include="program\Fireworks.cpp">
+      <Filter>program\game</Filter>
+    </ClCompile>
+    <ClCompile Include="program\Time.cpp">
+      <Filter>program\system</Filter>
+    </ClCompile>
+    <ClCompile Include="program\Score.cpp">
+      <Filter>program\system</Filter>
+    </ClCompile>
+    <ClCompile Include="program\Game_Over.cpp">
+      <Filter>program\system</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="program\Game.h">
@@ -54,6 +111,63 @@
       <Filter>program\system</Filter>
     </ClInclude>
     <ClInclude Include="program\Camera.h">
+      <Filter>program\system</Filter>
+    </ClInclude>
+    <ClInclude Include="program\Debug.h">
+      <Filter>program</Filter>
+    </ClInclude>
+    <ClInclude Include="program\Map.h">
+      <Filter>program</Filter>
+    </ClInclude>
+    <ClInclude Include="program\Mario.h">
+      <Filter>program\game</Filter>
+    </ClInclude>
+    <ClInclude Include="program\Goomba.h">
+      <Filter>program\game</Filter>
+    </ClInclude>
+    <ClInclude Include="program\Koopa_Troopa.h">
+      <Filter>program\game</Filter>
+    </ClInclude>
+    <ClInclude Include="program\Super_Mushroom.h">
+      <Filter>program\game</Filter>
+    </ClInclude>
+    <ClInclude Include="program\1-Up_Mushroom.h">
+      <Filter>program\game</Filter>
+    </ClInclude>
+    <ClInclude Include="program\Coin.h">
+      <Filter>program\game</Filter>
+    </ClInclude>
+    <ClInclude Include="program\Brick_Block.h">
+      <Filter>program\game</Filter>
+    </ClInclude>
+    <ClInclude Include="program\Hidden_Block.h">
+      <Filter>program\game</Filter>
+    </ClInclude>
+    <ClInclude Include="program\Question_Block.h">
+      <Filter>program\game</Filter>
+    </ClInclude>
+    <ClInclude Include="program\Super_Star.h">
+      <Filter>program\game</Filter>
+    </ClInclude>
+    <ClInclude Include="program\Fire_Flower.h">
+      <Filter>program\game</Filter>
+    </ClInclude>
+    <ClInclude Include="program\Warp_Pipe.h">
+      <Filter>program\game</Filter>
+    </ClInclude>
+    <ClInclude Include="program\Goal_Pole.h">
+      <Filter>program\game</Filter>
+    </ClInclude>
+    <ClInclude Include="program\Fireworks.h">
+      <Filter>program\game</Filter>
+    </ClInclude>
+    <ClInclude Include="program\Time.h">
+      <Filter>program\system</Filter>
+    </ClInclude>
+    <ClInclude Include="program\Score.h">
+      <Filter>program\system</Filter>
+    </ClInclude>
+    <ClInclude Include="program\Game_Over.h">
       <Filter>program\system</Filter>
     </ClInclude>
   </ItemGroup>

@@ -1,0 +1,34 @@
+﻿#include"Main.h"
+#include "Camera.h";
+#include "Mario.h";
+
+extern Camera MainCamera;
+
+//Constructor
+Camera::Camera() 
+{
+	pos = { 0.0f, 0.0f };
+}
+
+void Camera::SetPos(Float2 targetPos)
+{
+	pos.Set(targetPos);
+}
+
+void Camera::GlobalRenderImage(const Image& image, float scale)
+{
+	Float2 globalPos;
+	globalPos.Set(image.pos.x - pos.x, image.pos.y - pos.y);
+	image.Render(globalPos, scale);
+}
+
+void Camera::Update()
+{
+	if (CheckHitKey(KEY_INPUT_D)) { pos.x += marioSpeed; }
+//	if (CheckHitKey(KEY_INPUT_A)) { pos.x -= marioSpeed; }
+//	if (CheckHitKey(KEY_INPUT_W)) { pos.y -= marioSpeed; }
+//	if (CheckHitKey(KEY_INPUT_S)) { pos.y += marioSpeed; }
+	if( MainCamera.pos.x <= 0){
+		MainCamera.pos.x = 0;
+	}
+}

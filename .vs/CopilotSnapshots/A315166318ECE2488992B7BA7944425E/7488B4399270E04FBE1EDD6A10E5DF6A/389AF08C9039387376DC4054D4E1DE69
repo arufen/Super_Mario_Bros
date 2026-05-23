@@ -1,0 +1,15 @@
+﻿#pragma once
+#include "HelpfulFunc.h"
+
+class Mario
+{
+private:
+	Image marioImage;
+	bool isLeft; // trueなら左向き、falseなら右向き
+	float marioSpeed = 2.0f;
+
+public:
+	void Init();
+	void Update();
+	void Render();
+};

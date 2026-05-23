@@ -1,0 +1,18 @@
+﻿#pragma once
+#include "HelpfulFunc.h"
+
+// Global speed variable (for legacy code that references `marioSpeed`)
+extern float marioSpeed;
+
+class Mario
+{
+private:
+	Image marioImage;
+	bool isLeft; // trueなら左向き、falseなら右向き
+	float marioSpeed = 2.0f;
+
+public:
+	void Init();
+	void Update();
+	void Render();
+};

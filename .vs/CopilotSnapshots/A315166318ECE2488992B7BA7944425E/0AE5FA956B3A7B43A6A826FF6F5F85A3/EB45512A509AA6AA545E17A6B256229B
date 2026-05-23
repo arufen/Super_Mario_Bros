@@ -1,0 +1,35 @@
+﻿#include "Main.h"
+#include "Mario.h"
+#include "Debug.h"
+#include "Camera.h"
+
+extern Camera MainCamera;
+
+void Mario::Init()
+{
+	marioImage.InitialImageAndSize(LoadGraph("data/mario_walk_1.png"));
+	marioImage.pos.Set(100.0f, 0.0f);
+}
+
+void Mario::Render()
+{
+	// 1. まずマリオの画像を描画する（独自の描画関数があればそれに差し替えてください）
+	// ※もし marioImage.Render() や marioImage.Draw() のような関数があれば、そちらを呼んでください。
+    // Draw at screen position relative to camera (camera.pos is top-left world coord)
+	int screenX = (int)(marioImage.pos.x - MainCamera.pos.x);
+	int screenY = (int)(marioImage.pos.y - MainCamera.pos.y);
+	DrawGraph(screenX, screenY, marioImage.image, 4.0f, TRUE);
+
+	// 2. デバッグモードなら、その上に当たり判定の枠線を重ねて描画する
+	if (map_mode == MODE_DEBUG)
+	{
+		// DxLibの座標指定は int型 なので、float から int にキャスト（変換）しておくと安全です
+        int x1 = screenX;
+		int y1 = screenY;
+		int x2 = x1 + (int)marioImage.sizeX;
+		int y2 = y1 + (int)marioImage.sizeY;
+
+		// 緑の枠線を描画（FALSE で塗りつぶしなし）
+		DrawBox(x1, y1, x2, y2, GetColor(0, 255, 0), FALSE);
+	}
+}

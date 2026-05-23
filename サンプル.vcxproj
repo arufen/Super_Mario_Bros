@@ -151,22 +151,60 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="program\1-Up_Mushroom.cpp" />
+    <ClCompile Include="program\Brick_Block.cpp" />
     <ClCompile Include="program\Camera.cpp" />
+    <ClCompile Include="program\Coin.cpp" />
+    <ClCompile Include="program\Debug.cpp" />
+    <ClCompile Include="program\Fireworks.cpp" />
+    <ClCompile Include="program\Fire_Flower.cpp" />
     <ClCompile Include="program\Float2.cpp" />
     <ClCompile Include="program\Game.cpp" />
+    <ClCompile Include="program\Game_Over.cpp" />
+    <ClCompile Include="program\Goal_Pole.cpp" />
+    <ClCompile Include="program\Goomba.cpp" />
     <ClCompile Include="program\HelpfulFunc.cpp" />
+    <ClCompile Include="program\Hidden_Block.cpp" />
     <ClCompile Include="program\Hit.cpp" />
+    <ClCompile Include="program\Koopa_Troopa.cpp" />
     <ClCompile Include="program\Main.cpp" />
+    <ClCompile Include="program\Map.cpp" />
+    <ClCompile Include="program\Mario.cpp" />
+    <ClCompile Include="program\Question_Block.cpp" />
     <ClCompile Include="program\Random.cpp" />
+    <ClCompile Include="program\Score.cpp" />
+    <ClCompile Include="program\Super_Mushroom.cpp" />
+    <ClCompile Include="program\Super_Star.cpp" />
+    <ClCompile Include="program\Time.cpp" />
+    <ClCompile Include="program\Warp_Pipe.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="program\1-Up_Mushroom.h" />
+    <ClInclude Include="program\Brick_Block.h" />
     <ClInclude Include="program\Camera.h" />
+    <ClInclude Include="program\Coin.h" />
+    <ClInclude Include="program\Debug.h" />
+    <ClInclude Include="program\Fireworks.h" />
+    <ClInclude Include="program\Fire_Flower.h" />
     <ClInclude Include="program\Float2.h" />
     <ClInclude Include="program\Game.h" />
+    <ClInclude Include="program\Game_Over.h" />
+    <ClInclude Include="program\Goal_Pole.h" />
+    <ClInclude Include="program\Goomba.h" />
     <ClInclude Include="program\HelpfulFunc.h" />
+    <ClInclude Include="program\Hidden_Block.h" />
     <ClInclude Include="program\Hit.h" />
+    <ClInclude Include="program\Koopa_Troopa.h" />
     <ClInclude Include="program\Main.h" />
+    <ClInclude Include="program\Map.h" />
+    <ClInclude Include="program\Mario.h" />
+    <ClInclude Include="program\Question_Block.h" />
     <ClInclude Include="program\Random.h" />
+    <ClInclude Include="program\Score.h" />
+    <ClInclude Include="program\Super_Mushroom.h" />
+    <ClInclude Include="program\Super_Star.h" />
+    <ClInclude Include="program\Time.h" />
+    <ClInclude Include="program\Warp_Pipe.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

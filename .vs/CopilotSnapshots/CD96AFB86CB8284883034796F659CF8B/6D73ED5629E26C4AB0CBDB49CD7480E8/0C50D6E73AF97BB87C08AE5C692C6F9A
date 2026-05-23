@@ -1,0 +1,17 @@
+﻿#pragma once
+#include "HelpfulFunc.h"
+
+// Global speed variable (for legacy code that references `marioSpeed`)
+extern float marioSpeed;
+extern int mario_centerX; // For camera boundary checking
+class Mario
+{
+private:
+	Image marioImage;
+	bool isLeft; // trueなら左向き、falseなら右向き
+
+public:
+	void Init();
+	void Update();
+	void Render();
+};
