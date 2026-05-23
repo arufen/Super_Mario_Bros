@@ -11,4 +11,6 @@ public:
 
 private:
 	Float2 pos;
+	bool active;
+	int image;
 };
