@@ -1,0 +1,21 @@
+﻿#pragma once
+#include "Float2.h"
+#include "HelpfulFunc.h"
+
+class Camera
+{
+public: 
+	Float2 pos;
+
+   // Constructor
+	// Note: `pos` represents the camera's top-left world coordinate (not center).
+	Camera();
+
+	void SetPos(Float2 targetPos);
+
+	// 引数を「参照渡し（const &）」にして無駄なコピーを防止
+    void GlobalRenderImage(const Image& image, float scale = 1.0f);
+
+	// カメラ自身の移動処理
+	void Update();
+};

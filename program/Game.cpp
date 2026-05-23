@@ -1,64 +1,60 @@
 #include "Main.h"
 #include "Game.h"
-#include "Float2.h"
-#include "Hit.h"
-#include "Random.h"
 #include "Camera.h"
-#include "HelpfulFunc.h"
+#include "Debug.h"
+#include "Map.h"
+#include "Mario.h"
 
-Camera MainCamera;
+extern Camera MainCamera;
 
-//Map マップ
-Image mapImage; 
+// マップ
+Map MainMap;
 
-//Render in global (calculated based on camera)
-void GlobalRenderImage(Camera camera, Image image)
-{
-	Float2 globalPos;
-	globalPos.Set(image.pos.x - camera.pos.x, image.pos.y - camera.pos.y);
-	image.RenderCenter(globalPos);
-}
+// デバッグ用機能
+Debug MainDebug;
+
+// プレイヤー（マリオ）
+Mario MainMario;
 
 //---------------------------------------------------------------------------------
 //	初期化処理
 //---------------------------------------------------------------------------------
 void GameInit()
 {
-	//map init
-	mapImage.InitialImageAndSize(LoadGraph("data/1-1.png")); 
-	mapImage.pos.Set(0.0f, SCREEN_H / 2);
-	MainCamera.pos.Set(100.0f, 0.0f);
+	// マップの初期化
+	MainMap.Init();
+	
+	// マリオおよびデバッグシステムの初期化
+	MainMario.Init();
+	MainDebug.Init();
+	
+	// カメラの初期位置を設定
+	MainCamera.pos.Set(0.0f, 0.0f);
 }
 //---------------------------------------------------------------------------------
 //	更新処理
 //---------------------------------------------------------------------------------
 void GameUpdate()
 {
-	float  cameraSpeed = 2.0f;
-	if(CheckHitKey(KEY_INPUT_RIGHT))
-	{
-		MainCamera.pos.x += cameraSpeed;
-	}
-	if (CheckHitKey(KEY_INPUT_LEFT))
-	{
-		MainCamera.pos.x -= cameraSpeed;
-	}
-	if (CheckHitKey(KEY_INPUT_UP))
-	{
-		MainCamera.pos.y -= cameraSpeed;
-	}
-	if (CheckHitKey(KEY_INPUT_DOWN))
-	{
-		MainCamera.pos.y += cameraSpeed;
-	}
+	MainCamera.Update();
+	MainMario.Update();
+	
+	// デバッグ機能（モード切り替えなど）の更新
+	MainDebug.Update();
 }
 //---------------------------------------------------------------------------------
 //	描画処理
 //---------------------------------------------------------------------------------
 void GameRender()
 {
-	GlobalRenderImage(MainCamera, mapImage);
-	DrawFormatString(0, 0, GetColor(255, 255, 255), "camera pos X : %f, camera pos Y : %f", MainCamera.pos.x, MainCamera.pos.y);
+    // 背景となるマップを描画
+    MainMap.Render(MainCamera);
+	
+	// マップの手前にマリオを描画
+	MainMario.Render();
+	
+	// 一番手前にデバッグ情報を描画
+	MainDebug.Render();
 }
 //---------------------------------------------------------------------------------
 //	終了処理

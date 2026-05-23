@@ -1,12 +1,37 @@
 {
   "Version": 1,
-  "WorkspaceRootPath": "E:\\2026\\\u30B2\u30FC\u30E0\u30D7\u30ED\u30B0\u30E9\u30E0\\SuperMarioADD\\",
-  "Documents": [],
+  "WorkspaceRootPath": "F:\\2026\\\u30B2\u30FC\u30E0\u30D7\u30ED\u30B0\u30E9\u30E0\\SuperMarioADD\\",
+  "Documents": [
+    {
+      "AbsoluteMoniker": "D:0:0:{AA33BDDF-F69C-4502-AE89-1093B08F52DD}|\u30B5\u30F3\u30D7\u30EB.vcxproj|F:\\2026\\\u30B2\u30FC\u30E0\u30D7\u30ED\u30B0\u30E9\u30E0\\SuperMarioADD\\program\\Mario.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
+      "RelativeMoniker": "D:0:0:{AA33BDDF-F69C-4502-AE89-1093B08F52DD}|\u30B5\u30F3\u30D7\u30EB.vcxproj|solutionrelative:program\\Mario.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
+    }
+  ],
   "DocumentGroupContainers": [
     {
       "Orientation": 0,
       "VerticalTabListWidth": 256,
-      "DocumentGroups": []
+      "DocumentGroups": [
+        {
+          "DockedWidth": 200,
+          "SelectedChildIndex": 0,
+          "Children": [
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "Mario.cpp",
+              "DocumentMoniker": "F:\\2026\\\u30B2\u30FC\u30E0\u30D7\u30ED\u30B0\u30E9\u30E0\\SuperMarioADD\\program\\Mario.cpp",
+              "RelativeDocumentMoniker": "program\\Mario.cpp",
+              "ToolTip": "F:\\2026\\\u30B2\u30FC\u30E0\u30D7\u30ED\u30B0\u30E9\u30E0\\SuperMarioADD\\program\\Mario.cpp",
+              "RelativeToolTip": "program\\Mario.cpp",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAoAAAAUAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000677|",
+              "WhenOpened": "2026-05-23T02:35:55.023Z",
+              "EditorCaption": ""
+            }
+          ]
+        }
+      ]
     }
   ]
 }

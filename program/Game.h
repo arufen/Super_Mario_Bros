@@ -1,10 +1,10 @@
 #pragma once
 
-// 4x scale
-#define SCREEN_W	1280
+// 画面解像度の設定（元解像度から4倍スケールで表示するためのサイズ）
+#define SCREEN_W	1024
 #define SCREEN_H	960
 
-void GameInit();	//	初期化処理
-void GameUpdate();	//	更新処理
-void GameRender();	//	描画処理
-void GameExit();	//	終了処理
+void GameInit();	//	ゲーム起動時の初期化処理
+void GameUpdate();	//	毎フレームの更新処理（入力の受付など)
+void GameRender();	//	毎フレームの描画処理
+void GameExit();	//	ゲーム終了時の後始末処理

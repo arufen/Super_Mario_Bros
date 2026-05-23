@@ -1,0 +1,63 @@
+﻿#include "Main.h"
+#include "Game.h"
+#include "Debug.h"
+#include "Camera.h"
+
+// MainCamera is defined in a single translation unit (Main.cpp).
+// Use extern here to avoid duplicate symbol when linking.
+extern Camera MainCamera;
+
+int map_mode;
+
+//---------------------------------------------------------------------------------
+//	初期化処理
+//---------------------------------------------------------------------------------
+void Debug::Init()
+{
+		map_mode = MODE_USUALLY;
+}
+
+//---------------------------------------------------------------------------------
+//	更新処理
+//---------------------------------------------------------------------------------
+void Debug::Update()
+{
+	if (CheckHitKey(KEY_INPUT_LCONTROL) && PushHitKey(KEY_INPUT_U))
+	{
+		map_mode = MODE_USUALLY;
+	}
+
+	if( CheckHitKey( KEY_INPUT_LCONTROL ) && PushHitKey( KEY_INPUT_D ) )
+	{
+		map_mode = MODE_DEBUG;
+	}
+
+	if (map_mode == MODE_USUALLY)
+	{
+
+	}
+
+	if (map_mode == MODE_DEBUG)
+	{
+
+	}
+}
+
+//---------------------------------------------------------------------------------
+//	描画処理
+//---------------------------------------------------------------------------------
+void Debug::Render()
+{
+	// デバッグ情報の表示
+	DrawFormatString(0, 0, GetColor(255, 255, 255), "camera pos X : %f, camera pos Y : %f", MainCamera.pos.x, MainCamera.pos.y);
+
+	// 現在のモードを画面の端にでも出しておくとデバッグが捗ります
+	if (map_mode == MODE_DEBUG) {
+		DrawString(0, 20, "DEBUG MODE ACTIVE", GetColor(255, 0, 0));
+		DrawLine(SCREEN_W/2, 0, SCREEN_W/2, SCREEN_H, GetColor(0, 255, 255));
+		DrawLine((int)(marioImage.pos.x / 2), 0, SCREEN_W / 2, SCREEN_H, GetColor(0, 0, 255));
+	}
+	else {
+		DrawString(0, 20, "USUALLY MODE ACTIVE", GetColor(255, 255, 255));
+	}
+}

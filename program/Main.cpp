@@ -1,5 +1,9 @@
 #include "Main.h"
 #include "Game.h"
+#include "Camera.h"
+
+// Define the global camera in exactly one translation unit to avoid LNK2005.
+Camera MainCamera;
 
 char KeyBuffer[256];
 int KeyFrame[256];
