@@ -1,0 +1,173 @@
+﻿#include "Main.h"
+#include "Game.h"
+#include "Mario.h"
+#include "Debug.h"
+#include "Camera.h"
+
+extern Camera MainCamera;
+
+// Camera.cpp との互換性を保つためのグローバル変数
+// ※Camera.cpp を変更せずに参照できるようにここに定義しています
+float marioSpeed;
+
+int mario_centerX;
+// デバッグ描画用のマリオの画面座標情報（screen座標）
+int mario_debug_x1;
+int mario_debug_y1;
+int mario_debug_x2;
+int mario_debug_y2;
+
+// ==========================================
+// 調整用の物理パラメータ（定数）
+// ==========================================
+// NOTE: 他箇所で同名のシンボルが定義されている可能性があるため
+// 定数名を一意にする（C2377 対策）。
+const float MARIO_ACCEL = 0.4f;		// 1フレームごとの加速度（増やすとキレが良くなる）
+const float MARIO_WALK_MAX_SPEED = 4.5f;	// 歩き状態の最高速度（これ以上速くならない）
+const float MARIO_DASH_MAX_SPEED = 8.0f;   // ダッシュ状態の最高速度（これ以上速くならない）
+const float MARIO_FRICTION = 0.3f;	// キーを離したときの摩擦・ブレーキ（減らすとよく滑る）
+const float MARIO_DECEL_TURN = 0.8f;  // 逆キーを入れたときの急ブレーキの強さ
+
+void Mario::Init()
+{
+	// マリオの画像を読み込み、初期位置を設定
+	marioImage.InitialImageAndSize(LoadGraph("data/mario_walk_1.png"));
+	marioImage.pos.Set(165.0f, 772.0f);
+	isLeft = false; // 最初は右向き
+
+	now_speed_x = 0.0f; // 最初は静止している
+}
+
+void Mario::Update()
+{
+	if (CheckHitKey(KEY_INPUT_D)) {
+		marioSpeed = MARIO_WALK_MAX_SPEED; // 歩きの最高速度
+	}
+	else if (CheckHitKey(KEY_INPUT_LSHIFT) && PushHitKey(KEY_INPUT_D)) {
+		marioSpeed = MARIO_DASH_MAX_SPEED; // ダッシュの最高速度
+	}
+	else if (CheckHitKey(KEY_INPUT_A)) {
+		marioSpeed = -MARIO_WALK_MAX_SPEED; // 歩きの最高速度（左向き）
+	}
+	else if (CheckHitKey(KEY_INPUT_LSHIFT) && PushHitKey(KEY_INPUT_A)) {
+		marioSpeed = -MARIO_DASH_MAX_SPEED; // ダッシュの最高速度（左向き）
+	}
+	else {
+		marioSpeed = 0.0f; // キーが押されていないときは速度ゼロ
+	}
+
+
+	// キー入力に応じた「速度（now_speed_x）」の計算
+	if (CheckHitKey(KEY_INPUT_D) || (CheckHitKey(KEY_INPUT_LSHIFT) && CheckHitKey(KEY_INPUT_D))) // 歩きとダッシュの右移動
+	{
+		isLeft = false; // 右を向く
+
+		if (now_speed_x < 0.0f) 
+		{
+			now_speed_x += MARIO_DECEL_TURN; // 左に動いていたら急ブレーキ
+		}
+        else
+		{
+            now_speed_x += MARIO_ACCEL;      // 通常加速
+        }
+	}
+	else if (CheckHitKey(KEY_INPUT_A) || (CheckHitKey(KEY_INPUT_LSHIFT) && CheckHitKey(KEY_INPUT_A))) // 歩きとダッシュの左移動
+	{
+		isLeft = true;  // 左を向く
+
+		if (now_speed_x > 0.0f) 
+		{
+			now_speed_x -= MARIO_DECEL_TURN; // 右に動いていたら急ブレーキ
+		}
+        else 
+		{
+            now_speed_x -= MARIO_ACCEL;      // 通常加速
+        }
+	}
+	else // 何も押していないとき
+	{
+		// 摩擦（自然減速）の処理
+		if (now_speed_x > 0.0f) 
+		{
+			now_speed_x -= MARIO_FRICTION;
+			if (now_speed_x < 0.0f) now_speed_x = 0.0f; // 減速しすぎて逆走するのを防ぐ
+		}
+		else if (now_speed_x < 0.0f) 
+		{
+			now_speed_x += MARIO_FRICTION;
+			if (now_speed_x > 0.0f) now_speed_x = 0.0f; // 減速しすぎて逆走するのを防ぐ
+		}
+	}
+
+	// 2. 最高速度の制限（クランプ）
+	if (now_speed_x > MARIO_WALK_MAX_SPEED)  now_speed_x = MARIO_WALK_MAX_SPEED;
+	if (now_speed_x < -MARIO_WALK_MAX_SPEED) now_speed_x = -MARIO_WALK_MAX_SPEED;
+	if (now_speed_x > MARIO_DASH_MAX_SPEED)  now_speed_x = MARIO_DASH_MAX_SPEED;
+	if (now_speed_x < -MARIO_DASH_MAX_SPEED) now_speed_x = -MARIO_DASH_MAX_SPEED;
+
+	// 3. 計算した速度を「実際の座標」に足し算する（★ここが等速からの大きな変化です）
+	marioImage.pos.x += now_speed_x;
+
+	// Dキーの押し下げに関係なく、マリオが画面中央を越えたらカメラを動かすように外に出しました
+	float marioWorldCenterX = marioImage.pos.x + (marioImage.sizeX / 2.0f);
+	if (marioWorldCenterX >= MainCamera.pos.x + (SCREEN_W / 2))
+	{
+		MainCamera.pos.x = marioWorldCenterX - (SCREEN_W / 2);
+	}
+
+	// カメラの移動可能範囲を制限 (0 ～ 12480)
+	if (MainCamera.pos.x < 0) MainCamera.pos.x = 0;
+	if (MainCamera.pos.x > 12480) MainCamera.pos.x = 12480;
+
+	// マリオがカメラの左端より外に出ないようにする
+	if (marioImage.pos.x < MainCamera.pos.x)
+	{
+		marioImage.pos.x = MainCamera.pos.x;
+	}
+
+	// マリオの表示幅を計算
+	float marioWidth = marioImage.sizeX; // マリオの画像の幅を計算
+	float marioHeight = marioImage.sizeY;// マリオの画像の高さを計算
+	// マリオの右端のワールド座標
+	float marioRightX = marioImage.pos.x + marioWidth;
+
+	// ステージの右端を設定 (カメラの最大移動量 + 画面幅)
+	float stageRightLimit = 12480.0f + SCREEN_W;
+
+	// マリオがステージの右端を越えないように座標を補正
+	if (marioRightX > stageRightLimit)
+	{
+		marioImage.pos.x = stageRightLimit - marioWidth;
+	}
+
+	// 画面上でのマリオの中心X座標を計算し、グローバル変数に保持する
+	// デバッグ描画用にマリオのスクリーン矩形を更新しておく
+	// ※Debug.cpp 側でこの情報を参照して当たり判定枠などを描画する
+	int mario_screenX = (int)(marioImage.pos.x - MainCamera.pos.x);
+	int mario_screenY = (int)(marioImage.pos.y - MainCamera.pos.y);
+	mario_centerX = mario_screenX + (marioWidth / 2);
+
+	mario_debug_x1 = mario_screenX;
+	mario_debug_y1 = mario_screenY;
+	mario_debug_x2 = mario_screenX + marioWidth;
+	mario_debug_y2 = mario_screenY + marioHeight;
+}
+
+void Mario::Render()
+{
+	// カメラの座標に合わせてマリオの描画位置（スクリーン座標）を計算
+	int screenX = (int)(marioImage.pos.x - MainCamera.pos.x);
+	int screenY = (int)(marioImage.pos.y - MainCamera.pos.y);
+	
+	// 向きに応じて反転させて描画 (画像の左上を基準点として等倍で描画)
+	if (isLeft)
+	{
+		// 左向き (左右反転)
+		DrawRotaGraph2(screenX, screenY, 0, 0, 1.0f, 0.0, marioImage.image, TRUE, TRUE);
+	}
+	else
+	{
+		// 右向き (反転なし)
+		DrawRotaGraph2(screenX, screenY, 0, 0, 1.0f, 0.0, marioImage.image, TRUE, FALSE);
+	}
+}
