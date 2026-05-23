@@ -20,11 +20,11 @@ void Map::Render(Camera& camera)
     if (map_mode == MODE_USUALLY)
     {
         // 4倍スケールで通常マップを描画
-        camera.GlobalRenderImage(mapImageUsually, 4.0f);
+        camera.GlobalRenderImage(mapImageUsually);
     }
     else if (map_mode == MODE_DEBUG)
     {
         // 4倍スケールでデバッグ用マップを描画
-        camera.GlobalRenderImage(mapImageDebug, 4.0f);
+        camera.GlobalRenderImage(mapImageDebug);
     }
 }

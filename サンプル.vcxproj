@@ -151,6 +151,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Hard_Block.cpp" />
     <ClCompile Include="program\1-Up_Mushroom.cpp" />
     <ClCompile Include="program\Brick_Block.cpp" />
     <ClCompile Include="program\Camera.cpp" />
@@ -179,6 +180,7 @@
     <ClCompile Include="program\Warp_Pipe.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Hard_Block.h" />
     <ClInclude Include="program\1-Up_Mushroom.h" />
     <ClInclude Include="program\Brick_Block.h" />
     <ClInclude Include="program\Camera.h" />
