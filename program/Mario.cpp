@@ -32,6 +32,11 @@ void Mario::Init()
 {
 	// マリオの画像を読み込み、初期位置を設定
 	marioImage.InitialImageAndSize(LoadGraph("data/mario_walk_1.png"));
+	
+	// アニメーションの初期化（画像ハンドル、フレーム数、FPSなどを渡す）
+	walkAnim.InitialAnimation(LoadGraph("data/mario/mario_walk.png"), 4, 10);
+	jumpAnim.InitialAnimation(LoadGraph("data/mario/mario_jump.png"), 1, 1);
+
 	marioImage.pos.Set(165.0f, 772.0f);
 	isLeft = false; // 最初は右向き
 
@@ -46,12 +51,16 @@ void Mario::Update()
 	}
 	else if (CheckHitKey(KEY_INPUT_D)) {
 		marioSpeed = MARIO_WALK_MAX_SPEED; // 歩きの最高速度（右向き）
+		// 歩き状態なら歩きアニメーションを更新
+		walkAnim.AnimationUpdateLoop();
 	}
 	else if (CheckHitKey(KEY_INPUT_LSHIFT) && CheckHitKey(KEY_INPUT_A)) {
 		marioSpeed = -MARIO_DASH_MAX_SPEED; // ダッシュの最高速度（左向き）
 	}
 	else if (CheckHitKey(KEY_INPUT_A)) {
 		marioSpeed = -MARIO_WALK_MAX_SPEED; // 歩きの最高速度（左向き）
+		// 歩き状態なら歩きアニメーションを更新
+		walkAnim.AnimationUpdateLoop();
 	}
 	else {
 		// キーが押されていないときは速度制御用変数は歩き相当にしておく（慣性で滑るため）
@@ -175,4 +184,6 @@ void Mario::Render()
 		// 右向き (反転なし)
 		DrawRotaGraph2(screenX, screenY, 0, 0, 1.0f, 0.0, marioImage.image, TRUE, FALSE);
 	}
+	// 現在の状態に応じて描画
+	walkAnim.AnimationRenderCenter();
 }

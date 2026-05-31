@@ -20,6 +20,9 @@ private:
 	bool isLeft;		// 向きフラグ（trueなら左向き、falseなら右向き）
 
 public:
+	Animation walkAnim;
+	Animation jumpAnim;
+
 	void Init();
 	void Update();
 	void Render();
