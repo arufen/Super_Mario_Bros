@@ -18,8 +18,6 @@ int mario_debug_y1;
 int mario_debug_x2;
 int mario_debug_y2;
 
-
-
 // ==========================================
 // 調整用の物理パラメータ（定数）
 // ==========================================
@@ -33,89 +31,80 @@ const float MARIO_DECEL_TURN = 0.8f;  // 逆キーを入れたときの急ブレ
 
 void Mario::Init()
 {
-	// マリオの画像を読み込み、初期位置を設定
-	//marioImage.InitialImageAndSize(LoadGraph("data/mario_walk_1.png"));
+	// 【修正】walkAnimation を正しく初期化（画像、コマ数:3, FPS:15）
 	walkAnimation.InitialAnimation(LoadGraph("data/mario/mario_walk_01.png"), 3, 15);
-	//walkSprite.InitialImageAndSize(LoadGraph("data/mario/mario_walk_01.png"));
-	//jumpSprite.InitialImageAndSize(LoadGraph("data/mario/mario_jump.png"));
 
 	marioImage.pos.Set(165.0f, 772.0f);
-	//walkSprite.pos.Set(165.0f, 772.0f);
 
 	isLeft = false; // 最初は右向き
-
 	now_speed_x = 0.0f; // 最初は静止している
 }
 
 void Mario::Update()
 {
-    // LSHIFT + 方向キー の組み合わせは単独の方向キー判定より先に評価する
+	// LSHIFT + 方向キー の組み合わせは単独の方向キー判定より先に評価する
 	if (CheckHitKey(KEY_INPUT_LSHIFT) && CheckHitKey(KEY_INPUT_D)) {
 		marioSpeed = MARIO_DASH_MAX_SPEED; // ダッシュの最高速度（右向き）
 	}
 	else if (CheckHitKey(KEY_INPUT_D)) {
 		marioSpeed = MARIO_WALK_MAX_SPEED; // 歩きの最高速度（右向き）
-		// 歩き状態なら歩きアニメーションを更新
-		walkAnim.AnimationUpdateLoop();
+		// 【修正】ここでは更新せず、Updateの最後で一括して walkAnimation の更新を行います
 	}
 	else if (CheckHitKey(KEY_INPUT_LSHIFT) && CheckHitKey(KEY_INPUT_A)) {
 		marioSpeed = -MARIO_DASH_MAX_SPEED; // ダッシュの最高速度（左向き）
 	}
 	else if (CheckHitKey(KEY_INPUT_A)) {
 		marioSpeed = -MARIO_WALK_MAX_SPEED; // 歩きの最高速度（左向き）
-		// 歩き状態なら歩きアニメーションを更新
-		walkAnim.AnimationUpdateLoop();
+		// 【修正】ここでは更新せず、Updateの最後で一括して walkAnimation の更新を行います
 	}
 	else {
 		// キーが押されていないときは速度制御用変数は歩き相当にしておく（慣性で滑るため）
 		marioSpeed = MARIO_WALK_MAX_SPEED;
 	}
 
-
 	// キー入力に応じた「速度（now_speed_x）」の計算
 	if (CheckHitKey(KEY_INPUT_D) || (CheckHitKey(KEY_INPUT_LSHIFT) && CheckHitKey(KEY_INPUT_D))) // 歩きとダッシュの右移動
 	{
 		isLeft = false; // 右を向く
 
-		if (now_speed_x < 0.0f) 
+		if (now_speed_x < 0.0f)
 		{
 			now_speed_x += MARIO_DECEL_TURN; // 左に動いていたら急ブレーキ
 		}
-        else
+		else
 		{
-            now_speed_x += MARIO_ACCEL;      // 通常加速
-        }
+			now_speed_x += MARIO_ACCEL;      // 通常加速
+		}
 	}
 	else if (CheckHitKey(KEY_INPUT_A) || (CheckHitKey(KEY_INPUT_LSHIFT) && CheckHitKey(KEY_INPUT_A))) // 歩きとダッシュの左移動
 	{
 		isLeft = true;  // 左を向く
 
-		if (now_speed_x > 0.0f) 
+		if (now_speed_x > 0.0f)
 		{
 			now_speed_x -= MARIO_DECEL_TURN; // 右に動いていたら急ブレーキ
 		}
-        else 
+		else
 		{
-            now_speed_x -= MARIO_ACCEL;      // 通常加速
-        }
+			now_speed_x -= MARIO_ACCEL;      // 通常加速
+		}
 	}
 	else // 何も押していないとき
 	{
 		// 摩擦（自然減速）の処理
-		if (now_speed_x > 0.0f) 
+		if (now_speed_x > 0.0f)
 		{
 			now_speed_x -= MARIO_FRICTION;
 			if (now_speed_x < 0.0f) now_speed_x = 0.0f; // 減速しすぎて逆走するのを防ぐ
 		}
-		else if (now_speed_x < 0.0f) 
+		else if (now_speed_x < 0.0f)
 		{
 			now_speed_x += MARIO_FRICTION;
 			if (now_speed_x > 0.0f) now_speed_x = 0.0f; // 減速しすぎて逆走するのを防ぐ
 		}
 	}
 
-    // 2. 最高速度の制限（クランプ）
-	// 現在押されているキーに応じて最大速度を決定する（ダッシュ中は大きな値）
+	// 最高速度の制限（クランプ）
 	float MarioMoovMaxSpeed = MARIO_WALK_MAX_SPEED;
 	if (CheckHitKey(KEY_INPUT_LSHIFT) && (CheckHitKey(KEY_INPUT_D) || CheckHitKey(KEY_INPUT_A))) {
 		MarioMoovMaxSpeed = MARIO_DASH_MAX_SPEED;
@@ -123,7 +112,7 @@ void Mario::Update()
 	if (now_speed_x > MarioMoovMaxSpeed)  now_speed_x = MarioMoovMaxSpeed;
 	if (now_speed_x < -MarioMoovMaxSpeed) now_speed_x = -MarioMoovMaxSpeed;
 
-	// 3. 計算した速度を「実際の座標」に足し算する
+	// 計算した速度を「実際の座標」に足し算する
 	marioImage.pos.x += now_speed_x;
 
 	// Dキーの押し下げに関係なく、マリオが画面中央を越えたらカメラを動かすように外に出しました
@@ -162,59 +151,41 @@ void Mario::Update()
 
 	// 画面上でのマリオの中心X座標を計算し、グローバル変数に保持する
 	// デバッグ描画用にマリオのスクリーン矩形を更新しておく
-	// ※Debug.cpp 側でこの情報を参照して当たり判定枠などを描画する
 	int mario_screenX = (int)(marioImage.pos.x - MainCamera.pos.x);
 	int mario_screenY = (int)(marioImage.pos.y - MainCamera.pos.y);
-	mario_centerX = mario_screenX + (marioWidth / 2);
+	mario_centerX = mario_screenX + ((int)marioWidth / 2);
 
 	mario_debug_x1 = mario_screenX;
 	mario_debug_y1 = mario_screenY;
-	mario_debug_x2 = mario_screenX + marioWidth;
-	mario_debug_y2 = mario_screenY + marioHeight;
+	mario_debug_x2 = mario_screenX + (int)marioWidth;
+	mario_debug_y2 = mario_screenY + (int)marioHeight;
 
+	// アニメーション用のスクリーン現在座標を渡す
 	walkAnimation.x = (float)mario_screenX;
 	walkAnimation.y = (float)mario_screenY;
 
+	// 【修正】実際に「移動している速度」に基づいて walkAnimation の更新を行います
 	if (std::abs(now_speed_x) > 0.1f)
 	{
-		// 動いているときはコマを進める
-		walkAnimation.AnimationUpdateLoop();
+		walkAnimation.AnimationUpdateLoop(); // 正しく walkAnimation を更新
 	}
 	else
 	{
 		// 止まっているときは最初のコマ（立ちポーズ）に戻す
 		walkAnimation.currentFrame = 0;
 	}
-
-	// アニメーション描画用にスクリーンの現在座標を渡す
-	walkAnimation.x = (float)mario_screenX;
-	walkAnimation.y = (float)mario_screenY;
 }
-
 
 void Mario::Render()
 {
-	// カメラの座標に合わせてマリオの描画位置（スクリーン座標）を計算
-	int screenX = (int)(marioImage.pos.x - MainCamera.pos.x);
-	int screenY = (int)(marioImage.pos.y - MainCamera.pos.y);
-	
-	float scale = 4.0f;
-
-	// 向きに応じて反転させて描画 (画像の左上を基準点として等倍で描画)
+	// 向きに応じて反転させて描画
+	// 【修正】初期化されていない walkAnim や古い DrawRotaGraph2 の重複した描画を全て削除しました。
 	if (isLeft)
 	{
-		walkAnimation.AnimationRenderCenter(true);
-		// 左向き (左右反転)
-		DrawRotaGraph2(screenX, screenY, 0, 0, 1.0f, 0.0, marioImage.image, TRUE, TRUE);
-		
+		walkAnimation.AnimationRenderCenter(true); // 左向き (左右反転してアニメーション描画)
 	}
 	else
 	{
-		
-		walkAnimation.AnimationRenderCenter(isLeft);
-		// 右向き (反転なし)
-		DrawRotaGraph2(screenX, screenY, 0, 0, 1.0f, 0.0, marioImage.image, TRUE, FALSE);
+		walkAnimation.AnimationRenderCenter(false); // 右向き (反転なしでアニメーション描画)
 	}
-	// 現在の状態に応じて描画
-	walkAnim.AnimationRenderCenter();
 }
