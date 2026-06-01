@@ -6,7 +6,7 @@
 void Map::Init()
 {
     // 通常モード用のマップ画像を読み込み、基準位置を設定する
-    mapImageUsually.InitialImageAndSize(LoadGraph("data/1-1.png"));
+    mapImageUsually.InitialImageAndSize(LoadGraph("data/1-1(new).png"));
     mapImageUsually.pos.Set(0.0f, 0.0f);
 
     // デバッグモード用（当たり判定可視化など）のマップ画像を読み込み、基準位置を設定する

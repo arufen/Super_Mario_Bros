@@ -13,6 +13,7 @@
 
 #include <DxLib.h>
 
+
 // キーボードやマウスの入力を取得するためのヘルパー関数群
 bool PushHitKey( int key );
 bool CheckMouseInput( int button = MOUSE_INPUT_LEFT|MOUSE_INPUT_RIGHT );
