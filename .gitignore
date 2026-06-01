@@ -71,3 +71,12 @@ Testing/
 .cache/
 
 .vs/
+
+# VS build output
+*.user
+*.suo
+Debug/
+Release/
+x64/
+サンプル/
+ipch/
