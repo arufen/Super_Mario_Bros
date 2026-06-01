@@ -4,17 +4,14 @@
 #include "Debug.h"
 #include "Map.h"
 #include "Mario.h"
-<<<<<<< HEAD
 #include "Brick_Block.h"
 #include "Question_Block.h"
 #include "Hard_Block.h"
 #include <vector>
-=======
 #include "Ground.h"
 #include "StageManager.h"
 #include <vector>
 using namespace std;
->>>>>>> 30f87b127552e9cfc3a361a6981d4f865ff36fa6
 
 extern Camera MainCamera;
 
@@ -30,12 +27,6 @@ std::vector<IBlock*> globalBlocks;
 
 // プレイヤー（マリオ）
 Mario MainMario;
-<<<<<<< HEAD
-=======
-
-
-
->>>>>>> 30f87b127552e9cfc3a361a6981d4f865ff36fa6
 //---------------------------------------------------------------------------------
 //	初期化処理
 //---------------------------------------------------------------------------------
@@ -113,18 +104,14 @@ void GameUpdate()
 {
 	MainCamera.Update();
 	MainMario.Update();
-<<<<<<< HEAD
 	//// Update all active brick block logic frames (bouncing physics)
 	//for (int i = 0; i < MAX_BRICKBLOCKS; i++)
 	//{
 	//	brick_block[i].Update();
 	//}
-=======
 	
 	StageManager::GetInstance().Update(MainMario);
 	
-
->>>>>>> 30f87b127552e9cfc3a361a6981d4f865ff36fa6
 	// デバッグ機能（モード切り替えなど）の更新
 
 	for (IBlock* block : globalBlocks)
