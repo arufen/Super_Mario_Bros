@@ -3,6 +3,7 @@
 #include "Mario.h"
 #include "Debug.h"
 #include "Camera.h"
+#include <cmath>
 
 extern Camera MainCamera;
 
@@ -16,6 +17,8 @@ int mario_debug_x1;
 int mario_debug_y1;
 int mario_debug_x2;
 int mario_debug_y2;
+
+
 
 // ==========================================
 // 調整用の物理パラメータ（定数）
@@ -31,8 +34,14 @@ const float MARIO_DECEL_TURN = 0.8f;  // 逆キーを入れたときの急ブレ
 void Mario::Init()
 {
 	// マリオの画像を読み込み、初期位置を設定
-	marioImage.InitialImageAndSize(LoadGraph("data/mario_walk_1.png"));
+	//marioImage.InitialImageAndSize(LoadGraph("data/mario_walk_1.png"));
+	walkAnimation.InitialAnimation(LoadGraph("data/mario/mario_walk_01.png"), 3, 15);
+	//walkSprite.InitialImageAndSize(LoadGraph("data/mario/mario_walk_01.png"));
+	//jumpSprite.InitialImageAndSize(LoadGraph("data/mario/mario_jump.png"));
+
 	marioImage.pos.Set(165.0f, 772.0f);
+	//walkSprite.pos.Set(165.0f, 772.0f);
+
 	isLeft = false; // 最初は右向き
 
 	now_speed_x = 0.0f; // 最初は静止している
@@ -130,9 +139,11 @@ void Mario::Update()
 		marioImage.pos.x = MainCamera.pos.x;
 	}
 
+	float scale = 4.0f;
+
 	// マリオの表示幅を計算
-	float marioWidth = marioImage.sizeX; // マリオの画像の幅を計算
-	float marioHeight = marioImage.sizeY;// マリオの画像の高さを計算
+	float marioWidth = marioImage.sizeX * scale; // マリオの画像の幅を計算
+	float marioHeight = marioImage.sizeY * scale;// マリオの画像の高さを計算
 	// マリオの右端のワールド座標
 	float marioRightX = marioImage.pos.x + marioWidth;
 
@@ -156,7 +167,26 @@ void Mario::Update()
 	mario_debug_y1 = mario_screenY;
 	mario_debug_x2 = mario_screenX + marioWidth;
 	mario_debug_y2 = mario_screenY + marioHeight;
+
+	walkAnimation.x = (float)mario_screenX;
+	walkAnimation.y = (float)mario_screenY;
+
+	if (std::abs(now_speed_x) > 0.1f)
+	{
+		// 動いているときはコマを進める
+		walkAnimation.AnimationUpdateLoop();
+	}
+	else
+	{
+		// 止まっているときは最初のコマ（立ちポーズ）に戻す
+		walkAnimation.currentFrame = 0;
+	}
+
+	// アニメーション描画用にスクリーンの現在座標を渡す
+	walkAnimation.x = (float)mario_screenX;
+	walkAnimation.y = (float)mario_screenY;
 }
+
 
 void Mario::Render()
 {
@@ -164,14 +194,20 @@ void Mario::Render()
 	int screenX = (int)(marioImage.pos.x - MainCamera.pos.x);
 	int screenY = (int)(marioImage.pos.y - MainCamera.pos.y);
 	
+	float scale = 4.0f;
+
 	// 向きに応じて反転させて描画 (画像の左上を基準点として等倍で描画)
 	if (isLeft)
 	{
+		walkAnimation.AnimationRenderCenter(true);
 		// 左向き (左右反転)
 		DrawRotaGraph2(screenX, screenY, 0, 0, 1.0f, 0.0, marioImage.image, TRUE, TRUE);
+		
 	}
 	else
 	{
+		
+		walkAnimation.AnimationRenderCenter(isLeft);
 		// 右向き (反転なし)
 		DrawRotaGraph2(screenX, screenY, 0, 0, 1.0f, 0.0, marioImage.image, TRUE, FALSE);
 	}

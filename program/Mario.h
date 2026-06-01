@@ -19,6 +19,12 @@ private:
 	float now_speed_x;	// 現在の横方向の速度
 	bool isLeft;		// 向きフラグ（trueなら左向き、falseなら右向き）
 
+	Image walkSprite; // 歩きアニメーションのスプライト
+	Image jumpSprite; // ジャンプアニメーションのスプライト
+
+	Animation walkAnimation; // 歩きアニメーションの管理
+	Animation jumpAnimation; // ジャンプアニメーションの管理
+
 public:
 	void Init();
 	void Update();

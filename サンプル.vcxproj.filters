@@ -90,7 +90,7 @@
     <ClCompile Include="program\Game_Over.cpp">
       <Filter>program\system</Filter>
     </ClCompile>
-    <ClCompile Include="Hard_Block.cpp">
+    <ClCompile Include="program\Hard_Block.cpp">
       <Filter>program\game</Filter>
     </ClCompile>
   </ItemGroup>
@@ -173,7 +173,7 @@
     <ClInclude Include="program\Game_Over.h">
       <Filter>program\system</Filter>
     </ClInclude>
-    <ClInclude Include="Hard_Block.h">
+    <ClInclude Include="program\Hard_Block.h">
       <Filter>program\game</Filter>
     </ClInclude>
   </ItemGroup>
