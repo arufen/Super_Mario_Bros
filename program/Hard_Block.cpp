@@ -1,10 +1,37 @@
 #include "Hard_Block.h"
+#include "DxLib.h"
 
-void Hard_Block::Init()
+HardBlock::HardBlock()
 {
-	// ハードブロックの初期化処理をここに記述
+    pos.Set(0.0f, 0.0f);
+    active = false;
 }
-void Hard_Block::Update()
+
+void HardBlock::Init(Float2 startPos, int graphHandle)
 {
-	// ハードブロックの更新処理をここに記述
+    pos = startPos;
+    active = true;
+
+    image.InitialImageAndSize(graphHandle);
+}
+
+void HardBlock::Bump()
+{
+    
+}
+
+void HardBlock::Update()
+{
+    if (!active) return;
+}
+
+void HardBlock::Render(Float2 cameraPos)
+{
+    if (!active) return;
+
+    // Calculate where the block should draw relative to the camera screen space
+    Float2 screenPos = { pos.x - cameraPos.x,pos.y - cameraPos.y };
+
+    // Render at the screen relative position
+    image.Render(screenPos);
 }

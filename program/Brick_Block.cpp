@@ -1,30 +1,49 @@
 #include "Brick_Block.h"
 #include "Dxlib.h"
-#define MAX_BRICKBLOCKS 30
-//BrickBlock Brick_block[MAX_BRICKBLOCKS];
 
-void BrickBlock::Init()
+// Constructor
+BrickBlock::BrickBlock()
 {
-	pos.x = 0;
-	pos.y = 0;
-	active = true;
+    pos.Set(0.0f, 0.0f);
+    originalPos.Set(0.0f, 0.0f);
+    active = false;
+    isBouncing = false;
+    bounceTimer = 0.0f;
 }
 
-void BrickBlock::Set(float x, float y)
+void BrickBlock::Init(Float2 startPos, int graphHandle)
 {
-	pos.x = x;
-	pos.y = y;
+    pos = startPos;
+    originalPos = startPos;
+    active = true;
+
+    image.InitialImageAndSize(graphHandle);
+}
+
+void BrickBlock::Bump()
+{
+    if (!isBouncing)
+    {
+        isBouncing = true;
+        bounceTimer = 0.0f; // Reset our animation timeframe tracker
+        
+    }
 }
 
 void BrickBlock::Update()
 {
-	if (active)
-	{
+    if (!active) return;
 
-	}
+    // マリオはスーパーマリオとかファイアマリオになったら…
 }
 
-void BrickBlock::Render()
+void BrickBlock::Render(Float2 cameraPos)
 {
-	DrawGraph(pos.x, pos.y, image, TRUE);
+    if (!active) return;
+
+    // Calculate where the block should draw relative to the camera screen space
+    Float2 screenPos = { pos.x - cameraPos.x,pos.y - cameraPos.y };
+
+    // Render at the screen relative position
+    image.Render(screenPos);
 }
