@@ -55,12 +55,16 @@ void Mario::Update()
 	}
 	else if (CheckHitKey(KEY_INPUT_D)) {
 		marioSpeed = MARIO_WALK_MAX_SPEED; // 歩きの最高速度（右向き）
+		// 歩き状態なら歩きアニメーションを更新
+		walkAnim.AnimationUpdateLoop();
 	}
 	else if (CheckHitKey(KEY_INPUT_LSHIFT) && CheckHitKey(KEY_INPUT_A)) {
 		marioSpeed = -MARIO_DASH_MAX_SPEED; // ダッシュの最高速度（左向き）
 	}
 	else if (CheckHitKey(KEY_INPUT_A)) {
 		marioSpeed = -MARIO_WALK_MAX_SPEED; // 歩きの最高速度（左向き）
+		// 歩き状態なら歩きアニメーションを更新
+		walkAnim.AnimationUpdateLoop();
 	}
 	else {
 		// キーが押されていないときは速度制御用変数は歩き相当にしておく（慣性で滑るため）
@@ -211,4 +215,6 @@ void Mario::Render()
 		// 右向き (反転なし)
 		DrawRotaGraph2(screenX, screenY, 0, 0, 1.0f, 0.0, marioImage.image, TRUE, FALSE);
 	}
+	// 現在の状態に応じて描画
+	walkAnim.AnimationRenderCenter();
 }

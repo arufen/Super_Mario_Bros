@@ -26,6 +26,9 @@ private:
 	Animation jumpAnimation; // ジャンプアニメーションの管理
 
 public:
+	Animation walkAnim;
+	Animation jumpAnim;
+
 	void Init();
 	void Update();
 	void Render();
