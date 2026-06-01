@@ -2,7 +2,11 @@
 <Project>
   <ProjectOutputs>
     <ProjectOutput>
+<<<<<<< HEAD
       <FullPath>F:\2nd_Year\Code Tests\Super Mario Bros\x64\Debug\サンプル.exe</FullPath>
+=======
+      <FullPath>F:\oca file\2nd_year\SuperMarioBros\x64\Debug\サンプル.exe</FullPath>
+>>>>>>> 30f87b127552e9cfc3a361a6981d4f865ff36fa6
     </ProjectOutput>
   </ProjectOutputs>
   <ContentFiles />

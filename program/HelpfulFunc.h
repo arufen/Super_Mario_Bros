@@ -1,5 +1,7 @@
 #pragma once
 #include "Float2.h"
+#include "Main.h"
+#include "Game.h"
 
 class Timer
 {
@@ -41,6 +43,7 @@ public:
 	//Method
 	void InitialImageAndSize(int Loadimage);
 	void Render() const;
+	//void RenderGlobal(Camera& camera) const; //Render Camera 
     void Render(Float2 targetPos) const;
 	void Render(Float2 targetPos, float scale) const;
 

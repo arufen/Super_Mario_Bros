@@ -4,6 +4,7 @@
 #include "HelpfulFunc.h"
 
 
+
 #define PI 3.141592653589793
 
 float Lerp(float a, float b, float t) //smooth animation
@@ -174,7 +175,7 @@ float Timer::GetCurrentTimer()
 	return currentTime;
 }
 
-//IMAGE2
+//IMAGE
 void Image::InitialImageAndSize(int Loadimage)
 {
 	image = Loadimage;
@@ -186,6 +187,11 @@ void Image::Render()const
     // Draw with top-left as origin
 	DrawExtendGraphF(pos.x, pos.y, pos.x + (float)sizeX, pos.y + (float)sizeY, image, true);
 }
+
+//void Image::RenderGlobal(Camera& camera) const
+//{
+//	//MainCamera
+//}
 
 void Image::Render(Float2 targetPos)const
 {

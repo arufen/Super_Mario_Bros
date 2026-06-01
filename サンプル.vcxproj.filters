@@ -90,7 +90,20 @@
     <ClCompile Include="program\Game_Over.cpp">
       <Filter>program\system</Filter>
     </ClCompile>
+<<<<<<< HEAD
     <ClCompile Include="program\Hard_Block.cpp">
+=======
+    <ClCompile Include="program\Collider.cpp">
+      <Filter>program\system</Filter>
+    </ClCompile>
+    <ClCompile Include="program\Ground.cpp">
+      <Filter>program\game</Filter>
+    </ClCompile>
+    <ClCompile Include="program\StageManager.cpp">
+      <Filter>program\game</Filter>
+    </ClCompile>
+    <ClCompile Include="program\Collidable.cpp">
+>>>>>>> 30f87b127552e9cfc3a361a6981d4f865ff36fa6
       <Filter>program\game</Filter>
     </ClCompile>
   </ItemGroup>
@@ -173,10 +186,23 @@
     <ClInclude Include="program\Game_Over.h">
       <Filter>program\system</Filter>
     </ClInclude>
+<<<<<<< HEAD
     <ClInclude Include="program\Hard_Block.h">
       <Filter>program\game</Filter>
     </ClInclude>
     <ClInclude Include="program\IBlock.h">
+=======
+    <ClInclude Include="program\Collider.h">
+      <Filter>program\system</Filter>
+    </ClInclude>
+    <ClInclude Include="program\Ground.h">
+      <Filter>program\game</Filter>
+    </ClInclude>
+    <ClInclude Include="program\StageManager.h">
+      <Filter>program\game</Filter>
+    </ClInclude>
+    <ClInclude Include="program\Collidable.h">
+>>>>>>> 30f87b127552e9cfc3a361a6981d4f865ff36fa6
       <Filter>program\game</Filter>
     </ClInclude>
   </ItemGroup>

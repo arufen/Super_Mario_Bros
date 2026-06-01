@@ -20,7 +20,7 @@ int WINAPI WinMain( _In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, 
 	SetOutApplicationLogValidFlag( FALSE );
 	ChangeWindowMode( TRUE );
 	SetMainWindowText( "ƒTƒ“ƒvƒ‹" );
-	SetBackgroundColor( 100, 100, 100 );
+	SetBackgroundColor( 92, 148, 252);
 
 	SetDoubleStartValidFlag( TRUE );
 	SetAlwaysRunFlag( TRUE );
