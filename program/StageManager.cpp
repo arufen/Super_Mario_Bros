@@ -49,11 +49,11 @@ void StageManager::Init()
 
 void StageManager::Update(Mario& mario)
 {
-	//Ground Check collision (当たり判定チェック）
-	for (int i = 0; i < ground.size(); i++)
-	{
-		ground[i].Update(mario);
-	}
+	////Ground Check collision (当たり判定チェック）
+	//for (int i = 0; i < ground.size(); i++)
+	//{
+	//	ground[i].Update(mario);
+	//}
 }
 
 void StageManager::Render(Camera& camera)
