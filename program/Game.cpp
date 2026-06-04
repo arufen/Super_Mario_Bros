@@ -54,7 +54,7 @@ void GameUpdate()
 	MainCamera.Update();
 	MainMario.Update();
 	
-	StageManager::GetInstance().Update(MainMario);
+	StageManager::GetInstance().Update();
 	
 
 	// デバッグ機能（モード切り替えなど）の更新

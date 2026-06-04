@@ -102,6 +102,9 @@
     <ClCompile Include="program\Collidable.cpp">
       <Filter>program\game</Filter>
     </ClCompile>
+    <ClCompile Include="program\RigidBody.cpp">
+      <Filter>program\system</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="program\Game.h">
@@ -193,6 +196,9 @@
     </ClInclude>
     <ClInclude Include="program\Collidable.h">
       <Filter>program\game</Filter>
+    </ClInclude>
+    <ClInclude Include="program\RigidBody.h">
+      <Filter>program\system</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
