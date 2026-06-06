@@ -48,7 +48,10 @@ const BlockSpawnData world1_1data[] = {
     { 170, 9 , BlockType::QUESTION},
     { 168, 9 , BlockType::BRICK}, { 169, 9 , BlockType::BRICK}, { 171, 9 , BlockType::BRICK}
 };
-
+//const BlockSpawnData underworld1_1data[] =
+//{
+//
+//};
 class IBlock
 {
 public:
