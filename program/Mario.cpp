@@ -78,7 +78,7 @@ void Mario::ResolveCollision(Collidable& block)
 void Mario::Init()
 {
 	// マリオの画像を読み込み、初期位置を設定
-	marioImage.InitialImageAndSize(LoadGraph("data/mario_idle.png"));
+	marioImage.InitialImageAndSize(LoadGraph("data/image/mario_idle.png"));
 	position.Set(165.0f, 700.0f); //772
 	isLeft = false; // 最初は右向き
 

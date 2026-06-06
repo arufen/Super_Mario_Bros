@@ -6,7 +6,9 @@
 #include "Mario.h"
 #include "Ground.h"
 #include "StageManager.h"
+#include "Time.h"
 #include <vector>
+#include "Sound.h"
 using namespace std;
 
 extern Camera MainCamera;
@@ -20,20 +22,31 @@ Debug MainDebug;
 // プレイヤー（マリオ）
 Mario MainMario;
 
-
+// ゲーム時間
+GameTime MainTime;
 
 //---------------------------------------------------------------------------------
 //	初期化処理
 //---------------------------------------------------------------------------------
 void GameInit()
 {
+	SoundManager::GetInstance().Init(); // サウンドの読み込み
+
+	// BGMを鳴らし始める
+	SoundManager::GetInstance().PlayBGM("Stage1");
+
+	MainMap.Init();
+
 	// マップの初期化
 	MainMap.Init();
 	
 	// マリオおよびデバッグシステムの初期化
 	MainMario.Init();
 	MainDebug.Init();
-	
+
+	// ゲーム時間の初期化
+	MainTime.Init();
+
 	// カメラの初期位置を設定
 	MainCamera.pos.Set(0.0f, 0.0f);
 
@@ -53,7 +66,8 @@ void GameUpdate()
 {
 	MainCamera.Update();
 	MainMario.Update();
-	
+	MainTime.Update();
+
 	StageManager::GetInstance().Update();
 	
 
@@ -71,6 +85,9 @@ void GameRender()
 	// マップの手前にマリオを描画
 	MainMario.Render();
 	
+	// マリオの手前に残り時間を描画
+	MainTime.Render();
+
 	// 一番手前にデバッグ情報を描画
 	MainDebug.Render();
 

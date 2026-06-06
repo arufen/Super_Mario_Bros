@@ -1,1 +1,19 @@
-#pragma once
+class GameTime
+{
+private:
+    int count;          // 残り時間（400スタート）
+    int frameCounter;   // 0.4秒（24フレーム）を計測するためのカウンタ
+
+    bool isTimeStarted;    // 時間が進み始めたかどうかのフラグ
+    bool isHurryBGMPlayed; // 残り100秒のBGMに切り替えたかどうかのフラグ
+    bool isBGMStopped;     // タイムアップでBGMを停止したかどうかのフラグ
+
+public:
+    void Init();
+    void Update();
+    void Render();
+
+    // 外部（マリオクラスなど）から時間切れを判定したい時のための関数
+    int GetCount() const { return count; }
+    bool IsTimeUp() const { return count <= 0; }
+};
