@@ -93,6 +93,9 @@
     <ClCompile Include="program\Hard_Block.cpp">
       <Filter>program\game</Filter>
     </ClCompile>
+    <ClCompile Include="program\Mario_Animation.cpp">
+      <Filter>program\game</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="program\Game.h">
@@ -174,6 +177,9 @@
       <Filter>program\system</Filter>
     </ClInclude>
     <ClInclude Include="program\Hard_Block.h">
+      <Filter>program\game</Filter>
+    </ClInclude>
+    <ClInclude Include="program\Mario_Animation.h">
       <Filter>program\game</Filter>
     </ClInclude>
   </ItemGroup>

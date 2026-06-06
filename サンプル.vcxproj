@@ -152,9 +152,6 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="program\1-Up_Mushroom.cpp" />
-    <ClCompile Include="program\Animation.cpp">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
-    </ClCompile>
     <ClCompile Include="program\Brick_Block.cpp" />
     <ClCompile Include="program\Camera.cpp" />
     <ClCompile Include="program\Coin.cpp" />
@@ -174,6 +171,7 @@
     <ClCompile Include="program\Main.cpp" />
     <ClCompile Include="program\Map.cpp" />
     <ClCompile Include="program\Mario.cpp" />
+    <ClCompile Include="program\Mario_Animation.cpp" />
     <ClCompile Include="program\Question_Block.cpp" />
     <ClCompile Include="program\Random.cpp" />
     <ClCompile Include="program\Score.cpp" />
@@ -184,9 +182,6 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="program\1-Up_Mushroom.h" />
-    <ClInclude Include="program\Animation.h">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
-    </ClInclude>
     <ClInclude Include="program\Brick_Block.h" />
     <ClInclude Include="program\Camera.h" />
     <ClInclude Include="program\Coin.h" />
@@ -206,6 +201,7 @@
     <ClInclude Include="program\Main.h" />
     <ClInclude Include="program\Map.h" />
     <ClInclude Include="program\Mario.h" />
+    <ClInclude Include="program\Mario_Animation.h" />
     <ClInclude Include="program\Question_Block.h" />
     <ClInclude Include="program\Random.h" />
     <ClInclude Include="program\Score.h" />
