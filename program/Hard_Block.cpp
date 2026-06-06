@@ -1,10 +1,30 @@
 #include "Hard_Block.h"
+#include "DxLib.h"
 
-void Hard_Block::Init()
+HardBlock::HardBlock()
 {
-	// ハードブロックの初期化処理をここに記述
+    pos.Set(0.0f, 0.0f);
+    active = false;
 }
-void Hard_Block::Update()
+
+void HardBlock::Init(Float2 startPos, int graphHandle)
 {
-	// ハードブロックの更新処理をここに記述
+    pos = startPos;
+    active = true;
+
+    image.InitialImageAndSize(graphHandle);
+    image.pos = pos;
+    collider = Collider(pos.x, pos.y, (float)image.sizeX, (float)image.sizeY);
+}
+
+void HardBlock::Update()
+{
+    //if (!active) return;
+}
+
+void HardBlock::Render(Camera camera)
+{
+    if (!active) return;
+
+    camera.GlobalRenderImage(image);
 }

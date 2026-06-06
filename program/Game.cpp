@@ -4,10 +4,13 @@
 #include "Debug.h"
 #include "Map.h"
 #include "Mario.h"
+//#include "Brick_Block.h"
+//#include "Question_Block.h"
+//#include "Hard_Block.h"
+#include <vector>
 #include "Ground.h"
 #include "StageManager.h"
 #include "Time.h"
-#include <vector>
 #include "Sound.h"
 using namespace std;
 
@@ -16,8 +19,10 @@ extern Camera MainCamera;
 // マップ
 Map MainMap;
 
-// デバッグ用機能
+// デバッグ用機・
 Debug MainDebug;
+
+//int brickGraph = -1;
 
 // プレイヤー（マリオ）
 Mario MainMario;
@@ -42,6 +47,7 @@ void GameInit()
 	
 	// マリオおよびデバッグシステムの初期化
 	MainMario.Init();
+
 	MainDebug.Init();
 
 	// ゲーム時間の初期化
@@ -67,7 +73,6 @@ void GameUpdate()
 	MainCamera.Update();
 	MainMario.Update();
 	MainTime.Update();
-
 	StageManager::GetInstance().Update();
 	
 
@@ -79,12 +84,10 @@ void GameUpdate()
 //---------------------------------------------------------------------------------
 void GameRender()
 {
-    //// 背景となるマップを描画
-    //MainMap.Render(MainCamera);
 	
 	// マップの手前にマリオを描画
 	MainMario.Render();
-	
+
 	// マリオの手前に残り時間を描画
 	MainTime.Render();
 
@@ -99,5 +102,4 @@ void GameRender()
 //---------------------------------------------------------------------------------
 void GameExit()
 {
-
 }

@@ -22,10 +22,17 @@ int mario_debug_y2;
 // ==========================================
 // NOTE: 他箇所で同名のシンボルが定義されている可能性があるため
 // 定数名を一意にする（C2377 対策）。
+const float MARIO_ACCEL = 0.4f;		// 1フレームごとの加速度（増やすとキレが良くなる）
+const float MARIO_WALK_MAX_SPEED = 10.5f;	// 歩き状態の最高速度（これ以上速くならない）
+const float MARIO_DASH_MAX_SPEED = 8.0f;   // ダッシュ状態の最高速度（これ以上速くならない）
+const float MARIO_FRICTION = 0.3f;	// キーを離したときの摩擦・ブレーキ（減らすとよく滑る）
+const float MARIO_DECEL_TURN = 0.8f;  // 逆キーを入れたときの急ブレーキの強さ
 
 
 void Mario::ResolveCollision(Collidable& block)
 {
+	if (currentState == MarioState::WARPING) return;
+
 	if (!collider.intersects(block.collider)) return;
 
 	float overlapLeft = (collider.x + collider.width) - block.collider.x;
@@ -36,7 +43,7 @@ void Mario::ResolveCollision(Collidable& block)
 	float minX = min(overlapLeft, overlapRight);
 	float minY = min(overlapTop, overlapBottom);
 
-	const float bias = 20.0f;
+	const float bias = 0.0f;
 
 	if (minY < minX + bias)
 	{
@@ -74,7 +81,16 @@ void Mario::ResolveCollision(Collidable& block)
 	}
 }
 
+void Mario::Warping(float pipeY)
+{
+	currentState = MarioState::WARPING;
+	warpTimer = 0.0f;
 
+	now_speed_x = 0.0f;
+	now_speed_y = 0.0f;
+
+	position.y = pipeY;
+}
 void Mario::Init()
 {
 	// マリオの画像を読み込み、初期位置を設定
@@ -83,11 +99,45 @@ void Mario::Init()
 	isLeft = false; // 最初は右向き
 
 	now_speed_x = 0.0f; // 最初は静止している
+	now_speed_y = 0.0f;//new added for warp pipe
+	currentState = MarioState::NORMAL;
+	warpTimer = 0.0f;
 	collider = Collider(position.x, position.y, marioImage.sizeX, marioImage.sizeY); // Collider(コライダーの初期化)
 }
 
 void Mario::Update()
 {
+	if (currentState == MarioState::WARPING)
+	{
+		warpTimer += 0.016f; // Standard frame step speed calculation
+
+		// Slowly descend Mario down past the threshold grid block boundaries (1.5px frame scale)
+		position.y += 1.5f;
+
+		marioImage.pos = position;
+		collider.x = position.x;
+		collider.y = position.y;
+
+		// Frame debug layout configuration parameters
+		int mScrX = (int)(position.x - MainCamera.pos.x);
+		int mScrY = (int)(position.y - MainCamera.pos.y);
+		mario_centerX = mScrX + (marioImage.sizeX / 2);
+		mario_debug_x1 = mScrX;
+		mario_debug_y1 = mScrY;
+		mario_debug_x2 = mScrX + marioImage.sizeX;
+		mario_debug_y2 = mScrY + marioImage.sizeY;
+
+		// If time finishes, teleport or transition player location
+		if (warpTimer >= WARP_DURATION)
+		{
+			currentState = MarioState::NORMAL;
+
+			// Trigger Underworld level load or coordinate placement modifications here:
+			//position.Set(UnderWorldSpawnX, UnderWorldSpawnY);
+		}
+
+		return; // Stop processing and drop loop cycles early. Skips normal controls.
+	}
 	//image and position update
 	marioImage.pos = position;
 
