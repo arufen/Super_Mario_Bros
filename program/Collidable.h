@@ -9,6 +9,7 @@ class Collidable
 {
 public:
     Collider collider;
+    bool isTrigger = false;
 
     virtual void OnHitTop(RigidBody& mario) {}
     virtual void OnHitBottom(RigidBody& mario) {}
