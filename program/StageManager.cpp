@@ -38,7 +38,7 @@ void CreateStairs(int fromTileX, int fromTileY, int toTileX, int toTileY, bool f
 		return;
 	}
 
-	int handle = LoadGraph("data/ground2.png");
+	int handle = LoadGraph("data/image/ground2.png");
 
 	
 
