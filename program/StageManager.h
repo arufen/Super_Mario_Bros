@@ -8,6 +8,8 @@
 
 //All Blocks in the stage
 #include "Ground.h"
+#include "IBlock.h"
+#include "Warp_Pipe.h"
 
 //Enemies
 #include "Goomba.h"
@@ -32,6 +34,11 @@ public:
 
 	// returns all collidable blocks for mario to register
 	vector<Collidable*> GetCollidables();
+
+	//for all blocks
+	vector<IBlock*> globalBlocks;
+
+	vector<Pipe*> globalPipes;
 
 	//Main thread 
 	void Init();	//Load blocks (ブロックの初期化）

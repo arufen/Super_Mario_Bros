@@ -15,6 +15,7 @@ extern int mario_debug_x1;
 extern int mario_debug_y1;
 extern int mario_debug_x2;
 extern int mario_debug_y2;
+enum class MarioState{NORMAL, WARPING};
 
 // プレイヤーキャラクター（マリオ）の挙動や描画を管理するクラス
 class Mario : public RigidBody
@@ -34,6 +35,8 @@ public:
 	static constexpr float JUMP_INITIAL = -15;  // first jump force (negative = up)
 	static constexpr float JUMP_HOLD_FORCE = -0.7f; // extra boost per frame while holding
 
+	static constexpr float WARP_DURATION = 1.0f; // warp timer
+
 
 	//Mario image/animation variables (画像/アニメーション変数)
 	Image marioImage;	// マリオの画像情報（サイズなどを含む）
@@ -45,6 +48,11 @@ public:
 	bool isLeft;		// 向きフラグ（trueなら左向き、falseなら右向き）
 	bool isJumping = false;
 	float jumpHoldTimer = 0.0f;
+
+	// State machine controllers
+	MarioState currentState = MarioState::NORMAL;
+	float warpTimer = 0.0f;
+
 	//Collider collider; // Collider (マリオの当たり判定)
 
 	////Check Every collision that has registered here （登録した当たり判定をチェックする）
@@ -60,4 +68,9 @@ public:
 
 	//mechanics function
 	void Jump();
+
+	void Warping(float pipeY);
+
+private:
+	int texWarp;
 };

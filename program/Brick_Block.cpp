@@ -1,30 +1,47 @@
 #include "Brick_Block.h"
 #include "Dxlib.h"
-#define MAX_BRICKBLOCKS 30
-//BrickBlock Brick_block[MAX_BRICKBLOCKS];
 
-void BrickBlock::Init()
+// Constructor
+BrickBlock::BrickBlock()
 {
-	pos.x = 0;
-	pos.y = 0;
-	active = true;
+    pos.Set(0.0f, 0.0f);
+    originalPos.Set(0.0f, 0.0f);
+    active = false;
 }
 
-void BrickBlock::Set(float x, float y)
+void BrickBlock::Init(Float2 startPos, int graphHandle)
 {
-	pos.x = x;
-	pos.y = y;
+    pos = startPos;
+    originalPos = startPos;
+    active = true;
+    
+
+    image.InitialImageAndSize(graphHandle);
+    image.pos = pos;
+    collider = Collider(pos.x, pos.y, (float)image.sizeX, (float)image.sizeY);
 }
 
+void BrickBlock::OnHitBottom(RigidBody& player)
+{
+    active = false;
+
+    collider.x = -9999.0f;
+    collider.y = -9999.0f;
+    collider.width = 0;
+    collider.height = 0;
+}
 void BrickBlock::Update()
 {
-	if (active)
-	{
+    /*if (!active) return;*/
 
-	}
+
+
+    // マリオはスーパーマリオとかファイアマリオになったら…
 }
 
-void BrickBlock::Render()
+void BrickBlock::Render(Camera camera)
 {
-	DrawGraph(pos.x, pos.y, image, TRUE);
+    if (!active) return;
+
+    camera.GlobalRenderImage(image);
 }

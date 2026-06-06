@@ -1,3 +1,5 @@
+#pragma once
+
 #include "RigidBody.h"
 #include "HelpfulFunc.h"
 #include "Camera.h"

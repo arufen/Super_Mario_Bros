@@ -1,5 +1,14 @@
 #include "StageManager.h"
 
+//Blocks
+#include "Ground.h"
+
+#include "Brick_Block.h"
+#include "Question_Block.h"
+#include "Hard_Block.h"
+
+//Enemis
+#include "Goomba.h"
 using namespace std;
 
 
@@ -82,11 +91,25 @@ vector<Collidable*> StageManager::GetCollidables()
 	vector<Collidable*> result;
 	for (auto& g : ground)
 		result.push_back(&g);
+	/*for (auto& g : brick_block)
+		result.push_back(&g);*/
+	for (auto* block : globalBlocks) {
+		if (block->IsActive()) {
+			Collidable* physicsObject = dynamic_cast<Collidable*>(block);
+			if (physicsObject != nullptr) {
+				result.push_back(physicsObject);
+			}
+		}
+	}
+	for (auto* pipe : globalPipes) {
+		if (pipe->IsActive()) {
+			result.push_back(pipe); // Makes the pipe solid to Mario!
+		}
+	}
 	// when u add pipe, questionblock etc just do:
 	// for (auto& p : pipes)
 	//     result.push_back(&p);
 	return result;
-	
 }
 
 void StageManager::Init()
@@ -99,6 +122,50 @@ void StageManager::Init()
 
 	//Stairs
 	CreateStairs(134, 9, 137, 12, false);
+	int texBrick = LoadGraph("data/brick_block.png");
+	int texQuestion = LoadGraph("data/question_block.png");
+	int texEmpty = LoadGraph("data/empty_block.png");
+	int texHard = LoadGraph("data/hard_block.png");
+
+	int tLeft = LoadGraph("data/top_left.png");
+	int tRight = LoadGraph("data/top_right.png");
+	int bLeft = LoadGraph("data/bottom_left.png");
+	int bRight = LoadGraph("data/bottom_right.png");
+
+	int totalBlocks = sizeof(world1_1data) / sizeof(BlockSpawnData);
+
+	for (int i = 0; i < totalBlocks; i++)
+	{
+		Float2 pixelPos;
+		pixelPos.x = world1_1data[i].gridX * 64.0f;
+		pixelPos.y = world1_1data[i].gridY * 64.0f;
+
+		if (world1_1data[i].type == BlockType::BRICK)
+		{
+			BrickBlock* brick = new BrickBlock();
+			brick->Init(pixelPos, texBrick);
+			globalBlocks.push_back(brick);
+		}
+		else if (world1_1data[i].type == BlockType::QUESTION)
+		{
+			QuestionBlock* qblock = new QuestionBlock();
+			qblock->Init(pixelPos, texQuestion, texHard);
+			globalBlocks.push_back(qblock);
+		}
+		else if (world1_1data[i].type == BlockType::HARD)
+		{
+			HardBlock* hblock = new HardBlock();
+			hblock->Init(pixelPos, texHard);
+			globalBlocks.push_back(hblock);
+		}
+		else if (world1_1data[i].type == BlockType::PIPE)
+		{
+			Pipe* myPipe = new Pipe();
+			myPipe->Init(pixelPos, tLeft, tRight, bLeft, bRight, world1_1data[i].pipeHeight, world1_1data[i].isWarpPipe);
+
+			globalPipes.push_back(myPipe); // Save it to your vector!
+		}
+	}
 
 	CreateStairs(140, 9, 143, 12, true);
 
@@ -119,16 +186,19 @@ void StageManager::Init()
 
 void StageManager::Update()
 {
-	////Ground Check collision (当たり判定チェック）
-	//for (int i = 0; i < ground.size(); i++)
-	//{
-	//	ground[i].Update(mario);
-	//}
 
 	//Goomba
 	for (int i = 0; i < goomba.size(); i++)
 	{
 		goomba[i].Update();
+	}
+	for (IBlock* block : globalBlocks)
+	{
+		block->Update();
+	}
+	for (Pipe* pipe : globalPipes)
+	{
+		pipe->Update();
 	}
 }
 
@@ -146,6 +216,14 @@ void StageManager::Render(Camera& camera)
 		goomba[i].RenderGlobal(camera);
 
 		//DrawFormatString(100, 100 + 20 * i, GetColor(255, 255, 255), "speed: %f", goomba[i].now_speed_x);
+	}
+	for (IBlock* block : globalBlocks)
+	{
+		block->Render(camera);
+	}
+	for (Pipe* pipe : globalPipes)
+	{
+		pipe->Render(camera);
 	}
 
 }
