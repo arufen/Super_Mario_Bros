@@ -1,6 +1,5 @@
 #include "RigidBody.h"
 
-
 vector<Collidable*> RigidBody::collidables; // define it here!
 
 void RigidBody::ResolveCollision(Collidable& block)
@@ -15,7 +14,7 @@ void RigidBody::ResolveCollision(Collidable& block)
 	float minX = min(overlapLeft, overlapRight);
 	float minY = min(overlapTop, overlapBottom);
 
-	const float bias = 20.0f;
+	const float bias = 0.0f;
 
 	if (minY < minX + bias)
 	{

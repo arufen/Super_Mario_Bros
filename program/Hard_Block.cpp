@@ -13,25 +13,18 @@ void HardBlock::Init(Float2 startPos, int graphHandle)
     active = true;
 
     image.InitialImageAndSize(graphHandle);
-}
-
-void HardBlock::Bump()
-{
-    
+    image.pos = pos;
+    collider = Collider(pos.x, pos.y, (float)image.sizeX, (float)image.sizeY);
 }
 
 void HardBlock::Update()
 {
-    if (!active) return;
+    //if (!active) return;
 }
 
-void HardBlock::Render(Float2 cameraPos)
+void HardBlock::Render(Camera camera)
 {
     if (!active) return;
 
-    // Calculate where the block should draw relative to the camera screen space
-    Float2 screenPos = { pos.x - cameraPos.x,pos.y - cameraPos.y };
-
-    // Render at the screen relative position
-    image.Render(screenPos);
+    camera.GlobalRenderImage(image);
 }

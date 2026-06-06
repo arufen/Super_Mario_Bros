@@ -7,8 +7,6 @@ BrickBlock::BrickBlock()
     pos.Set(0.0f, 0.0f);
     originalPos.Set(0.0f, 0.0f);
     active = false;
-    isBouncing = false;
-    bounceTimer = 0.0f;
 }
 
 void BrickBlock::Init(Float2 startPos, int graphHandle)
@@ -16,34 +14,34 @@ void BrickBlock::Init(Float2 startPos, int graphHandle)
     pos = startPos;
     originalPos = startPos;
     active = true;
+    
 
     image.InitialImageAndSize(graphHandle);
+    image.pos = pos;
+    collider = Collider(pos.x, pos.y, (float)image.sizeX, (float)image.sizeY);
 }
 
-void BrickBlock::Bump()
+void BrickBlock::OnHitBottom(RigidBody& player)
 {
-    if (!isBouncing)
-    {
-        isBouncing = true;
-        bounceTimer = 0.0f; // Reset our animation timeframe tracker
-        
-    }
-}
+    active = false;
 
+    collider.x = -9999.0f;
+    collider.y = -9999.0f;
+    collider.width = 0;
+    collider.height = 0;
+}
 void BrickBlock::Update()
 {
-    if (!active) return;
+    /*if (!active) return;*/
+
+
 
     // マリオはスーパーマリオとかファイアマリオになったら…
 }
 
-void BrickBlock::Render(Float2 cameraPos)
+void BrickBlock::Render(Camera camera)
 {
     if (!active) return;
 
-    // Calculate where the block should draw relative to the camera screen space
-    Float2 screenPos = { pos.x - cameraPos.x,pos.y - cameraPos.y };
-
-    // Render at the screen relative position
-    image.Render(screenPos);
+    camera.GlobalRenderImage(image);
 }

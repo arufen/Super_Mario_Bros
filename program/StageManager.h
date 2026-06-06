@@ -7,6 +7,10 @@
 #include "Collidable.h" //To check collision for every block
 //All Blocks in the stage
 #include "Ground.h"
+
+#include "IBlock.h"
+
+#include "Warp_Pipe.h"
 using namespace std;
 
 class StageManager
@@ -24,6 +28,11 @@ public:
 
 	// returns all collidable blocks for mario to register
 	vector<Collidable*> GetCollidables();
+
+	//for all blocks
+	vector<IBlock*> globalBlocks;
+
+	vector<Pipe*> globalPipes;
 
 	//Main thread 
 	void Init();	//Load blocks (ブロックの初期化）

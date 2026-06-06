@@ -1,12 +1,18 @@
 #pragma once
 #include "HelpfulFunc.h"
+#include "Camera.h"
+#include "Collidable.h"
 
-enum class BlockType {BRICK, QUESTION, HARD};
+enum class BlockType {BRICK, QUESTION, HARD, PIPE};
+enum class WorldZone {OVERWORLD1_1, UNDERWORLD1_1, OVERWORLD1_4};
 
 struct BlockSpawnData {
     int gridX;
     int gridY;
     BlockType type;
+
+    int pipeHeight = 0;
+    bool isWarpPipe = false;
 };
 
 const BlockSpawnData world1_1data[] = {
@@ -14,7 +20,10 @@ const BlockSpawnData world1_1data[] = {
     // 1st Block Cluster (Overworld 1-25)
     {16, 9, BlockType::QUESTION},{21, 9, BlockType::QUESTION},{22, 5, BlockType::QUESTION},{23, 9, BlockType::QUESTION},
     { 20, 9 , BlockType::BRICK}, { 22, 9 , BlockType::BRICK}, { 24, 9 , BlockType::BRICK},
-
+    { 28, 11, BlockType::PIPE, 2, false},
+    { 38, 10, BlockType::PIPE, 3, false},
+    { 46, 9, BlockType::PIPE, 4, false},
+    { 57, 9, BlockType::PIPE, 4, true},
     // 2nd Block Cluster (Long structural ceiling row 75-90)
     { 78, 9, BlockType::QUESTION},
     { 77, 9 , BlockType::BRICK}, { 79, 9 , BlockType::BRICK}, { 80, 5 , BlockType::BRICK}, { 81, 5 , BlockType::BRICK}, 
@@ -34,6 +43,8 @@ const BlockSpawnData world1_1data[] = {
     { 129, 5 , BlockType::QUESTION}, { 130, 5 , BlockType::QUESTION},
 
     // 5th Block Cluster (Final structures right before the pyramid walls)
+    { 163, 11, BlockType::PIPE, 2, false},
+    { 179, 11, BlockType::PIPE, 2, false},
     { 170, 9 , BlockType::QUESTION},
     { 168, 9 , BlockType::BRICK}, { 169, 9 , BlockType::BRICK}, { 171, 9 , BlockType::BRICK}
 };
@@ -43,8 +54,8 @@ class IBlock
 public:
     virtual ~IBlock() {}
     virtual void Update() = 0;
-    virtual void Render(Float2 cameraPos) = 0;
-    virtual void Bump() = 0;
+    virtual void Render(Camera camera) = 0;
+    
 
     virtual Float2 GetPos() const = 0;
     virtual bool IsActive() const = 0;

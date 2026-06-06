@@ -18,13 +18,22 @@ void QuestionBlock::Init(Float2 startPos, int active_graph, int empty_graph)
 	active = true;
 
 	image.InitialImageAndSize(texActive);
+	image.pos = pos;
+	collider = Collider(pos.x, pos.y, (float)image.sizeX, (float)image.sizeY);
 }
-void QuestionBlock::Bump()
+//void QuestionBlock::Bump()
+//{
+//	
+//}
+void QuestionBlock::OnHitBottom(RigidBody& player)
 {
+	// Trigger the jump animation!
 	if (!isAvailable || isBouncing) return;
 
 	isBouncing = true;
 	bounceTimer = 0.0f;
+
+	// TODO: Spawn a coin or powerup item here!
 }
 void QuestionBlock::Update()
 {
@@ -52,11 +61,14 @@ void QuestionBlock::Update()
 			image.InitialImageAndSize(texEmpty);
 		}
 	}
+	image.pos = pos;
+	collider.y = pos.y;
+	collider.x = pos.x;
 }
-void QuestionBlock::Render(Float2 cameraPos)
+
+void QuestionBlock::Render(Camera camera)
 {
 	if (!active) return;
 
-	Float2 screenPos = { pos.x - cameraPos.x,pos.y - cameraPos.y };
-	image.Render(screenPos);
+	camera.GlobalRenderImage(image);
 }
