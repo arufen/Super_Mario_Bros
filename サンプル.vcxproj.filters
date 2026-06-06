@@ -105,6 +105,9 @@
     <ClCompile Include="program\RigidBody.cpp">
       <Filter>program\system</Filter>
     </ClCompile>
+    <ClCompile Include="program\Sound.cpp">
+      <Filter>program\system</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="program\Game.h">
@@ -198,6 +201,9 @@
       <Filter>program\game</Filter>
     </ClInclude>
     <ClInclude Include="program\RigidBody.h">
+      <Filter>program\system</Filter>
+    </ClInclude>
+    <ClInclude Include="program\Sound.h">
       <Filter>program\system</Filter>
     </ClInclude>
   </ItemGroup>

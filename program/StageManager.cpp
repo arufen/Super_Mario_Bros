@@ -14,7 +14,7 @@ Goomba testGoomba;
 void CreateGoomba(int x, int y)
 {
 
-	testGoomba.Init(x * BLOCK_SIZE, y * BLOCK_SIZE, LoadGraph("data/goomba.png"));
+	testGoomba.Init(x * BLOCK_SIZE, y * BLOCK_SIZE, LoadGraph("data/image/goomba.png"));
 }
 
 //Create ground tiles from (fromTileX, fromTileY) to (toTileX, toTileY) (max Y: 14)
@@ -25,7 +25,7 @@ void CreateGrounds(int fromTileX, int fromTileY, int toTileX, int toTileY)
 		for (int y = fromTileY; y <= toTileY; y++)
 		{
 			Ground newGround;
-			newGround.Init(x * BLOCK_SIZE, y * BLOCK_SIZE, LoadGraph("data/ground.png"));
+			newGround.Init(x * BLOCK_SIZE, y * BLOCK_SIZE, LoadGraph("data/image/ground.png"));
 			StageManager::GetInstance(). ground.push_back(newGround);
 		}
 	}
@@ -34,7 +34,7 @@ void CreateGrounds(int fromTileX, int fromTileY, int toTileX, int toTileY)
 //Stair looking ground (ŠK’i‚ðì‚éŠÖ”j
 void CreateStairs(int fromTileX, int fromTileY, int toTileX, int toTileY, bool flipFlag)
 {
-	int handle = LoadGraph("data/ground2.png");
+	int handle = LoadGraph("data/image/ground2.png");
 
 	
 
