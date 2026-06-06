@@ -1,20 +1,14 @@
 #include "StageManager.h"
-#include "Game.h"
-#include <vector>
 
-//Blocks
-#include "Ground.h"
-
-//Enemis
-#include "Goomba.h"
 using namespace std;
 
-Goomba testGoomba;
+
 
 void CreateGoomba(int x, int y)
 {
-
-	testGoomba.Init(x * BLOCK_SIZE, y * BLOCK_SIZE, LoadGraph("data/image/goomba.png"));
+	Goomba newGoomba;
+	newGoomba.Init(x * BLOCK_SIZE, y * BLOCK_SIZE, LoadGraph("data/goomba.png"));
+	StageManager::GetInstance().goomba.push_back(newGoomba);
 }
 
 //Create ground tiles from (fromTileX, fromTileY) to (toTileX, toTileY) (max Y: 14)
@@ -34,7 +28,17 @@ void CreateGrounds(int fromTileX, int fromTileY, int toTileX, int toTileY)
 //Stair looking ground (ŠK’i‚ðì‚éŠÖ”j
 void CreateStairs(int fromTileX, int fromTileY, int toTileX, int toTileY, bool flipFlag)
 {
-	int handle = LoadGraph("data/image/ground2.png");
+
+	//invalid if Y > X
+	int deltaX = toTileX - fromTileX;
+	int deltaY = toTileY - fromTileY;
+
+	if (deltaY > deltaX)
+	{
+		return;
+	}
+
+	int handle = LoadGraph("data/ground2.png");
 
 	
 
@@ -42,10 +46,10 @@ void CreateStairs(int fromTileX, int fromTileY, int toTileX, int toTileY, bool f
 	{
 		int a = fromTileX;
 
-		for (int y = toTileY; y > fromTileY; y--)
+		for (int y = toTileY; y >= fromTileY; y--)
 		{
 
-			for (int x = toTileX; x > a; x--)
+			for (int x = toTileX; x >= a; x--)
 			{
 				Ground newGround;
 				newGround.Init(x * BLOCK_SIZE, y * BLOCK_SIZE, handle);
@@ -57,9 +61,9 @@ void CreateStairs(int fromTileX, int fromTileY, int toTileX, int toTileY, bool f
 	else
 	{
 		int a = toTileX;
-		for (int y = toTileY; y > fromTileY; y--)
+		for (int y = toTileY; y >= fromTileY; y--)
 		{
-			for (int x = a; x > fromTileX; x--)
+			for (int x = a; x >= fromTileX; x--)
 			{
 				Ground newGround;
 				newGround.Init(x * BLOCK_SIZE, y * BLOCK_SIZE, handle);
@@ -93,26 +97,24 @@ void StageManager::Init()
 	CreateGrounds(88, 13, 152, 14);
 	CreateGrounds(155, 13, 210, 14);
 
-	////Stairs
-	//CreateStairs(134, 9, 137, 12, false);
+	//Stairs
+	CreateStairs(134, 9, 137, 12, false);
 
-	//CreateStairs(140, 9, 153, 12, true);
+	CreateStairs(140, 9, 143, 12, true);
 
-	//CreateStairs(148, 9, 152, 12, false);
+	CreateStairs(148, 9, 152, 12, false);
 
-	//CreateStairs(155, 9, 158, 12, true);
+	CreateStairs(155, 9, 158, 12, true);
 
-	//CreateStairs(181, 5, 189, 12, false);
-	
-	//test stairs
-	CreateStairs(11, 11, 13, 12, false);
-
-	////tmp 
-	//CreateGrounds(20, 9, 25, 9);
-	//CreateGrounds(10, 12, 15, 12);
+	CreateStairs(181, 5, 189, 12, false);
 
 	//goomba test
 	CreateGoomba(10, 4);
+	CreateGoomba(12, 6);
+	CreateGoomba(15, 6);
+
+	//tmp
+	CreateGrounds(20, 12, 21, 12);
 }
 
 void StageManager::Update()
@@ -123,8 +125,11 @@ void StageManager::Update()
 	//	ground[i].Update(mario);
 	//}
 
-	//test goomba
-	testGoomba.Update();
+	//Goomba
+	for (int i = 0; i < goomba.size(); i++)
+	{
+		goomba[i].Update();
+	}
 }
 
 void StageManager::Render(Camera& camera)
@@ -135,6 +140,12 @@ void StageManager::Render(Camera& camera)
 		ground[i].RenderGlobal(camera);
 	}
 
-	//goomba test
-	testGoomba.GlobalRender(camera);
+	//Goomba
+	for (int i = 0; i < goomba.size(); i++)
+	{
+		goomba[i].RenderGlobal(camera);
+
+		//DrawFormatString(100, 100 + 20 * i, GetColor(255, 255, 255), "speed: %f", goomba[i].now_speed_x);
+	}
+
 }

@@ -16,10 +16,14 @@ public:
 	//Check Every collision that has registered here （登録した当たり判定をチェックする）
 	static vector<Collidable*> collidables; // all blocks register here to update the collision（登録の当たり判定）
 
+	//test
+	Collidable* Raycast(float x, float y);
+
 	//Resolve collision for a block
 	virtual void ResolveCollision(Collidable& block);
 
 	//Main thread
 	void PhysicsUpdate(); //Resolve collision for every block
+
 
 };

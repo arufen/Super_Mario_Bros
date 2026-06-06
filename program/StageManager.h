@@ -5,8 +5,13 @@
 #include <vector>
 
 #include "Collidable.h" //To check collision for every block
+
 //All Blocks in the stage
 #include "Ground.h"
+
+//Enemies
+#include "Goomba.h"
+
 using namespace std;
 
 class StageManager
@@ -21,6 +26,9 @@ public:
 	//All register blocks
 	//Ground （床）
 	vector<Ground> ground;
+
+	//Enemy （敵）
+	vector<Goomba> goomba;
 
 	// returns all collidable blocks for mario to register
 	vector<Collidable*> GetCollidables();
