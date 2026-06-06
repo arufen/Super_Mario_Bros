@@ -116,6 +116,10 @@ void Animation::AnimationRender(const float x, const float y)
 	float sizeX = (float)sprite.sizeX;
 	float sizeY = (float)sprite.sizeY;
 	int image = sprite.image;
+
+	//float destX2 = x + (sizeX * scale);
+	//float destY2 = y + (sizeY * scale);
+
 	DrawRectGraphF(x, y, currentImage, 0, sizeX, sizeY, image, true);
 }
 
@@ -127,6 +131,10 @@ void Animation::AnimationRenderCenter(bool reverseFlag)
 	float sizeX = (float)sprite.sizeX;
 	float sizeY = (float)sprite.sizeY;
 	int image = sprite.image;
+
+	//float destX2 = x + (sizeX * scale);
+	//float destY2 = y + (sizeY * scale);
+	
     // Render with top-left origin (no center offset)
 	DrawRectGraphF(x, y, currentImage, 0, sizeX, sizeY, image, true, reverseFlag);
 }

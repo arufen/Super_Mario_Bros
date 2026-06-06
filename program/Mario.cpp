@@ -216,7 +216,7 @@ void Mario::Update()
 	mario_debug_x2 = mario_screenX + (int)marioWidth;
 	mario_debug_y2 = mario_screenY + (int)marioHeight;
 
-	// 【あなたが追加したアニメーション処理】
+	// 追加したアニメーション処理
 	walkAnimation.x = (float)mario_screenX;
 	walkAnimation.y = (float)mario_screenY;
 
@@ -231,7 +231,6 @@ void Mario::Update()
 		walkAnimation.currentFrame = 0;
 	}
 
-	// 【他の人が追加したジャンプ処理】
 	// first press — initial jump
 	if (CheckHitKey(KEY_INPUT_SPACE) && !isJumping)
 	{
@@ -253,6 +252,8 @@ void Mario::Update()
 
 void Mario::Render()
 {
+	//float scale = 4.0f;
+
 	// 向きに応じて反転させて描画
 	if (isLeft)
 	{

@@ -11,6 +11,7 @@ class MarioAnimation
 {
 public:
 	Animation walkAnimation;
+	Animation jumpAnimation;
 
 	// ‰Šú‰»
 	void Init();
