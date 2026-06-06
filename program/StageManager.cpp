@@ -7,7 +7,7 @@ using namespace std;
 void CreateGoomba(int x, int y)
 {
 	Goomba newGoomba;
-	newGoomba.Init(x * BLOCK_SIZE, y * BLOCK_SIZE, LoadGraph("data/goomba.png"));
+	newGoomba.Init(x * BLOCK_SIZE, y * BLOCK_SIZE, LoadGraph("data/image/goomba.png"));
 	StageManager::GetInstance().goomba.push_back(newGoomba);
 }
 
