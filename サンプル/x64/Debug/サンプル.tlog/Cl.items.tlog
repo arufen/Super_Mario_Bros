@@ -2,6 +2,8 @@ C:\Users\cre\Desktop\mario_animation\program\1-Up_Mushroom.cpp;C:\Users\cre\Desk
 C:\Users\cre\Desktop\mario_animation\program\Brick_Block.cpp;C:\Users\cre\Desktop\mario_animation\サンプル\x64\Debug\Brick_Block.obj
 C:\Users\cre\Desktop\mario_animation\program\Camera.cpp;C:\Users\cre\Desktop\mario_animation\サンプル\x64\Debug\Camera.obj
 C:\Users\cre\Desktop\mario_animation\program\Coin.cpp;C:\Users\cre\Desktop\mario_animation\サンプル\x64\Debug\Coin.obj
+C:\Users\cre\Desktop\mario_animation\program\Collidable.cpp;C:\Users\cre\Desktop\mario_animation\サンプル\x64\Debug\Collidable.obj
+C:\Users\cre\Desktop\mario_animation\program\Collider.cpp;C:\Users\cre\Desktop\mario_animation\サンプル\x64\Debug\Collider.obj
 C:\Users\cre\Desktop\mario_animation\program\Debug.cpp;C:\Users\cre\Desktop\mario_animation\サンプル\x64\Debug\Debug.obj
 C:\Users\cre\Desktop\mario_animation\program\Fireworks.cpp;C:\Users\cre\Desktop\mario_animation\サンプル\x64\Debug\Fireworks.obj
 C:\Users\cre\Desktop\mario_animation\program\Fire_Flower.cpp;C:\Users\cre\Desktop\mario_animation\サンプル\x64\Debug\Fire_Flower.obj
@@ -10,6 +12,7 @@ C:\Users\cre\Desktop\mario_animation\program\Game.cpp;C:\Users\cre\Desktop\mario
 C:\Users\cre\Desktop\mario_animation\program\Game_Over.cpp;C:\Users\cre\Desktop\mario_animation\サンプル\x64\Debug\Game_Over.obj
 C:\Users\cre\Desktop\mario_animation\program\Goal_Pole.cpp;C:\Users\cre\Desktop\mario_animation\サンプル\x64\Debug\Goal_Pole.obj
 C:\Users\cre\Desktop\mario_animation\program\Goomba.cpp;C:\Users\cre\Desktop\mario_animation\サンプル\x64\Debug\Goomba.obj
+C:\Users\cre\Desktop\mario_animation\program\Ground.cpp;C:\Users\cre\Desktop\mario_animation\サンプル\x64\Debug\Ground.obj
 C:\Users\cre\Desktop\mario_animation\program\Hard_Block.cpp;C:\Users\cre\Desktop\mario_animation\サンプル\x64\Debug\Hard_Block.obj
 C:\Users\cre\Desktop\mario_animation\program\HelpfulFunc.cpp;C:\Users\cre\Desktop\mario_animation\サンプル\x64\Debug\HelpfulFunc.obj
 C:\Users\cre\Desktop\mario_animation\program\Hidden_Block.cpp;C:\Users\cre\Desktop\mario_animation\サンプル\x64\Debug\Hidden_Block.obj
@@ -17,6 +20,9 @@ C:\Users\cre\Desktop\mario_animation\program\Hit.cpp;C:\Users\cre\Desktop\mario_
 C:\Users\cre\Desktop\mario_animation\program\Koopa_Troopa.cpp;C:\Users\cre\Desktop\mario_animation\サンプル\x64\Debug\Koopa_Troopa.obj
 C:\Users\cre\Desktop\mario_animation\program\Main.cpp;C:\Users\cre\Desktop\mario_animation\サンプル\x64\Debug\Main.obj
 C:\Users\cre\Desktop\mario_animation\program\Map.cpp;C:\Users\cre\Desktop\mario_animation\サンプル\x64\Debug\Map.obj
+C:\Users\cre\Desktop\mario_animation\program\RigidBody.cpp;C:\Users\cre\Desktop\mario_animation\サンプル\x64\Debug\RigidBody.obj
+C:\Users\cre\Desktop\mario_animation\program\Sound.cpp;C:\Users\cre\Desktop\mario_animation\サンプル\x64\Debug\Sound.obj
+C:\Users\cre\Desktop\mario_animation\program\StageManager.cpp;C:\Users\cre\Desktop\mario_animation\サンプル\x64\Debug\StageManager.obj
 C:\Users\cre\Desktop\mario_animation\program\Mario.cpp;C:\Users\cre\Desktop\mario_animation\サンプル\x64\Debug\Mario.obj
 C:\Users\cre\Desktop\mario_animation\program\Mario_Animation.cpp;C:\Users\cre\Desktop\mario_animation\サンプル\x64\Debug\Mario_Animation.obj
 C:\Users\cre\Desktop\mario_animation\program\Question_Block.cpp;C:\Users\cre\Desktop\mario_animation\サンプル\x64\Debug\Question_Block.obj

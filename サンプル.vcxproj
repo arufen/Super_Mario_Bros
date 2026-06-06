@@ -165,11 +165,8 @@
     <ClCompile Include="program\Game_Over.cpp" />
     <ClCompile Include="program\Goal_Pole.cpp" />
     <ClCompile Include="program\Goomba.cpp" />
-<<<<<<< HEAD
-    <ClCompile Include="program\Hard_Block.cpp" />
-=======
     <ClCompile Include="program\Ground.cpp" />
->>>>>>> develop
+    <ClCompile Include="program\Hard_Block.cpp" />
     <ClCompile Include="program\HelpfulFunc.cpp" />
     <ClCompile Include="program\Hidden_Block.cpp" />
     <ClCompile Include="program\Hit.cpp" />
@@ -204,11 +201,8 @@
     <ClInclude Include="program\Game_Over.h" />
     <ClInclude Include="program\Goal_Pole.h" />
     <ClInclude Include="program\Goomba.h" />
-<<<<<<< HEAD
-    <ClInclude Include="program\Hard_Block.h" />
-=======
     <ClInclude Include="program\Ground.h" />
->>>>>>> develop
+    <ClInclude Include="program\Hard_Block.h" />
     <ClInclude Include="program\HelpfulFunc.h" />
     <ClInclude Include="program\Hidden_Block.h" />
     <ClInclude Include="program\Hit.h" />

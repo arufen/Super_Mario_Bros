@@ -90,17 +90,16 @@
     <ClCompile Include="program\Game_Over.cpp">
       <Filter>program\system</Filter>
     </ClCompile>
-<<<<<<< HEAD
     <ClCompile Include="program\Hard_Block.cpp">
       <Filter>program\game</Filter>
     </ClCompile>
     <ClCompile Include="program\Mario_Animation.cpp">
-=======
+      <Filter>program\game</Filter>
+    </ClCompile>
     <ClCompile Include="program\Collider.cpp">
       <Filter>program\system</Filter>
     </ClCompile>
     <ClCompile Include="program\Ground.cpp">
->>>>>>> develop
       <Filter>program\game</Filter>
     </ClCompile>
     <ClCompile Include="program\StageManager.cpp">
@@ -195,30 +194,16 @@
     <ClInclude Include="program\Game_Over.h">
       <Filter>program\system</Filter>
     </ClInclude>
-<<<<<<< HEAD
     <ClInclude Include="program\Hard_Block.h">
       <Filter>program\game</Filter>
     </ClInclude>
     <ClInclude Include="program\Mario_Animation.h">
-=======
+      <Filter>program\game</Filter>
+    </ClInclude>
     <ClInclude Include="program\Collider.h">
       <Filter>program\system</Filter>
     </ClInclude>
     <ClInclude Include="program\Ground.h">
->>>>>>> develop
       <Filter>program\game</Filter>
     </ClInclude>
-    <ClInclude Include="program\StageManager.h">
-      <Filter>program\game</Filter>
-    </ClInclude>
-    <ClInclude Include="program\Collidable.h">
-      <Filter>program\game</Filter>
-    </ClInclude>
-    <ClInclude Include="program\RigidBody.h">
-      <Filter>program\system</Filter>
-    </ClInclude>
-    <ClInclude Include="program\Sound.h">
-      <Filter>program\system</Filter>
-    </ClInclude>
-  </ItemGroup>
-</Project>
+    <ClInclude Include="program\StageManager.h
