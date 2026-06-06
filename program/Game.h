@@ -4,6 +4,8 @@
 #define SCREEN_W	1024
 #define SCREEN_H	960
 
+#define BLOCK_SIZE 64
+
 void GameInit();	//	ゲーム起動時の初期化処理
 void GameUpdate();	//	毎フレームの更新処理（入力の受付など)
 void GameRender();	//	毎フレームの描画処理

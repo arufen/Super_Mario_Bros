@@ -25,6 +25,14 @@ void Camera::GlobalRenderImage(const Image& image, float scale)
 	image.Render(globalPos, scale);
 }
 
+void Camera::GlobalRenderBox(float x1, float y1, float x2, float y2, int color, int fillFlag) 
+{
+	
+	DrawBoxAA(x1 - pos.x, y1 - pos.y,
+		x2 - pos.x, y2 - pos.y,
+		color, fillFlag);
+}
+
 void Camera::Update()
 {
 	// カメラの移動可能範囲の制限（左端：0、右端：12480）

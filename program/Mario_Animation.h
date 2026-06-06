@@ -16,10 +16,10 @@ public:
 	void Init();
 
 	// アニメーションの更新
-	void Update(float now_speed_x, int mario_screenX, int mario_screenY);
+	void Update();
 
 	// 描画
-	void Render(bool isLeft);
+	void Render();
 };
 
 #endif // __MARIO_ANIMATION_H__
