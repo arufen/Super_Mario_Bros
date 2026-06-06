@@ -170,8 +170,8 @@ void Mario::Update()
 	if (now_speed_x > MarioMoovMaxSpeed)  now_speed_x = MarioMoovMaxSpeed;
 	if (now_speed_x < -MarioMoovMaxSpeed) now_speed_x = -MarioMoovMaxSpeed;
 
-	// 3. 計算した速度を「実際の座標」に足し算する
-	position.x += now_speed_x;
+	//// 3. 計算した速度を「実際の座標」に足し算する
+	//position.x += now_speed_x;
 
 	// Dキーの押し下げに関係なく、マリオが画面中央を越えたらカメラを動かすように外に出しました
 	float marioWorldCenterX = position.x + (marioImage.sizeX / 2.0f);
@@ -232,39 +232,8 @@ void Mario::Update()
 		jumpHoldTimer += 0.016f;         // add time (~1 frame at 60fps)
 	}
 
-	//// apply gravity always
-	//now_speed_y += GRAVITY;
-
-	//// move mario vertically
-	//position.y += now_speed_y;
-
-	//APPLY GRAVITY (重力）
-	//To make sure doesn't go through collider when going
-	//早く動くとき、当たり判定を通り抜けないために
-	int steps = (int)(abs(now_speed_y) / (collider.height * 0.5f)) + 1;
-	steps = min(steps, 10);
-
-	for (int i = 0; i < steps; i++)
-	{
-		now_speed_y += GRAVITY / steps;
-		position.y += now_speed_y / steps;
-		collider.y = position.y;
-
-		for (auto* block : collidables)
-		{
-			ResolveCollision(*block);
-		}
-	}
-
-	// basic ground check (replace with ur real ground logic)
-	/*if (position.y >= GROUND_Y)
-	{
-		position.y = GROUND_Y;
-		now_speed_y = 0.0f;
-		isJumping = false;
-		jumpHoldTimer = 0.0f;
-	}*/
-	
+	//RigidBody update
+	PhysicsUpdate();
 }
 
 void Mario::Render()

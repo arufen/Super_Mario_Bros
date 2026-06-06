@@ -110,7 +110,7 @@ void GameUpdate()
 	//	brick_block[i].Update();
 	//}
 	
-	StageManager::GetInstance().Update(MainMario);
+	StageManager::GetInstance().Update();
 	
 	// デバッグ機能（モード切り替えなど）の更新
 

@@ -106,6 +106,9 @@
 >>>>>>> 30f87b127552e9cfc3a361a6981d4f865ff36fa6
       <Filter>program\game</Filter>
     </ClCompile>
+    <ClCompile Include="program\RigidBody.cpp">
+      <Filter>program\system</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="program\Game.h">
@@ -204,6 +207,9 @@
     <ClInclude Include="program\Collidable.h">
 >>>>>>> 30f87b127552e9cfc3a361a6981d4f865ff36fa6
       <Filter>program\game</Filter>
+    </ClInclude>
+    <ClInclude Include="program\RigidBody.h">
+      <Filter>program\system</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
