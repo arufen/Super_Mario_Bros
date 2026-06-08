@@ -19,9 +19,9 @@ public:
     virtual void OnHitSide(RigidBody& mario) {}
     virtual ~Collidable() = default;
 
-    ////debug
-    //void Render(Camera& camera)
-    //{
-    //    camera.GlobalRenderBox(collider.x, collider.y, collider.x + collider.width, collider.y + collider.height, GetColor(255, 255, 255), 0);
-    //}
+    //debug
+    void Render(Camera& camera)
+    {
+        camera.GlobalRenderBox(collider.x, collider.y, collider.x + collider.width, collider.y + collider.height, GetColor(0, 0, 255), 0);
+    }
 };

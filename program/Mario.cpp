@@ -35,6 +35,20 @@ void Mario::ResolveCollision(Collidable& block)
 
 	if (!RigidBody_collider.intersects(block.collider)) return;
 
+	if (block.isTrigger)
+	{
+		//Coin
+		Coin* coin = dynamic_cast<Coin*>(&block);
+		if (coin != nullptr)
+		{
+			AddCoin();
+			coin->active = false; // Mark the coin as collected
+		}
+
+		block.OnHitSide(*this);  // just calls callback, no pushing
+		return;
+	}
+
 	float overlapLeft = (RigidBody_collider.x + RigidBody_collider.width) - block.collider.x;
 	float overlapRight = (block.collider.x + block.collider.width) - RigidBody_collider.x;
 	float overlapTop = (RigidBody_collider.y + RigidBody_collider.height) - block.collider.y;
@@ -52,6 +66,7 @@ void Mario::ResolveCollision(Collidable& block)
 
 		if (overlapTop < overlapBottom)
 		{
+			//Adjust mario position
 			position.y -= overlapTop;
 			RigidBody_collider.y -= overlapTop;
 			now_speed_y = 0;
@@ -59,7 +74,7 @@ void Mario::ResolveCollision(Collidable& block)
 			jumpHoldTimer = 0.0f;
 			hitVertical = true;  // mark it
 
-			//jump if hit enemy on top
+			//jump if hit enemy on top (like raycast)
 			Enemy* enemy = dynamic_cast<Enemy*>(&block);
 			if (enemy != nullptr)
 			{
@@ -121,9 +136,14 @@ void Mario::Init()
 	warpTimer = 0.0f;
 	RigidBody_collider = Collider(position.x, position.y, marioImage.sizeX, marioImage.sizeY); // Collider(コライダーの初期化)
 
+	//Shrink collider (当たり判定を画像より少し小さくする)
 	float offsetWidth = 20.0f; // how much to shrink total width
 	RigidBody_collider.width -= offsetWidth;
 	RigidBody_collider.x += offsetWidth / 2; // shift right so it's centered
+
+	//Score and item
+	score = 0;
+	coin = 0;
 }
 
 void Mario::Update()
@@ -337,4 +357,9 @@ void Mario::Jump()
 	now_speed_y = JUMP_INITIAL;  // shoot up
 	isJumping = true;
 	jumpHoldTimer = 0.0f;
+}
+
+void Mario::AddCoin()
+{
+	coin++;
 }

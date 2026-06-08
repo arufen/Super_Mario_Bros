@@ -96,23 +96,24 @@ void GameRender()
 	MainDebug.Render();
 
 	StageManager::GetInstance().Render(MainCamera);
-
-	//debug
-	/*for (auto& c : RigidBody::collidables)
-	{
-		c->Render(MainCamera);
-	}*/
+	
 
 	//DEBUG
 	//mario collider
-	MainCamera.GlobalRenderBox(
+	/*MainCamera.GlobalRenderBox(
 		MainMario.RigidBody_collider.x,
 		MainMario.RigidBody_collider.y,
 		MainMario.RigidBody_collider.x + MainMario.RigidBody_collider.width,
 		MainMario.RigidBody_collider.y + MainMario.RigidBody_collider.height,
 		GetColor(255, 0, 0),
 		FALSE
-	);
+	);*/
+	for (auto& c : RigidBody::collidables)
+	{
+		c->Render(MainCamera);
+	}
+
+	DrawFormatString(0, 80, GetColor(255, 255, 255), "Mario coin : %d", MainMario.coin);
 
 }
 //---------------------------------------------------------------------------------

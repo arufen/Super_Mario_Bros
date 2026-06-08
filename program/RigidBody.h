@@ -17,7 +17,7 @@ public:
 	static vector<Collidable*> collidables; // all blocks register here to update the collisioni“o˜^‚Ì“–‚½‚è”»’èj
 
 	//Raycast
-	Collidable* Raycast(float x, float y);
+	Collidable* Raycast(float x, float y); //to Check further collider
 
 	bool hitVertical = false;
 

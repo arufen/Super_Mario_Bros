@@ -5,6 +5,7 @@
 #include <vector>
 #include "RigidBody.h"
 #include "Enemy.h"
+#include "Coin.h"
 using namespace std;
 
 // 外部ファイル（Camera.cppなど）からマリオの移動速度や中心座標を
@@ -50,6 +51,10 @@ public:
 	MarioState currentState = MarioState::NORMAL;
 	float warpTimer = 0.0f;
 
+	//item and score (アイテムとスコア)
+	int score = 0;
+	int coin = 0;
+
 	void ResolveCollision(Collidable& block) override;
 
 
@@ -59,6 +64,7 @@ public:
 	void Render();
 
 	//mechanics function
+	void AddCoin();
 	void Jump();
 
 	void Warping(float pipeY);

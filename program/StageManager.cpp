@@ -86,6 +86,13 @@ void CreateStairs(int fromTileX, int fromTileY, int toTileX, int toTileY, bool f
 
 }
 
+void CreateCoin(float x, float y)
+{
+	Coin* newCoin = new Coin();
+	newCoin->Init(x * BLOCK_SIZE, y * BLOCK_SIZE, LoadGraph("data/image/coin.png"));
+	StageManager::GetInstance().coins.push_back(newCoin);
+}
+
 vector<Collidable*> StageManager::GetCollidables()
 {
 	// returns all collidable blocks for mario to register
@@ -110,6 +117,10 @@ vector<Collidable*> StageManager::GetCollidables()
 	}
 
 	for (auto* g : goomba)
+	{
+		result.push_back(g);
+	}
+	for (auto* g : coins)
 	{
 		result.push_back(g);
 	}
@@ -211,6 +222,9 @@ void StageManager::Init()
 	CreateGoomba(174, 12);
 	CreateGoomba(175.5f, 12);
 
+	//COINS
+	CreateCoin(15, 10);
+
 	//BACKGROUND
 	background.InitialImageAndSize(LoadGraph("data/image/1-1_background.png"));
 	background.pos.Set(0.0f, 0.0f);
@@ -243,6 +257,22 @@ void StageManager::Update(Camera& camera)
 	{
 		pipe->Update();
 	}
+
+	//Coin
+	for (int i = 0; i < coins.size(); i++)
+	{
+		if (!coins[i]->active)
+		{
+			// remove from collidables list too!
+			RigidBody::collidables.erase(
+				remove(RigidBody::collidables.begin(), RigidBody::collidables.end(), coins[i]),
+				RigidBody::collidables.end()
+			);
+			//remove coins from stage manager
+			coins.erase(coins.begin() + i);
+		}
+	}
+
 }
 
 void StageManager::Render(Camera& camera)
@@ -261,6 +291,15 @@ void StageManager::Render(Camera& camera)
 	for (Pipe* pipe : globalPipes)
 	{
 		pipe->Render(camera);
+	}
+
+	for (Coin* coin: coins)
+	{
+		if (coin->active)
+		{
+			coin->RenderGlobal(camera);
+		}
+	
 	}
 
 	//ENEMIES

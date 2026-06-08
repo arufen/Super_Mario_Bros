@@ -10,6 +10,7 @@
 #include "Ground.h"
 #include "IBlock.h"
 #include "Warp_Pipe.h"
+#include "Coin.h"
 
 //Enemies
 #include "Goomba.h"
@@ -37,8 +38,9 @@ public:
 
 	//for all blocks
 	vector<IBlock*> globalBlocks;
-
 	vector<Pipe*> globalPipes;
+
+	vector<Coin*> coins;
 
 	Image background;
 
