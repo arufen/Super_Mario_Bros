@@ -58,11 +58,10 @@ void GameInit()
 
 	StageManager::GetInstance().Init();
 
-	// register all collidables into mario
-	// (StageManager probably owns the blocks, so grab them from there)
+	// register all collidables into for every object that has RigidBody
 	for (auto* block : StageManager::GetInstance().GetCollidables())
 	{
-		MainMario.collidables.push_back(block);
+		RigidBody::collidables.push_back(block);
 	}
 }
 //---------------------------------------------------------------------------------
@@ -73,7 +72,7 @@ void GameUpdate()
 	MainCamera.Update();
 	MainMario.Update();
 	MainTime.Update();
-	StageManager::GetInstance().Update();
+	StageManager::GetInstance().Update(MainCamera);
 	
 
 	// デバッグ機能（モード切り替えなど）の更新
@@ -84,6 +83,8 @@ void GameUpdate()
 //---------------------------------------------------------------------------------
 void GameRender()
 {
+	//BACKGROUND
+	MainCamera.GlobalRenderImage(StageManager::GetInstance().background);
 	
 	// マップの手前にマリオを描画
 	MainMario.Render();
@@ -95,6 +96,23 @@ void GameRender()
 	MainDebug.Render();
 
 	StageManager::GetInstance().Render(MainCamera);
+
+	//debug
+	for (auto& c : RigidBody::collidables)
+	{
+		c->Render(MainCamera);
+	}
+
+	//DEBUG
+	//mario collider
+	MainCamera.GlobalRenderBox(
+		MainMario.RigidBody_collider.x,
+		MainMario.RigidBody_collider.y,
+		MainMario.RigidBody_collider.x + MainMario.RigidBody_collider.width,
+		MainMario.RigidBody_collider.y + MainMario.RigidBody_collider.height,
+		GetColor(255, 0, 0),
+		FALSE
+	);
 
 }
 //---------------------------------------------------------------------------------

@@ -12,13 +12,15 @@
 using namespace std;
 
 
-
-void CreateGoomba(int x, int y)
+template <typename T1, typename T2>
+void CreateGoomba(T1 x, T2 y)
 {
-	Goomba newGoomba;
-	newGoomba.Init(x * BLOCK_SIZE, y * BLOCK_SIZE, LoadGraph("data/image/goomba.png"));
+	Goomba* newGoomba = new Goomba();
+	newGoomba->Init(x * BLOCK_SIZE, y * BLOCK_SIZE, LoadGraph("data/image/goomba.png"));
 	StageManager::GetInstance().goomba.push_back(newGoomba);
 }
+
+
 
 //Create ground tiles from (fromTileX, fromTileY) to (toTileX, toTileY) (max Y: 14)
 void CreateGrounds(int fromTileX, int fromTileY, int toTileX, int toTileY)
@@ -106,6 +108,13 @@ vector<Collidable*> StageManager::GetCollidables()
 			result.push_back(pipe); // Makes the pipe solid to Mario!
 		}
 	}
+
+	for (auto* g : goomba)
+	{
+		result.push_back(g);
+	}
+
+
 	// when u add pipe, questionblock etc just do:
 	// for (auto& p : pipes)
 	//     result.push_back(&p);
@@ -174,23 +183,57 @@ void StageManager::Init()
 	CreateStairs(155, 9, 158, 12, true);
 
 	CreateStairs(181, 5, 189, 12, false);
+	
+	//ENEMIES
+	//GOOMBA
+	CreateGoomba(22, 12);
+	CreateGoomba(42, 12);
+	CreateGoomba(52, 12);
+	CreateGoomba(53.5, 12);
 
-	//goomba test
-	CreateGoomba(10, 4);
-	CreateGoomba(12, 6);
-	CreateGoomba(15, 6);
+	CreateGoomba(80, 4);
+	CreateGoomba(81.5, 4);
 
-	//tmp
-	CreateGrounds(20, 12, 21, 12);
+
+	CreateGoomba(98, 12);
+	CreateGoomba(99.5f, 12);
+
+
+	CreateGoomba(115, 12);
+	CreateGoomba(116.5f, 12);
+
+
+	CreateGoomba(125, 12);
+	CreateGoomba(126.5f, 12);
+	CreateGoomba(129, 12);
+	CreateGoomba(130.5f, 12);
+
+	CreateGoomba(174, 12);
+	CreateGoomba(175.5f, 12);
+
+	//BACKGROUND
+	background.InitialImageAndSize(LoadGraph("data/image/1-1_background.png"));
+	background.pos.Set(0.0f, 0.0f);
+
 }
 
-void StageManager::Update()
+void StageManager::Update(Camera& camera)
 {
 
 	//Goomba
 	for (int i = 0; i < goomba.size(); i++)
 	{
-		goomba[i].Update();
+		goomba[i]->Update(camera);
+
+		if (goomba[i]->state == EnemyState::DEAD)
+		{
+			// remove from collidables list too!
+			RigidBody::collidables.erase(
+				remove(RigidBody::collidables.begin(), RigidBody::collidables.end(), goomba[i]),
+				RigidBody::collidables.end()
+			);
+			goomba.erase(goomba.begin() + i);
+		}
 	}
 	for (IBlock* block : globalBlocks)
 	{
@@ -204,18 +247,12 @@ void StageManager::Update()
 
 void StageManager::Render(Camera& camera)
 {
-	//Stage
+
+
+	//BLOCKS
 	for (int i = 0; i < ground.size(); i++)
 	{
 		ground[i].RenderGlobal(camera);
-	}
-
-	//Goomba
-	for (int i = 0; i < goomba.size(); i++)
-	{
-		goomba[i].RenderGlobal(camera);
-
-		//DrawFormatString(100, 100 + 20 * i, GetColor(255, 255, 255), "speed: %f", goomba[i].now_speed_x);
 	}
 	for (IBlock* block : globalBlocks)
 	{
@@ -224,6 +261,15 @@ void StageManager::Render(Camera& camera)
 	for (Pipe* pipe : globalPipes)
 	{
 		pipe->Render(camera);
+	}
+
+	//ENEMIES
+	//Goomba
+	for (int i = 0; i < goomba.size(); i++)
+	{
+		goomba[i]->RenderGlobal(camera);
+
+		//DrawFormatString(0, 60 + 20 * i, GetColor(255, 255, 255), "goomba pos x: %f, y: %f", goomba[i].position.x, goomba[i].position.y);
 	}
 
 }

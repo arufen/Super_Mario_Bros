@@ -2,7 +2,6 @@
 
 vector<Collidable*> RigidBody::collidables;
 
-
 Collidable* RigidBody::Raycast(float x, float y)
 {
 	for (auto* block : collidables)
@@ -22,7 +21,7 @@ void RigidBody::ResolveCollision(Collidable& block)
 {
 
 
-	if (!collider.intersects(block.collider)) return;
+	if (!RigidBody_collider.intersects(block.collider)) return;
 
 
 	if (block.isTrigger)
@@ -32,29 +31,29 @@ void RigidBody::ResolveCollision(Collidable& block)
 		return;
 	}
 
-	float overlapLeft = (collider.x + collider.width) - block.collider.x;
-	float overlapRight = (block.collider.x + block.collider.width) - collider.x;
-	float overlapTop = (collider.y + collider.height) - block.collider.y;
-	float overlapBottom = (block.collider.y + block.collider.height) - collider.y;
+	float overlapLeft = (RigidBody_collider.x + RigidBody_collider.width) - block.collider.x;
+	float overlapRight = (block.collider.x + block.collider.width) - RigidBody_collider.x;
+	float overlapTop = (RigidBody_collider.y + RigidBody_collider.height) - block.collider.y;
+	float overlapBottom = (block.collider.y + block.collider.height) - RigidBody_collider.y;
 
 	float minX = min(overlapLeft, overlapRight);
 	float minY = min(overlapTop, overlapBottom);
 
-	const float bias = 0.0f;
+	const float bias = 20.0f;
 
 	if (minY < minX + bias)
 	{
 		if (overlapTop < overlapBottom)
 		{
 			position.y -= overlapTop;
-			collider.y -= overlapTop;
+			RigidBody_collider.y -= overlapTop;
 			now_speed_y = 0;
 			block.OnHitTop(*this);
 		}
 		else
 		{
 			position.y += overlapBottom;
-			collider.y += overlapBottom;
+			RigidBody_collider.y += overlapBottom;
 			now_speed_y = 0;
 			block.OnHitBottom(*this);
 		}
@@ -64,12 +63,12 @@ void RigidBody::ResolveCollision(Collidable& block)
 		if (overlapLeft < overlapRight)
 		{
 			position.x -= overlapLeft;
-			collider.x -= overlapLeft;
+			RigidBody_collider.x -= overlapLeft;
 		}
 		else
 		{
 			position.x += overlapRight;
-			collider.x += overlapRight;
+			RigidBody_collider.x += overlapRight;
 		}
 		now_speed_x = 0;
 		block.OnHitSide(*this);
@@ -81,19 +80,25 @@ void RigidBody::PhysicsUpdate()
 	// x movement here
 	position.x += now_speed_x;
 
+	now_speed_y = min(now_speed_y, 15.0f);
 
-	int steps = (int)(abs(now_speed_y) / (collider.height * 0.5f)) + 1;
+	int steps = (int)(abs(now_speed_y) / (RigidBody_collider.height * 0.5f)) + 1;
 	steps = min(steps, 10);
 
 	for (int i = 0; i < steps; i++)
 	{
 		now_speed_y += GRAVITY / steps;
 		position.y += now_speed_y / steps;
-		collider.y = position.y;
+		RigidBody_collider.y = position.y;
+
+		hitVertical = false;  // add this
 
 		for (auto* block : collidables)
 		{
+			if (block == dynamic_cast<Collidable*>(this)) continue; //skip itself
 			ResolveCollision(*block);
 		}
+		if (hitVertical) break;  // just this one line
 	}
+
 }

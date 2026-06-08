@@ -4,6 +4,7 @@
 #include "Collidable.h"
 #include <vector>
 #include "RigidBody.h"
+#include "Enemy.h"
 using namespace std;
 
 // 外部ファイル（Camera.cppなど）からマリオの移動速度や中心座標を
@@ -41,10 +42,6 @@ public:
 	//Mario image/animation variables (画像/アニメーション変数)
 	Image marioImage;	// マリオの画像情報（サイズなどを含む）
 
-	//Mario game mechanics variables (メカニック変数)
-	//Float2 position; //Mario position (座標)
-	//float now_speed_x;	// 現在の横方向の速度
-	//float now_speed_y;	// 現在の縦方向の速度
 	bool isLeft;		// 向きフラグ（trueなら左向き、falseなら右向き）
 	bool isJumping = false;
 	float jumpHoldTimer = 0.0f;
@@ -52,11 +49,6 @@ public:
 	// State machine controllers
 	MarioState currentState = MarioState::NORMAL;
 	float warpTimer = 0.0f;
-
-	//Collider collider; // Collider (マリオの当たり判定)
-
-	////Check Every collision that has registered here （登録した当たり判定をチェックする）
-	//vector<Collidable*> collidables; // all blocks register here （登録の当たり判定）
 
 	void ResolveCollision(Collidable& block) override;
 
