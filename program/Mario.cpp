@@ -33,34 +33,64 @@ void Mario::ResolveCollision(Collidable& block)
 {
 	if (currentState == MarioState::WARPING) return;
 
-	if (!collider.intersects(block.collider)) return;
+	if (!RigidBody_collider.intersects(block.collider)) return;
 
-	float overlapLeft = (collider.x + collider.width) - block.collider.x;
-	float overlapRight = (block.collider.x + block.collider.width) - collider.x;
-	float overlapTop = (collider.y + collider.height) - block.collider.y;
-	float overlapBottom = (block.collider.y + block.collider.height) - collider.y;
+	if (block.isTrigger)
+	{
+		//Coin
+		Coin* coin = dynamic_cast<Coin*>(&block);
+		if (coin != nullptr)
+		{
+			AddCoin();
+			coin->active = false; // Mark the coin as collected
+		}
+
+		block.OnHitSide(*this);  // just calls callback, no pushing
+		return;
+	}
+
+	float overlapLeft = (RigidBody_collider.x + RigidBody_collider.width) - block.collider.x;
+	float overlapRight = (block.collider.x + block.collider.width) - RigidBody_collider.x;
+	float overlapTop = (RigidBody_collider.y + RigidBody_collider.height) - block.collider.y;
+	float overlapBottom = (block.collider.y + block.collider.height) - RigidBody_collider.y;
 
 	float minX = min(overlapLeft, overlapRight);
 	float minY = min(overlapTop, overlapBottom);
 
-	const float bias = 0.0f;
+	const float bias = 0.5f;
 
 	if (minY < minX + bias)
 	{
+
+		if (hitVertical) return;
+
 		if (overlapTop < overlapBottom)
 		{
+			//Adjust mario position
 			position.y -= overlapTop;
-			collider.y -= overlapTop;
+			RigidBody_collider.y -= overlapTop;
 			now_speed_y = 0;
 			isJumping = false;
 			jumpHoldTimer = 0.0f;
+			hitVertical = true;  // mark it
+
+			//jump if hit enemy on top (like raycast)
+			Enemy* enemy = dynamic_cast<Enemy*>(&block);
+			if (enemy != nullptr)
+			{
+				Jump();
+			}
+
+
 			block.OnHitTop(*this);
 		}
 		else
 		{
 			position.y += overlapBottom;
-			collider.y += overlapBottom;
+			RigidBody_collider.y += overlapBottom;
 			now_speed_y = 0;
+
+		
 			block.OnHitBottom(*this);
 		}
 	}
@@ -69,14 +99,16 @@ void Mario::ResolveCollision(Collidable& block)
 		if (overlapLeft < overlapRight)
 		{
 			position.x -= overlapLeft;
-			collider.x -= overlapLeft;
+			RigidBody_collider.x -= overlapLeft;
 		}
 		else
 		{
 			position.x += overlapRight;
-			collider.x += overlapRight;
+			RigidBody_collider.x += overlapRight;
 		}
+
 		now_speed_x = 0;
+
 		block.OnHitSide(*this);
 	}
 }
@@ -102,7 +134,16 @@ void Mario::Init()
 	now_speed_y = 0.0f;//new added for warp pipe
 	currentState = MarioState::NORMAL;
 	warpTimer = 0.0f;
-	collider = Collider(position.x, position.y, marioImage.sizeX, marioImage.sizeY); // Collider(コライダーの初期化)
+	RigidBody_collider = Collider(position.x, position.y, marioImage.sizeX, marioImage.sizeY); // Collider(コライダーの初期化)
+
+	//Shrink collider (当たり判定を画像より少し小さくする)
+	float offsetWidth = 20.0f; // how much to shrink total width
+	RigidBody_collider.width -= offsetWidth;
+	RigidBody_collider.x += offsetWidth / 2; // shift right so it's centered
+
+	//Score and item
+	score = 0;
+	coin = 0;
 }
 
 void Mario::Update()
@@ -115,8 +156,8 @@ void Mario::Update()
 		position.y += 1.5f;
 
 		marioImage.pos = position;
-		collider.x = position.x;
-		collider.y = position.y;
+		RigidBody_collider.x = position.x;
+		RigidBody_collider.y = position.y;
 
 		// Frame debug layout configuration parameters
 		int mScrX = (int)(position.x - MainCamera.pos.x);
@@ -141,9 +182,11 @@ void Mario::Update()
 	//image and position update
 	marioImage.pos = position;
 
-	//Collider update
-	collider.x = position.x;
-	collider.y = position.y;
+	////Collider update
+	float offsetWidth = 20.0f;
+	RigidBody_collider.x = position.x + offsetWidth / 2;
+	//collider.x = position.x + 20.0f / 2;
+	//collider.y = position.y;
 	
 
     // LSHIFT + 方向キー の組み合わせは単独の方向キー判定より先に評価する (speed)
@@ -266,9 +309,7 @@ void Mario::Update()
 	// first press — initial jump
 	if (CheckHitKey(KEY_INPUT_SPACE) && !isJumping)
 	{
-		now_speed_y = JUMP_INITIAL;  // shoot up
-		isJumping = true;
-		jumpHoldTimer = 0.0f;
+		Jump();
 	}
 
 	// hold to go higher
@@ -307,10 +348,18 @@ void Mario::Render()
 		DrawFormatString(0, 40, GetColor(255, 255, 255), "Mario pos X : %f, Mario pos Y : %f", position.x, position.y);
 	}
 
+	DrawFormatString(0, 40, GetColor(255, 255, 255), "now_speed X : %f", now_speed_x);
 }
 
 //Jump player
 void Mario::Jump()
 {
-	now_speed_y += JUMP_FORCE;
+	now_speed_y = JUMP_INITIAL;  // shoot up
+	isJumping = true;
+	jumpHoldTimer = 0.0f;
+}
+
+void Mario::AddCoin()
+{
+	coin++;
 }
