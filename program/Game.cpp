@@ -98,10 +98,10 @@ void GameRender()
 	StageManager::GetInstance().Render(MainCamera);
 
 	//debug
-	for (auto& c : RigidBody::collidables)
+	/*for (auto& c : RigidBody::collidables)
 	{
 		c->Render(MainCamera);
-	}
+	}*/
 
 	//DEBUG
 	//mario collider
