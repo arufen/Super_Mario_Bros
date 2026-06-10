@@ -29,24 +29,36 @@ public:
 	//Ground （床）
 	vector<Ground> ground;
 
+	vector<Ground> underworld_ground;
+
 	//Enemy （敵）
 	vector<Goomba> goomba;
 
 	// returns all collidable blocks for mario to register
 	vector<Collidable*> GetCollidables();
 
-	//for all blocks
-	vector<IBlock*> globalBlocks;
-
 	vector<Pipe*> globalPipes;
+
+	/*vector<UnderWorldLPipe*> underWorldLPipe;*/
+	vector<UnderWorldPipe*> underWorldPipe;
+	vector<IBlock*> hardPipe;
+
+	WorldZone currentzone;
+
+	//for all blocks
+	vector<IBlock*> overworld1_1Blocks;
+	vector<IBlock*> underworldBlocks;
 
 	//Main thread 
 	void Init();	//Load blocks (ブロックの初期化）
 	void Update();	//Check Collision （当たり判定チェック）
 	void Render(Camera& camera); //Camera is for render globally (グロバール座標を使うためにカメラが必要）
 
+	void TransferWorldZone(WorldZone newZone); // handle world zone transitions (ワールドゾーンの切り替えを処理)
+	bool GetIsUnderworld() const { return currentzone == WorldZone::UNDERWORLD; }
+
 private:
 	//singleton pattern(シングルトンパターン）
-	StageManager() {};
-
+	StageManager() : currentzone(WorldZone::OVERWORLD){}
+	~StageManager() {};
 };

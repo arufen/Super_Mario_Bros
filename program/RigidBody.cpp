@@ -20,8 +20,6 @@ Collidable* RigidBody::Raycast(float x, float y)
 
 void RigidBody::ResolveCollision(Collidable& block)
 {
-
-
 	if (!collider.intersects(block.collider)) return;
 
 
@@ -81,7 +79,7 @@ void RigidBody::PhysicsUpdate()
 	// x movement here
 	position.x += now_speed_x;
 
-
+	collider.x = position.x;
 	int steps = (int)(abs(now_speed_y) / (collider.height * 0.5f)) + 1;
 	steps = min(steps, 10);
 

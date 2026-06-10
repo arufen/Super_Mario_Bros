@@ -15,4 +15,6 @@ public:
 
 	//check if this collider intersects with another collider (“–‚½‚è”»’è‚ª‚ ‚Á‚½‚çj
     bool intersects(const Collider& other) const;
+
+  
 };

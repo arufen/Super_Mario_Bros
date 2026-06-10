@@ -69,7 +69,13 @@ public:
 	//mechanics function
 	void Jump();
 
-	void Warping(float pipeY);
+	//void Warping(float pipeY);
+
+	enum class WarpDir { DOWN, RIGHT, UP, };
+	WarpDir currentWarpDir = WarpDir::DOWN;
+
+	// Update the function signature
+	void Warping(float targetX, float targetY, WarpDir dir);
 
 private:
 	int texWarp;

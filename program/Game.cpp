@@ -70,7 +70,16 @@ void GameInit()
 //---------------------------------------------------------------------------------
 void GameUpdate()
 {
-	MainCamera.Update();
+	if (StageManager::GetInstance().currentzone == WorldZone::UNDERWORLD)
+	{
+		MainCamera.pos.x = 56 * BLOCK_SIZE;
+		MainCamera.pos.y = 15 * BLOCK_SIZE;
+	}
+	else
+	{
+		MainCamera.Update();
+	}
+
 	MainMario.Update();
 	MainTime.Update();
 	StageManager::GetInstance().Update();
@@ -85,8 +94,7 @@ void GameUpdate()
 void GameRender()
 {
 	
-	// マップの手前にマリオを描画
-	MainMario.Render();
+	
 
 	// マリオの手前に残り時間を描画
 	MainTime.Render();
@@ -94,8 +102,22 @@ void GameRender()
 	// 一番手前にデバッグ情報を描画
 	MainDebug.Render();
 
+	//// マップの手前にマリオを描画
+	//MainMario.Render();
+	if (StageManager::GetInstance().currentzone == WorldZone::UNDERWORLD)
+	{
+		DrawBox(0, 0, SCREEN_W, SCREEN_H, GetColor(0, 0, 0), TRUE);
+	}
+	// マップの手前にマリオを描画
+	MainMario.Render();
 	StageManager::GetInstance().Render(MainCamera);
+	
 
+	//debug
+	for (auto& c : RigidBody::collidables)
+	{
+		c->Render(MainCamera);
+	}
 }
 //---------------------------------------------------------------------------------
 //	終了処理
