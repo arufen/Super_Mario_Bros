@@ -15,6 +15,5 @@ public:
 
 	//Main thread
 	void Init(float x, float y, int handle); //Set pos and image (座標とイメージを初期化)
-	void Update(); //Check Collision ((当たり判定の時)
 	void RenderGlobal(Camera& camera);
 };

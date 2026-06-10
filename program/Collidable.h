@@ -3,8 +3,11 @@
 #include "Collider.h"
 #include "Camera.h"
 
+//Debug
+#include "Camera.h"
 
-class RigidBody; // forward declare so we don't need to include Mario.h
+
+class RigidBody; 
 
 class Collidable
 {

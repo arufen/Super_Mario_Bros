@@ -58,11 +58,10 @@ void GameInit()
 
 	StageManager::GetInstance().Init();
 
-	// register all collidables into mario
-	// (StageManager probably owns the blocks, so grab them from there)
+	// register all collidables into for every object that has RigidBody
 	for (auto* block : StageManager::GetInstance().GetCollidables())
 	{
-		MainMario.collidables.push_back(block);
+		RigidBody::collidables.push_back(block);
 	}
 }
 //---------------------------------------------------------------------------------
@@ -82,7 +81,7 @@ void GameUpdate()
 
 	MainMario.Update();
 	MainTime.Update();
-	StageManager::GetInstance().Update();
+	StageManager::GetInstance().Update(MainCamera);
 	
 
 	// デバッグ機能（モード切り替えなど）の更新
@@ -93,6 +92,8 @@ void GameUpdate()
 //---------------------------------------------------------------------------------
 void GameRender()
 {
+	//BACKGROUND
+	MainCamera.GlobalRenderImage(StageManager::GetInstance().background);
 	
 	
 
@@ -112,6 +113,9 @@ void GameRender()
 	MainMario.Render();
 	StageManager::GetInstance().Render(MainCamera);
 	
+
+
+	DrawFormatString(0, 80, GetColor(255, 255, 255), "Mario coin : %d", MainMario.coin);
 
 	//debug
 	for (auto& c : RigidBody::collidables)
