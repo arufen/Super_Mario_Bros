@@ -118,9 +118,12 @@ void GameRender()
 	DrawFormatString(0, 80, GetColor(255, 255, 255), "Mario coin : %d", MainMario.coin);
 
 	//debug
-	for (auto& c : RigidBody::collidables)
+	if (map_mode == MODE_DEBUG)
 	{
-		c->Render(MainCamera);
+		for (auto& c : RigidBody::collidables)
+		{
+			c->Render(MainCamera);
+		}
 	}
 }
 //---------------------------------------------------------------------------------

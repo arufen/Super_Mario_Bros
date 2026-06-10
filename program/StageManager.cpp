@@ -67,6 +67,8 @@ void CreateGrounds(int fromTileX, int fromTileY, int toTileX, int toTileY)
 	}
 }
 
+
+
 //Stair looking ground (ŠK’i‚ðì‚éŠÖ”j
 void CreateStairs(int fromTileX, int fromTileY, int toTileX, int toTileY, bool flipFlag)
 {
@@ -120,8 +122,21 @@ void CreateStairs(int fromTileX, int fromTileY, int toTileX, int toTileY, bool f
 void CreateCoin(float x, float y)
 {
 	Coin* newCoin = new Coin();
-	newCoin->Init(x * BLOCK_SIZE, y * BLOCK_SIZE, LoadGraph("data/image/coin.png"));
+	newCoin->Init(x * BLOCK_SIZE, y * BLOCK_SIZE);
 	StageManager::GetInstance().coins.push_back(newCoin);
+}
+//Create coin tiles from (fromTileX, fromTileY) to (toTileX, toTileY) (max Y: 14)
+void CreateCoin(int fromTileX, int fromTileY, int toTileX, int toTileY)
+{
+	for (int x = fromTileX; x <= toTileX; x++)
+	{
+		for (int y = fromTileY; y <= toTileY; y++)
+		{
+			Coin* newCoin = new Coin();
+			newCoin->Init(x * BLOCK_SIZE, y * BLOCK_SIZE);
+			StageManager::GetInstance().coins.push_back(newCoin);
+		}
+	}
 }
 
 vector<Collidable*> StageManager::GetCollidables()
@@ -317,7 +332,10 @@ void StageManager::Init()
 	CreateGoomba(175.5f, 12);
 
 	//COINS
-	CreateCoin(15, 10);
+	//underworld coins
+	CreateCoin(61, 20, 65, 20); 
+	CreateCoin(60, 22, 66, 22); 
+	CreateCoin(60, 24, 66, 24); 
 
 	//BACKGROUND
 	background.InitialImageAndSize(LoadGraph("data/image/1-1_background.png"));
@@ -358,6 +376,8 @@ void StageManager::Update(Camera& camera)
 	//Coin
 	for (int i = 0; i < coins.size(); i++)
 	{
+		//Animation
+		coins[i]->AnimationUpdate();
 		if (!coins[i]->active)
 		{
 			// remove from collidables list too!
@@ -397,10 +417,7 @@ void StageManager::Render(Camera& camera)
 			camera.GlobalRenderBox(pipe->collider.x, pipe->collider.y, pipe->collider.x + pipe->collider.width, pipe->collider.y + pipe->collider.height, GetColor(255, 0, 0), FALSE);
 		}
 	}
-	DrawFormatString(0, 48, GetColor(255, 255, 255),
-		"Mario X: %.0f", MainMario.position.x);
-	DrawFormatString(0, 64, GetColor(255, 255, 255),
-		"Mario Y: %.0f", MainMario.position.y);
+
 	//ENEMIES
 	//Goomba
 	for (int i = 0; i < goomba.size(); i++)
@@ -408,13 +425,13 @@ void StageManager::Render(Camera& camera)
 		goomba[i]->RenderGlobal(camera);
 	}
 
+	int i = 0;
 	for (Coin* coin: coins)
 	{
 		if (coin->active)
 		{
 			coin->RenderGlobal(camera);
 		}
-	
 	}
 
 }

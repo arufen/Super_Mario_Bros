@@ -3,6 +3,7 @@
 #include "Collider.h"
 #include "Collidable.h"
 #include <vector>
+#include <algorithm>
 using namespace std;
 
 class RigidBody

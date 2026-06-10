@@ -35,6 +35,7 @@ void Mario::ResolveCollision(Collidable& block)
 
 	if (!RigidBody_collider.intersects(block.collider)) return;
 
+	//for isTrigger Collision
 	if (block.isTrigger)
 	{
 		//Coin
@@ -81,7 +82,7 @@ void Mario::ResolveCollision(Collidable& block)
 				Jump();
 			}
 
-
+			
 			block.OnHitTop(*this);
 		}
 		else
@@ -90,8 +91,42 @@ void Mario::ResolveCollision(Collidable& block)
 			RigidBody_collider.y += overlapBottom;
 			now_speed_y = 0;
 
-		
-			block.OnHitBottom(*this);
+			// find closest block to mario center
+			float marioCX = RigidBody_collider.x + RigidBody_collider.width / 2.0f;
+			float marioCY = RigidBody_collider.y + RigidBody_collider.height / 2.0f;
+
+			Collidable* closest = nullptr;
+			float closestDist = 999999.0f;
+
+			for (auto* c : collidables)
+			{
+				if (!RigidBody_collider.intersects(c->collider)) continue;
+				float cx = c->collider.x + c->collider.width / 2.0f;
+				float cy = c->collider.y + c->collider.height / 2.0f;
+				float dist = (marioCX - cx) * (marioCX - cx) + (marioCY - cy) * (marioCY - cy);
+				if (dist < closestDist)
+				{
+					closestDist = dist;
+					closest = c;
+				}
+			}
+
+			// only trigger item/break on closest block
+			if (closest == &block)
+			{
+				QuestionBlock* questionBlock = dynamic_cast<QuestionBlock*>(&block);
+				if (questionBlock != nullptr && questionBlock->IsAvailable())
+				{
+					switch (questionBlock->itemType)
+					{
+					case QuestionBlockItem::COIN:
+						AddCoin();
+						break;
+					}
+				}
+
+				block.OnHitBottom(*this);
+			}
 		}
 	}
 	else
@@ -384,10 +419,11 @@ void Mario::Render()
 	if (map_mode == MODE_DEBUG)
 	{
 		DrawFormatString(0, 40, GetColor(255, 255, 255), "Mario pos X : %f, Mario pos Y : %f", position.x, position.y);
+		DrawFormatString(0, 60, GetColor(255, 255, 255), "now_speed X : %f", now_speed_x);
+	}
 	}
 
-	DrawFormatString(0, 40, GetColor(255, 255, 255), "now_speed X : %f", now_speed_x);
-}
+	
 
 //Jump player
 void Mario::Jump()

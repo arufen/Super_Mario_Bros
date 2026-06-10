@@ -6,6 +6,7 @@
 #include "RigidBody.h"
 #include "Enemy.h"
 #include "Coin.h"
+#include "Question_Block.h"
 using namespace std;
 
 // 外部ファイル（Camera.cppなど）からマリオの移動速度や中心座標を
