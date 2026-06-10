@@ -1,5 +1,5 @@
 #include "Hidden_Block.h"
-#include "Mario.h" // Include your player header if needed for rigid body properties
+#include "Mario.h"
 
 HiddenBlock::HiddenBlock(Float2 startPos, int emptyBlockTextureHandle)
 {
