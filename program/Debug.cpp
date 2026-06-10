@@ -59,6 +59,22 @@ void Debug::Render()
 	if (map_mode == MODE_DEBUG) 
 	{
 		DrawString(0, 20, "DEBUG MODE ACTIVE", GetColor(255, 0, 0));
+
+		// マップ（ワールド座標）のX座標100ごとに縦の白線を引く
+		// 現在のカメラ位置から、画面に映る範囲の100の倍数を計算して線を引きます
+		int startX = ((int)MainCamera.pos.x / 100) * 100;
+		for (int x = startX; x <= MainCamera.pos.x + SCREEN_W; x += 100)
+		{
+			// ワールド座標からスクリーン座標に変換
+			int screenX = x - (int)MainCamera.pos.x;
+
+			// 白い縦線を引く
+			DrawLine(screenX, 0, screenX, SCREEN_H, GetColor(255, 255, 255));
+
+			// （おまけ）線の横にその座標の数値を描画しておくと、ブロックの配置確認などにさらに便利です
+			DrawFormatString(screenX + 2, 40, GetColor(255, 255, 255), "%d", x);
+		}
+
 		// デバッグモード時は画面中央を示す縦線を引く
 		DrawLine(SCREEN_W/2, 0, SCREEN_W/2, SCREEN_H, GetColor(0, 255, 255));
 

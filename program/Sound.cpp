@@ -7,7 +7,7 @@ void SoundManager::Init()
 	bgmList["Stage1-1_Hurry"] = LoadSoundMem("data/sound/bgm_stage1-1_hurry.mp3");
 
 	// SEiŒø‰Ê‰¹j‚Ì“Ç‚İ‚İ
-	// seList["Jump"]  = LoadSoundMem("data/sound/se_jump.wav");
+	seList["Jump_Small"] = LoadSoundMem("data/sound/mario_jump_small.wav");
 	// seList["Coin"]  = LoadSoundMem("data/sound/se_coin.wav");
 	// seList["Stomp"] = LoadSoundMem("data/sound/se_stomp.wav");
 }

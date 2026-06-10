@@ -39,13 +39,21 @@ public:
 
 
 	//Mario image/animation variables (画像/アニメーション変数)
-	Image marioImage;	// マリオの画像情報（サイズなどを含む）
+	Image mario_waitImage;	 // マリオの待機画像情報
+	Image mario_jumpImage;   //	マリオのジャンプ画像情報
+	Animation walkAnim;		 // 歩きアニメーション管理オブジェクト
+
+	// 後入力優先のためのキー状態保持
+	bool prevKeyA = false;
+	bool prevKeyD = false;
+	bool preferLeftInput = false;
 
 	//Mario game mechanics variables (メカニック変数)
 	//Float2 position; //Mario position (座標)
 	//float now_speed_x;	// 現在の横方向の速度
 	//float now_speed_y;	// 現在の縦方向の速度
 	bool isLeft;		// 向きフラグ（trueなら左向き、falseなら右向き）
+	bool isWalking = false;      // 現在歩いているかどうかの状態フラグ
 	bool isJumping = false;
 	float jumpHoldTimer = 0.0f;
 

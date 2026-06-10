@@ -42,9 +42,9 @@ void Pipe::OnHitTop(RigidBody& player)
 			if (mario != nullptr)
 			{
 				float pipeCenterX = this->pos.x + (BLOCK_SIZE);
-				mario->position.x = pipeCenterX - ((float)mario->marioImage.sizeX / 2.0f);
+				mario->position.x = pipeCenterX - ((float)mario->mario_waitImage.sizeX / 2.0f);
 
-				float surfaceY = this->pos.y - ((float)mario->marioImage.sizeX + 2.0f);
+				float surfaceY = this->pos.y - ((float)mario->mario_waitImage.sizeX + 2.0f);
 				mario->Warping(surfaceY);
 			}
 		}

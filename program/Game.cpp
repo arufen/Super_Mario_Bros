@@ -91,11 +91,10 @@ void GameRender()
 	// マリオの手前に残り時間を描画
 	MainTime.Render();
 
-	// 一番手前にデバッグ情報を描画
-	MainDebug.Render();
-
 	StageManager::GetInstance().Render(MainCamera);
 
+	// 一番手前にデバッグ情報を描画
+	MainDebug.Render();
 }
 //---------------------------------------------------------------------------------
 //	終了処理

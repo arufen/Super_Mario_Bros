@@ -3,6 +3,7 @@
 #include "Mario.h"
 #include "Debug.h"
 #include "Camera.h"
+#include "Sound.h"
 
 extern Camera MainCamera;
 
@@ -93,16 +94,28 @@ void Mario::Warping(float pipeY)
 }
 void Mario::Init()
 {
-	// マリオの画像を読み込み、初期位置を設定
-	marioImage.InitialImageAndSize(LoadGraph("data/image/mario_idle.png"));
+	// マリオの待機画像を読み込み、初期位置を設定
+	mario_waitImage.InitialImageAndSize(LoadGraph("data/image/mario/mario_wait.png"));
+
+	// 歩きアニメーションの初期化（画像パス、コマ数:3、初期再生速度FPS:10）
+	walkAnim.InitialAnimation(LoadGraph("data/image/mario/mario_walk.png"), 3, 10);
+
+	// マリオのジャンプ画像を読み込み
+	mario_jumpImage.InitialImageAndSize(LoadGraph("data/image/mario/mario_jump.png"));
+
 	position.Set(165.0f, 700.0f); //772
 	isLeft = false; // 最初は右向き
+
+	// 後入力優先用変数の初期化
+	prevKeyA = false;
+	prevKeyD = false;
+	preferLeftInput = false;
 
 	now_speed_x = 0.0f; // 最初は静止している
 	now_speed_y = 0.0f;//new added for warp pipe
 	currentState = MarioState::NORMAL;
 	warpTimer = 0.0f;
-	collider = Collider(position.x, position.y, marioImage.sizeX, marioImage.sizeY); // Collider(コライダーの初期化)
+	collider = Collider(position.x, position.y, mario_waitImage.sizeX, mario_waitImage.sizeY); // Collider(コライダーの初期化)
 }
 
 void Mario::Update()
@@ -114,18 +127,18 @@ void Mario::Update()
 		// Slowly descend Mario down past the threshold grid block boundaries (1.5px frame scale)
 		position.y += 1.5f;
 
-		marioImage.pos = position;
+		mario_waitImage.pos = position;
 		collider.x = position.x;
 		collider.y = position.y;
 
 		// Frame debug layout configuration parameters
 		int mScrX = (int)(position.x - MainCamera.pos.x);
 		int mScrY = (int)(position.y - MainCamera.pos.y);
-		mario_centerX = mScrX + (marioImage.sizeX / 2);
+		mario_centerX = mScrX + (mario_waitImage.sizeX / 2);
 		mario_debug_x1 = mScrX;
 		mario_debug_y1 = mScrY;
-		mario_debug_x2 = mScrX + marioImage.sizeX;
-		mario_debug_y2 = mScrY + marioImage.sizeY;
+		mario_debug_x2 = mScrX + mario_waitImage.sizeX;
+		mario_debug_y2 = mScrY + mario_waitImage.sizeY;
 
 		// If time finishes, teleport or transition player location
 		if (warpTimer >= WARP_DURATION)
@@ -139,88 +152,139 @@ void Mario::Update()
 		return; // Stop processing and drop loop cycles early. Skips normal controls.
 	}
 	//image and position update
-	marioImage.pos = position;
+	mario_waitImage.pos = position;
 
 	//Collider update
 	collider.x = position.x;
 	collider.y = position.y;
 	
+	// 今この瞬間にA/Dキーが押されているか
+	bool currKeyA = CheckHitKey(KEY_INPUT_A);
+	bool currKeyD = CheckHitKey(KEY_INPUT_D);
+	bool isDashing = CheckHitKey(KEY_INPUT_LSHIFT);
 
-    // LSHIFT + 方向キー の組み合わせは単独の方向キー判定より先に評価する (speed)
-	if (CheckHitKey(KEY_INPUT_LSHIFT) && CheckHitKey(KEY_INPUT_D)) {
-		marioSpeed = MARIO_DASH_MAX_SPEED; // ダッシュの最高速度（右向き）
-	}
-	else if (CheckHitKey(KEY_INPUT_D)) {
-		marioSpeed = MARIO_WALK_MAX_SPEED; // 歩きの最高速度（右向き）
-	}
-	else if (CheckHitKey(KEY_INPUT_LSHIFT) && CheckHitKey(KEY_INPUT_A)) {
-		marioSpeed = -MARIO_DASH_MAX_SPEED; // ダッシュの最高速度（左向き）
-	}
-	else if (CheckHitKey(KEY_INPUT_A)) {
-		marioSpeed = -MARIO_WALK_MAX_SPEED; // 歩きの最高速度（左向き）
-	}
-	else {
-		// キーが押されていないときは速度制御用変数は歩き相当にしておく（慣性で滑るため）
-		marioSpeed = MARIO_WALK_MAX_SPEED;
-	}
+	// ----------------------------------------------------
+	// 後入力優先の方向決定ロジック
+	// ----------------------------------------------------
+	// 前フレームでは押されておらず、今フレームで押された方を優先する
+	if (currKeyA && !prevKeyA) preferLeftInput = true;
+	if (currKeyD && !prevKeyD) preferLeftInput = false;
 
+	// 両押しから片方離した場合、残っている方のキーを優先方向に直す
+	if (currKeyA && !currKeyD) preferLeftInput = true;
+	if (currKeyD && !currKeyA) preferLeftInput = false;
 
-	// キー入力に応じた「速度（now_speed_x）」の計算
-	if (CheckHitKey(KEY_INPUT_D) || (CheckHitKey(KEY_INPUT_LSHIFT) && CheckHitKey(KEY_INPUT_D))) // 歩きとダッシュの右移動
+	// 現在のフレームの状態を次回のために保存
+	prevKeyA = currKeyA;
+	prevKeyD = currKeyD;
+
+	// 少なくともどちらかのキーが押されているか
+	bool moveKeyPressed = currKeyA || currKeyD;
+
+	// ----------------------------------------------------
+	// 外部参照用(Camera.cpp等)の移動速度設定
+	// ----------------------------------------------------
+	if (moveKeyPressed)
 	{
-		isLeft = false; // 右を向く
-
-		if (now_speed_x < 0.0f) 
+		float currentMax;
+		// ダッシュ中かどうかで最高速度を変える
+		if (isDashing)
 		{
-			now_speed_x += MARIO_DECEL_TURN; // 左に動いていたら急ブレーキ
+			currentMax = MARIO_DASH_MAX_SPEED;
 		}
-        else
+		else
 		{
-            now_speed_x += MARIO_ACCEL;      // 通常加速
-        }
+			currentMax = MARIO_WALK_MAX_SPEED;
+		}
+
+		// 優先されている向きに応じて速度のプラス・マイナスを決める
+		if (preferLeftInput)
+		{
+			marioSpeed = -currentMax;
+		}
+		else
+		{
+			marioSpeed = currentMax;
+		}
 	}
-	else if (CheckHitKey(KEY_INPUT_A) || (CheckHitKey(KEY_INPUT_LSHIFT) && CheckHitKey(KEY_INPUT_A))) // 歩きとダッシュの左移動
+	else
 	{
-		isLeft = true;  // 左を向く
+		marioSpeed = MARIO_WALK_MAX_SPEED; // 慣性滑り時のデフォルト
+	}
 
-		if (now_speed_x > 0.0f) 
+
+	// ----------------------------------------------------
+	// 速度（now_speed_x）と向きの計算
+	// ----------------------------------------------------
+	if (moveKeyPressed)
+	{
+		if (preferLeftInput) // 左移動が優先されている
 		{
-			now_speed_x -= MARIO_DECEL_TURN; // 右に動いていたら急ブレーキ
+			// ジャンプ中でない時だけ向きを変える
+			if (!isJumping) isLeft = true;
+
+			if (now_speed_x > 0.0f)
+			{
+				now_speed_x -= MARIO_DECEL_TURN; // 右に動いていたら急ブレーキ
+			}
+			else
+			{
+				now_speed_x -= MARIO_ACCEL;      // 通常加速
+			}
 		}
-        else 
+		else // 右移動が優先されている
 		{
-            now_speed_x -= MARIO_ACCEL;      // 通常加速
-        }
+			// ジャンプ中でない時だけ向きを変える
+			if (!isJumping) isLeft = false;
+
+			if (now_speed_x < 0.0f)
+			{
+				now_speed_x += MARIO_DECEL_TURN; // 左に動いていたら急ブレーキ
+			}
+			else
+			{
+				now_speed_x += MARIO_ACCEL;      // 通常加速
+			}
+		}
 	}
 	else // 何も押していないとき
 	{
 		// 摩擦（自然減速）の処理
-		if (now_speed_x > 0.0f) 
+		if (now_speed_x > 0.0f)
 		{
 			now_speed_x -= MARIO_FRICTION;
 			if (now_speed_x < 0.0f) now_speed_x = 0.0f; // 減速しすぎて逆走するのを防ぐ
 		}
-		else if (now_speed_x < 0.0f) 
+		else if (now_speed_x < 0.0f)
 		{
 			now_speed_x += MARIO_FRICTION;
 			if (now_speed_x > 0.0f) now_speed_x = 0.0f; // 減速しすぎて逆走するのを防ぐ
 		}
 	}
 
-    // 2. 最高速度の制限（クランプ）
-	// 現在押されているキーに応じて最大速度を決定する（ダッシュ中は大きな値）
-	float MarioMoovMaxSpeed = MARIO_WALK_MAX_SPEED;
-	if (CheckHitKey(KEY_INPUT_LSHIFT) && (CheckHitKey(KEY_INPUT_D) || CheckHitKey(KEY_INPUT_A))) {
+	// 最高速度の制限（クランプ）
+	float MarioMoovMaxSpeed;
+	if (isDashing)
+	{
 		MarioMoovMaxSpeed = MARIO_DASH_MAX_SPEED;
 	}
-	if (now_speed_x > MarioMoovMaxSpeed)  now_speed_x = MarioMoovMaxSpeed;
-	if (now_speed_x < -MarioMoovMaxSpeed) now_speed_x = -MarioMoovMaxSpeed;
+	else
+	{
+		MarioMoovMaxSpeed = MARIO_WALK_MAX_SPEED;
+	}
 
-	//// 3. 計算した速度を「実際の座標」に足し算する
-	//position.x += now_speed_x;
+	if (now_speed_x > MarioMoovMaxSpeed)
+	{
+		now_speed_x = MarioMoovMaxSpeed;
+	}
+	if (now_speed_x < -MarioMoovMaxSpeed)
+	{
+		now_speed_x = -MarioMoovMaxSpeed;
+	}
+
 
 	// Dキーの押し下げに関係なく、マリオが画面中央を越えたらカメラを動かすように外に出しました
-	float marioWorldCenterX = position.x + (marioImage.sizeX / 2.0f);
+	float marioWorldCenterX = position.x + (mario_waitImage.sizeX / 2.0f);
 	if (marioWorldCenterX >= MainCamera.pos.x + (SCREEN_W / 2))
 	{
 		MainCamera.pos.x = marioWorldCenterX - (SCREEN_W / 2);
@@ -237,8 +301,8 @@ void Mario::Update()
 	}
 
 	// マリオの表示幅を計算
-	float marioWidth = marioImage.sizeX; // マリオの画像の幅を計算
-	float marioHeight = marioImage.sizeY;// マリオの画像の高さを計算
+	float marioWidth = mario_waitImage.sizeX; // マリオの画像の幅を計算
+	float marioHeight = mario_waitImage.sizeY;// マリオの画像の高さを計算
 	// マリオの右端のワールド座標
 	float marioRightX = position.x + marioWidth;
 
@@ -269,6 +333,9 @@ void Mario::Update()
 		now_speed_y = JUMP_INITIAL;  // shoot up
 		isJumping = true;
 		jumpHoldTimer = 0.0f;
+
+		// ジャンプした瞬間にジャンプ音を鳴らす
+		SoundManager::GetInstance().PlaySE("Jump_Small");
 	}
 
 	// hold to go higher
@@ -278,6 +345,30 @@ void Mario::Update()
 		jumpHoldTimer += 0.016f;         // add time (~1 frame at 60fps)
 	}
 
+	// 歩きアニメーションのループ更新処理（RigidBodyの物理演算の直前に判定）
+	if (moveKeyPressed && !isJumping)
+	{
+		isWalking = true;
+
+		// ダッシュ中か通常歩行中かでシャカシャカ度（アニメーション速度）を切り替える
+		if (CheckHitKey(KEY_INPUT_LSHIFT))
+		{
+			walkAnim.FPS = 15; // ダッシュ時はアニメーションを速くする
+		}
+		else
+		{
+			walkAnim.FPS = 9;  // 通常時はトコトコ動かす
+		}
+
+		walkAnim.AnimationUpdateLoop(); // アニメーションのコマを進める
+	}
+	else
+	{
+		// 立ち止まった、またはジャンプした時はアニメーションをオフにして最初のコマに戻す
+		isWalking = false;
+		walkAnim.currentFrame = 0;
+	}
+
 	//RigidBody update
 	PhysicsUpdate();
 }
@@ -285,19 +376,47 @@ void Mario::Update()
 void Mario::Render()
 {
 	// カメラの座標に合わせてマリオの描画位置（スクリーン座標）を計算
-	int screenX = (int)(marioImage.pos.x - MainCamera.pos.x);
-	int screenY = (int)(marioImage.pos.y - MainCamera.pos.y);
+	int screenX = (int)(mario_waitImage.pos.x - MainCamera.pos.x);
+	int screenY = (int)(mario_waitImage.pos.y - MainCamera.pos.y);
 	
-	// 向きに応じて反転させて描画 (画像の左上を基準点として等倍で描画)
-	if (isLeft)
+	// ジャンプ中 ＞ 歩行中 ＞ 待機中 の優先順位で描画を切り替える
+	if (isJumping)
 	{
-		// 左向き (左右反転)
-		DrawRotaGraph2(screenX, screenY, 0, 0, 1.0f, 0.0, marioImage.image, TRUE, TRUE);
+		// 【修正】jumpImage.image を使用して描画
+		if (isLeft)
+		{
+			// 左向きジャンプ (左右反転)
+			DrawRotaGraph2(screenX, screenY, 0, 0, 1.0f, 0.0, mario_jumpImage.image, TRUE, TRUE);
+		}
+		else
+		{
+			// 右向きジャンプ (反転なし)
+			DrawRotaGraph2(screenX, screenY, 0, 0, 1.0f, 0.0, mario_jumpImage.image, TRUE, FALSE);
+		}
+	}
+	else if (isWalking)
+	{
+		// 歩き状態のアニメーション描画
+		walkAnim.x = (float)screenX;
+		walkAnim.y = (float)screenY;
+
+		// 自身のAnimationクラスに備わっている関数にisLeft（左を向いているか）をそのまま渡す
+		// これにより左移動時は自動で左右反転されて描画されます
+		walkAnim.AnimationRenderCenter(isLeft);
 	}
 	else
 	{
-		// 右向き (反転なし)
-		DrawRotaGraph2(screenX, screenY, 0, 0, 1.0f, 0.0, marioImage.image, TRUE, FALSE);
+		// 待機状態（止まっている時）は向きに応じて反転させて描画
+		if (isLeft)
+		{
+			// 左向き (左右反転)
+			DrawRotaGraph2(screenX, screenY, 0, 0, 1.0f, 0.0, mario_waitImage.image, TRUE, TRUE);
+		}
+		else
+		{
+			// 右向き (反転なし)
+			DrawRotaGraph2(screenX, screenY, 0, 0, 1.0f, 0.0, mario_waitImage.image, TRUE, FALSE);
+		}
 	}
 
 
