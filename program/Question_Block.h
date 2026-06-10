@@ -1,5 +1,14 @@
 #pragma once
 #include "IBlock.h"
+#include "HelpfulFunc.h"
+
+enum class QuestionBlockItem 
+{ 
+    COIN, 
+    SUPER_MUSHROOM, 
+    STARMAN,
+	ONE_UP_MUSHROOM,
+};
 
 class QuestionBlock : public IBlock, public Collidable
 {
@@ -16,7 +25,13 @@ public:
     Float2 GetPos() const override { return pos; }
     Image GetSprite() const override { return image; }
     bool IsActive() const { return active; }
+	bool IsAvailable() const { return isAvailable; }
 
+	//Types of items that can be spawned from the question block
+    QuestionBlockItem itemType;
+
+	Animation itemCoinAnim; // Coin animation that plays when the block is hit
+    Timer itemCoinAnimationTimer{0.5f}; // Timer to control the duration of the coin animation
 
 private:
     Float2 pos;          // Current position (shifts during physics updates / animations)

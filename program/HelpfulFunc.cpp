@@ -131,6 +131,7 @@ void Animation::AnimationRenderCenter(bool reverseFlag)
 	DrawRectGraphF(x, y, currentImage, 0, sizeX, sizeY, image, true, reverseFlag);
 }
 
+
 //TIMER
 void Timer::Update()
 {
