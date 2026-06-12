@@ -3,6 +3,7 @@
 #include "Debug.h"
 #include "Camera.h"
 #include "Mario.h"
+#include "StageManager.h"
 
 // メインのカメラはMain.cppで定義されているため、externを使って参照する
 extern Camera MainCamera;
@@ -61,17 +62,49 @@ void Debug::Render()
 		DrawFormatString(0, 0, GetColor(255, 255, 255), "camera pos X : %f, camera pos Y : %f", MainCamera.pos.x, MainCamera.pos.y);
 
 		DrawString(0, 20, "DEBUG MODE ACTIVE", GetColor(255, 0, 0));
+
+		// マップ（ワールド座標）のX座標100ごとに縦の白線を引く
+		// 現在のカメラ位置から、画面に映る範囲の100の倍数を計算して線を引きます
+		int startX = ((int)MainCamera.pos.x / 100) * 100;
+		for (int x = startX; x <= MainCamera.pos.x + SCREEN_W; x += 100)
+		{
+			// ワールド座標からスクリーン座標に変換
+			int screenX = x - (int)MainCamera.pos.x;
+
+			// 白い縦線を引く
+			DrawLine(screenX, 0, screenX, SCREEN_H, GetColor(255, 255, 255));
+
+			// （おまけ）線の横にその座標の数値を描画しておくと、ブロックの配置確認などにさらに便利です
+			DrawFormatString(screenX + 2, 40, GetColor(255, 255, 255), "%d", x);
+		}
+
 		// デバッグモード時は画面中央を示す縦線を引く
 		DrawLine(SCREEN_W/2, 0, SCREEN_W/2, SCREEN_H, GetColor(0, 255, 255));
 
+		// 落下死亡ライン（デッドライン）のデバッグ描画
+		// Marioクラスから定数を、StageManagerから現在のゾーンを取得する
+		float currentDeadLineY = (StageManager::GetInstance().GetWorldZone() == WorldZone::OVERWORLD)
+			? Mario::DEAD_LINE_OVERWORLD
+			: Mario::DEAD_LINE_UNDERWORLD;
+
+		// ワールド座標から画面座標（スクリーン座標）に変換
+		int screenDeadLineY = (int)(currentDeadLineY - MainCamera.pos.y);
+
+		// 死亡ラインが現在の画面の縦幅に収まっているときだけ描画
+		if (screenDeadLineY >= 0 && screenDeadLineY <= SCREEN_H)
+		{
+			DrawLine(0, screenDeadLineY, SCREEN_W, screenDeadLineY, GetColor(255, 0, 0), 2);
+			DrawString(10, screenDeadLineY - 22, "=== DEAD LINE ===", GetColor(255, 0, 0));
+		}
+
 		// マリオの当たり判定矩形（Mario.cpp で更新されるスクリーン座標）を描画
-		DrawBox(mario_debug_x1, mario_debug_y1, mario_debug_x2, mario_debug_y2, GetColor(0, 255, 0), FALSE);
+		DrawBox(small_mario_debug_x1, small_mario_debug_y1, small_mario_debug_x2, small_mario_debug_y2, GetColor(0, 255, 0), FALSE);
 		// マリオの画像中央に縦線を引く（mario_centerX はスクリーン座標）
-		DrawLine(mario_centerX, mario_debug_y1, mario_centerX, mario_debug_y2, GetColor(0, 255, 0));
+		DrawLine(mario_centerX, small_mario_debug_y1, mario_centerX, small_mario_debug_y2, GetColor(0, 255, 0));
 
 		// マリオ左上に黄色の点を表示し、点の横に座標を描画
-		DrawFormatString(mario_debug_x1 - 80, mario_debug_y1 - 20, GetColor(255, 255, 255), "(%d,%d)", mario_debug_x1, mario_debug_y1);
-		DrawCircle(mario_debug_x1, mario_debug_y1, 5, GetColor(255, 255, 0), TRUE);
+		DrawFormatString(small_mario_debug_x1 - 80, small_mario_debug_y1 - 20, GetColor(255, 255, 255), "(%d,%d)", small_mario_debug_x1, small_mario_debug_y1);
+		DrawCircle(small_mario_debug_x1, small_mario_debug_y1, 5, GetColor(255, 255, 0), TRUE);
 
 		// マリオが歩き状態とダッシュ状態の表示
 	}

@@ -2,38 +2,42 @@
 #include "Time.h"
 #include "Game.h"
 #include "Sound.h"
+#include "StageManager.h"
+#include "Mario.h"
 
-// 1カウント減少させるのに必要なフレーム数 (60FPS × 0.4秒 = 24フレーム)
-const int UPDATE_INTERVAL_FRAME = 60;
+// 外部にあるマリオの実体を参照する
+extern Mario MainMario;
+
+// 1カウント減少させるのに必要なフレーム数
+const int UPDATE_INTERVAL_FRAME = 25;
+
+static std::string currentPlayingBGMKey = "";
 
 void GameTime::Init()
 {
-	count = 200; // サウンド確認のため一旦200スタートにしてます
+	count = 140; // サウンド確認のため一旦200スタートにしてます
     frameCounter = 0;
 
     // フラグの初期化
     isTimeStarted = false;
     isHurryBGMPlayed = false;
     isBGMStopped = false;
+
+    currentPlayingBGMKey = "";
+
+    // リスタート（再初期化）時に前回のBGMが残らないように一度完全に止める
+    SoundManager::GetInstance().StopBGM();
 }
 
 void GameTime::Update()
 {
-    // 初回のUpdateが呼ばれた（時間が進み始めた）瞬間に通常のBGMを再生する
-    if (!isTimeStarted)
+    // マリオがすでに死亡状態なら、時間の進行もBGMの自動切り替えもすべて停止する
+    if (MainMario.GetState() == MarioState::DEAD)
     {
-        isTimeStarted = true;
-        SoundManager::GetInstance().PlayBGM("Stage1-1");
+        return;
     }
 
-    // 残り時間が100になった瞬間に、急ぎ版のBGMへ切り替える
-    if (count <= 100 && count > 0 && !isHurryBGMPlayed)
-    {
-        isHurryBGMPlayed = true;
-        SoundManager::GetInstance().PlayBGM("Stage1-1_Hurry");
-    }
-
-    // 0になったらストップ
+    // 0になったらストップ＆死亡処理
     if (count <= 0)
     {
         count = 0;
@@ -42,10 +46,48 @@ void GameTime::Update()
         if (!isBGMStopped)
         {
             isBGMStopped = true;
-            SoundManager::GetInstance().StopBGM();
-            // ここにタイムアップ時の効果音の再生を入れる
+
+            // マリオを死亡状態へ移行させる
+            MainMario.ToDeadState();
         }
         return;
+    }
+
+    // ----------------------------------------------------
+    // 現在の状態（ゾーン × 残り時間）に応じたBGM自動切り替え
+    // ----------------------------------------------------
+    // 1. 残り時間から「急ぎ（Hurry）」状態かどうかを判定
+    bool isHurry = (count <= 100);
+
+    if (isHurry && !isHurryBGMPlayed)
+    {
+        isHurryBGMPlayed = true;
+        SoundManager::GetInstance().StopBGM();
+        SoundManager::GetInstance().PlayBGMOnce("HurryAction");
+    }
+
+    // 2. StageManagerから現在のゾーンを取得
+    // ※もしコンパイルエラーが出る場合は、StageManager.hにある「現在地を返す関数」の名前に差し替えてください
+    WorldZone currentZone = StageManager::GetInstance().GetWorldZone();
+
+    // 3. 条件に合わせて「次に再生すべきBGM」のキー名を決める
+    std::string targetBGM = "";
+    if (currentZone == WorldZone::OVERWORLD)
+    {
+        targetBGM = isHurry ? "Stage1-1_Hurry" : "Stage1-1";
+    }
+    else if (currentZone == WorldZone::UNDERWORLD)
+    {
+        targetBGM = isHurry ? "Stage1-1_Underground_Hurry" : "Stage1-1_Underground";
+    }
+
+    if (!SoundManager::GetInstance().IsPlayingBGM("HurryAction"))
+    {
+        if (targetBGM != "" && targetBGM != currentPlayingBGMKey)
+        {
+            currentPlayingBGMKey = targetBGM; 
+            SoundManager::GetInstance().PlayBGM(targetBGM);
+        }
     }
 
     frameCounter++;

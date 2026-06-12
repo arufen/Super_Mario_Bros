@@ -2,7 +2,6 @@
 
 //Blocks
 #include "Ground.h"
-
 #include "Brick_Block.h"
 #include "Question_Block.h"
 #include "Hard_Block.h"
@@ -10,6 +9,9 @@
 
 //Enemis
 #include "Goomba.h"
+
+#include "Sound.h"
+
 using namespace std;
 extern Camera MainCamera;
 extern Mario MainMario;
@@ -24,8 +26,7 @@ void StageManager::TransferWorldZone(WorldZone newZone)
 		MainCamera.pos.x = 160 * BLOCK_SIZE;
 		MainCamera.pos.y = 0;
 
-		float spawnX = (164 * BLOCK_SIZE) - ((float)MainMario.marioImage.sizeX / 2.0f);
-
+		float spawnX = (164 * BLOCK_SIZE) - ((float)MainMario.small_mario_waitImage.sizeX / 2.0f);
 		float spawnY = 11 * BLOCK_SIZE + 32.0f;
 
 		MainMario.now_speed_x = 0.0f;
@@ -33,6 +34,7 @@ void StageManager::TransferWorldZone(WorldZone newZone)
 		MainMario.isJumping = false;
 
 		MainMario.Warping(spawnX, spawnY, Mario::WarpDir::UP);
+		SoundManager::GetInstance().PlaySE("Warp");
 	}
 	else if (currentzone == WorldZone::UNDERWORLD)
 	{

@@ -14,11 +14,12 @@ using namespace std;
 extern float marioSpeed;
 extern int mario_centerX;
 // デバッグ描画用にマリオの画面座標の矩形情報を外部参照可能にする
-extern int mario_debug_x1;
-extern int mario_debug_y1;
-extern int mario_debug_x2;
-extern int mario_debug_y2;
-enum class MarioState{NORMAL, WARPING};
+extern int small_mario_debug_x1;
+extern int small_mario_debug_y1;
+extern int small_mario_debug_x2;
+extern int small_mario_debug_y2;
+enum class MarioState { NORMAL, WARPING, DEAD };
+enum class MarioForm { SMALL, SUPER, FIRE }; // マリオの形態
 
 // プレイヤーキャラクター（マリオ）の挙動や描画を管理するクラス
 class Mario : public RigidBody
@@ -38,14 +39,30 @@ public:
 	static constexpr float JUMP_INITIAL = -15;  // first jump force (negative = up)
 	static constexpr float JUMP_HOLD_FORCE = -0.7f; // extra boost per frame while holding
 
+	// ※マリオの初期Y座標が700.0fなので、地上は980.0fに設定しています。地下の高さに合わせて数値は調整してください。
+	static constexpr float DEAD_LINE_OVERWORLD = 980.0f;
+	static constexpr float DEAD_LINE_UNDERWORLD = 1940.0f;
+
 	static constexpr float WARP_DURATION = 1.0f; // warp timer
 
 
 	//Mario image/animation variables (画像/アニメーション変数)
-	Image marioImage;	// マリオの画像情報（サイズなどを含む）
+	Image small_mario_waitImage;	 // マリオの待機画像情報
+	Image small_mario_jumpImage;   // マリオのジャンプ画像情報
+	Image small_mario_deadImage;   // マリオの死亡画像情報
+	Animation small_mario_walkAnim;		 // 歩きアニメーション管理オブジェクト
+
+	// 後入力優先のためのキー状態保持
+	bool prevKeyA = false;
+	bool prevKeyD = false;
+	bool preferLeftInput = false;
+	bool prevKeySpace = false;
 
 	bool isLeft;		// 向きフラグ（trueなら左向き、falseなら右向き）
+	bool isWalking = false;     // 現在歩いているかどうか
 	bool isJumping = false;
+	bool isDeadJumped = false;	// 死亡ジャンプをすでに受け取ったか
+	bool isFellDown = false;	// 落下死したかどうか
 	float jumpHoldTimer = 0.0f;
 
 	// State machine controllers
@@ -61,7 +78,19 @@ public:
 	bool isStarMode;         
 	float starTimer;         
 
+<<<<<<< HEAD
 	void ResolveCollision(Collidable& block) override;
+=======
+	// 現在のマリオの形態を取得・変更する関数
+	MarioForm GetForm() const { return currentForm; }
+	void SetForm(MarioForm form) { currentForm = form; }
+
+	// ゲーム管理クラス（Game.cppなど）からマリオの状態を確認するための関数
+	MarioState GetState() const { return currentState; }
+
+	// エネミーに横・下から接触したときに死亡状態へ移行させる関数
+	void ToDeadState(bool isFall = false);
+>>>>>>> origin/ID#a0004
 
 	//for main thread
 	void Init();
@@ -87,4 +116,5 @@ public:
 
 private:
 	int texWarp;
+	MarioForm currentForm = MarioForm::SMALL; // デフォルトはスモールマリオ
 };
