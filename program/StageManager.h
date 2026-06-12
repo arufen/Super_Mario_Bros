@@ -10,10 +10,16 @@
 #include "Ground.h"
 #include "IBlock.h"
 #include "Warp_Pipe.h"
+
+//ITEMS
 #include "Coin.h"
+#include "Super_Mushroom.h"
+#include "Fire_Flower.h"
+#include "Super_Star.h"
 
 //Enemies
 #include "Goomba.h"
+#include "Koopa_Troopa.h"
 
 using namespace std;
 
@@ -34,6 +40,7 @@ public:
 
 	//Enemy ÅiìGÅj
 	vector<Goomba*> goomba;
+	vector<KoopaTroopa*> koopaTroopa;
 
 	// returns all collidable blocks for mario to register
 	vector<Collidable*> GetCollidables();
@@ -49,8 +56,12 @@ public:
 	vector<IBlock*> underworldBlocks;
 	vector<IBlock*> globalBlocks;
 
-
+	//Collectable Item
 	vector<Coin*> coins;
+	vector<SuperMushroom*> superMushroom;
+	vector<FireFlower*> fireFlower;
+	vector<SuperStar*> superStar;
+
 
 	Image background;
 

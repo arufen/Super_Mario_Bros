@@ -43,12 +43,21 @@ void StageManager::TransferWorldZone(WorldZone newZone)
 	}
 }
 
+//ENEMIES ÅiìGÅj
 template <typename T1, typename T2>
 void CreateGoomba(T1 x, T2 y)
 {
 	Goomba* newGoomba = new Goomba();
-	newGoomba->Init(x * BLOCK_SIZE, y * BLOCK_SIZE, LoadGraph("data/image/goomba.png"));
+	newGoomba->Init(x * BLOCK_SIZE, y * BLOCK_SIZE, LoadGraph("data/image/GoombaAnimation.png"));
 	StageManager::GetInstance().goomba.push_back(newGoomba);
+}
+
+template <typename T1, typename T2>
+void CreateKoopaTroopa(T1 x, T2 y)
+{
+	KoopaTroopa* newKoopaTroopa = new KoopaTroopa();
+	newKoopaTroopa->Init(x * BLOCK_SIZE, y * BLOCK_SIZE);
+	StageManager::GetInstance().koopaTroopa.push_back(newKoopaTroopa);
 }
 
 
@@ -139,6 +148,29 @@ void CreateCoin(int fromTileX, int fromTileY, int toTileX, int toTileY)
 	}
 }
 
+//ITEMS
+void CreateSuperMushroom(float x, float y) 
+{
+	SuperMushroom* newSuperMushroom = new SuperMushroom();
+	newSuperMushroom->Init(x * BLOCK_SIZE, y * BLOCK_SIZE);
+	StageManager::GetInstance().superMushroom.push_back(newSuperMushroom);
+}
+
+void CreateFireFlower(float x, float y)
+{
+	FireFlower* newFireFlower = new FireFlower();
+	newFireFlower->Init(x * BLOCK_SIZE, y * BLOCK_SIZE);
+	StageManager::GetInstance().fireFlower.push_back(newFireFlower);
+}
+
+void CreateSuperStar(float x, float y)
+{
+	SuperStar* newSuperStar = new SuperStar();
+	newSuperStar->Init(x * BLOCK_SIZE, y * BLOCK_SIZE);
+	StageManager::GetInstance().superStar.push_back(newSuperStar);
+}
+
+
 vector<Collidable*> StageManager::GetCollidables()
 {
 	// returns all collidable blocks for mario to register
@@ -179,13 +211,36 @@ vector<Collidable*> StageManager::GetCollidables()
 		}
 	}
 
+	//ENEMIES
 	for (auto* g : goomba)
 	{
 		result.push_back(g);
 	}
+
+	for (auto* k : koopaTroopa)
+	{
+		result.push_back(k);
+	}
+
+	//ITEMS
+	//coin
 	for (auto* g : coins)
 	{
 		result.push_back(g);
+	}
+
+	//Super Mushroom
+	for (auto* superM : superMushroom)
+	{
+		result.push_back(superM);
+	}
+	for (auto* fireF: fireFlower)
+	{
+		result.push_back(fireF);
+	}
+	for (auto* superS : superStar)
+	{
+		result.push_back(superS);
 	}
 
 	// when u add pipe, questionblock etc just do:
@@ -305,7 +360,7 @@ void StageManager::Init()
 	CreateStairs(181, 5, 189, 12, false);
 	
 	//ENEMIES
-	//GOOMBA
+	//goomba
 	CreateGoomba(22, 12);
 	CreateGoomba(42, 12);
 	CreateGoomba(52, 12);
@@ -331,6 +386,9 @@ void StageManager::Init()
 	CreateGoomba(174, 12);
 	CreateGoomba(175.5f, 12);
 
+	//koopa
+	CreateKoopaTroopa(106, 12);
+
 	//COINS
 	//underworld coins
 	CreateCoin(61, 20, 65, 20); 
@@ -340,6 +398,12 @@ void StageManager::Init()
 	//BACKGROUND
 	background.InitialImageAndSize(LoadGraph("data/image/1-1_background.png"));
 	background.pos.Set(0.0f, 0.0f);
+
+	//tmp
+	CreateSuperMushroom(5, 10);
+	CreateFireFlower(6, 10);
+	CreateSuperStar(7, 10);
+	
 }
 
 void StageManager::Update(Camera& camera)
@@ -362,6 +426,21 @@ void StageManager::Update(Camera& camera)
 					RigidBody::collidables.end()
 				);
 				goomba.erase(goomba.begin() + i);
+			}
+		}
+
+		for (int i = 0; i < koopaTroopa.size(); i++)
+		{
+			koopaTroopa[i]->Update(camera, MainMario);
+
+			if (koopaTroopa[i]->state == EnemyState::DEAD)
+			{
+				// remove from collidables list too!
+				RigidBody::collidables.erase(
+					remove(RigidBody::collidables.begin(), RigidBody::collidables.end(), koopaTroopa[i]),
+					RigidBody::collidables.end()
+				);
+				koopaTroopa.erase(koopaTroopa.begin() + i);
 			}
 		}
 	}
@@ -389,6 +468,58 @@ void StageManager::Update(Camera& camera)
 			coins.erase(coins.begin() + i);
 		}
 	}
+
+	//Super Mushroom
+	for (int i = 0; i < superMushroom.size(); i++)
+	{
+		//Update for moving
+		superMushroom[i]->Update();
+		if (!superMushroom[i]->active)
+		{
+			// remove from collidables list too!
+			RigidBody::collidables.erase(
+				remove(RigidBody::collidables.begin(), RigidBody::collidables.end(), superMushroom[i]),
+				RigidBody::collidables.end()
+			);
+			//remove coins from stage manager
+			superMushroom.erase(superMushroom.begin() + i);
+		}
+	}
+
+	//Fire flower
+	for (int i = 0; i < fireFlower.size(); i++)
+	{
+		//Update for moving
+		fireFlower[i]->Update();
+		if (!fireFlower[i]->active)
+		{
+			// remove from collidables list too!
+			RigidBody::collidables.erase(
+				remove(RigidBody::collidables.begin(), RigidBody::collidables.end(), fireFlower[i]),
+				RigidBody::collidables.end()
+			);
+			//remove coins from stage manager
+			fireFlower.erase(fireFlower.begin() + i);
+		}
+	}
+
+	//Super Star
+	for (int i = 0; i < superStar.size(); i++)
+	{
+		//Update for moving
+		superStar[i]->Update();
+		if (!superStar[i]->active)
+		{
+			// remove from collidables list too!
+			RigidBody::collidables.erase(
+				remove(RigidBody::collidables.begin(), RigidBody::collidables.end(), superStar[i]),
+				RigidBody::collidables.end()
+			);
+			//remove coins from stage manager
+			superStar.erase(superStar.begin() + i);
+		}
+	}
+
 
 }
 
@@ -425,12 +556,40 @@ void StageManager::Render(Camera& camera)
 		goomba[i]->RenderGlobal(camera);
 	}
 
-	int i = 0;
+	for (int i = 0; i < koopaTroopa.size(); i++)
+	{
+		koopaTroopa[i]->RenderGlobal(camera);
+	}
+
+	//ITEMS
 	for (Coin* coin: coins)
 	{
 		if (coin->active)
 		{
 			coin->RenderGlobal(camera);
+		}
+	}
+
+	for (SuperMushroom* superM : superMushroom)
+	{
+		if (superM->active)
+		{
+			superM->RenderGlobal(camera);
+		}
+	}
+	for (FireFlower* fireF : fireFlower)
+	{
+		if (fireF->active)
+		{
+			fireF->RenderGlobal(camera);
+		}
+	}
+
+	for (SuperStar* superS : superStar)
+	{
+		if (superS->active)
+		{
+			superS->RenderGlobal(camera);
 		}
 	}
 

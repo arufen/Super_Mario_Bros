@@ -1,6 +1,9 @@
 #pragma once
 
 #include "Camera.h"
+#include "Hit.h"
+#include "HelpfulFunc.h"
+#include "RigidBody.h"
 
 enum class EnemyState
 {
@@ -12,7 +15,12 @@ enum class EnemyState
 class Enemy
 {
 public:
+
+
 	EnemyState state = EnemyState::WAITING;
 
-	//void WaitForCamera(Camera& camera);
+
+	//Update
+	virtual void WaitForCamera(Camera& camera) = 0; //Change enemy state to ACTIVE when inside camera
+	virtual void TakeDamage(RigidBody& attacker) = 0;
 };
