@@ -14,6 +14,7 @@
 //ITEMS
 #include "Coin.h"
 #include "Super_Mushroom.h"
+#include "Fire_Flower.h"
 
 //Enemies
 #include "Goomba.h"
@@ -55,6 +56,7 @@ public:
 	//Collectable Item
 	vector<Coin*> coins;
 	vector<SuperMushroom*> superMushroom;
+	vector<FireFlower*> fireFlower;
 
 	Image background;
 

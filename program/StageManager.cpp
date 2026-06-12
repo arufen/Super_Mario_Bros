@@ -139,11 +139,19 @@ void CreateCoin(int fromTileX, int fromTileY, int toTileX, int toTileY)
 	}
 }
 
+//ITEMS
 void CreateSuperMushroom(float x, float y) 
 {
 	SuperMushroom* newSuperMushroom = new SuperMushroom();
 	newSuperMushroom->Init(x * BLOCK_SIZE, y * BLOCK_SIZE);
 	StageManager::GetInstance().superMushroom.push_back(newSuperMushroom);
+}
+
+void CreateFireFlower(float x, float y)
+{
+	FireFlower* newFireFlower = new FireFlower();
+	newFireFlower->Init(x * BLOCK_SIZE, y * BLOCK_SIZE);
+	StageManager::GetInstance().fireFlower.push_back(newFireFlower);
 }
 
 vector<Collidable*> StageManager::GetCollidables()
@@ -202,6 +210,10 @@ vector<Collidable*> StageManager::GetCollidables()
 	for (auto* superM : superMushroom)
 	{
 		result.push_back(superM);
+	}
+	for (auto* fireF: fireFlower)
+	{
+		result.push_back(fireF);
 	}
 
 	// when u add pipe, questionblock etc just do:
@@ -359,6 +371,7 @@ void StageManager::Init()
 
 	//tmp
 	CreateSuperMushroom(5, 10);
+	CreateFireFlower(6, 10);
 }
 
 void StageManager::Update(Camera& camera)
@@ -409,6 +422,7 @@ void StageManager::Update(Camera& camera)
 		}
 	}
 
+	//Super Mushroom
 	for (int i = 0; i < superMushroom.size(); i++)
 	{
 		//Update for moving
@@ -422,6 +436,23 @@ void StageManager::Update(Camera& camera)
 			);
 			//remove coins from stage manager
 			superMushroom.erase(superMushroom.begin() + i);
+		}
+	}
+
+	//Fire flower
+	for (int i = 0; i < fireFlower.size(); i++)
+	{
+		//Update for moving
+		fireFlower[i]->Update();
+		if (!fireFlower[i]->active)
+		{
+			// remove from collidables list too!
+			RigidBody::collidables.erase(
+				remove(RigidBody::collidables.begin(), RigidBody::collidables.end(), fireFlower[i]),
+				RigidBody::collidables.end()
+			);
+			//remove coins from stage manager
+			fireFlower.erase(fireFlower.begin() + i);
 		}
 	}
 
@@ -474,6 +505,13 @@ void StageManager::Render(Camera& camera)
 		if (superM->active)
 		{
 			superM->RenderGlobal(camera);
+		}
+	}
+	for (FireFlower* fireF : fireFlower)
+	{
+		if (fireF->active)
+		{
+			fireF->RenderGlobal(camera);
 		}
 	}
 
