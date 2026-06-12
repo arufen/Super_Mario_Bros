@@ -5,6 +5,7 @@
 #include "HelpfulFunc.h"
 #include "Camera.h"
 #include "Hit.h"
+#include  "CollectableItem.h"
 
 
 
@@ -17,7 +18,6 @@ public:
 	//Update
 	void WaitForCamera(Camera& camera);
 	virtual void OnHitTop(RigidBody& player) override;
-	void Destroy();
 
 	//Main thread
 	void Init(float x, float y, int handle);

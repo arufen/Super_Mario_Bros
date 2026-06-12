@@ -9,6 +9,7 @@ void Goomba::Init(float x, float y, int handle)
 	this->now_speed_y = 0.0f;
 	this->now_speed_x = 1.0f;
 	this->direction = -1.0f;
+	this->layer = PhysicsLayer::ENEMY;
 }
 
 
@@ -41,7 +42,13 @@ void Goomba::Update(Camera& camera)
 	Collidable* hit = Raycast(checkX, checkY);
 	if (hit != nullptr)
 	{
-		direction *= -1.0f; 
+		//not colliding with collectable item
+		CollectableItem* item = dynamic_cast<CollectableItem*>(hit);
+		if (item == nullptr)
+		{
+			direction *= -1.0f;
+		}
+	
 	}
 
 	now_speed_x = direction; // add this line!

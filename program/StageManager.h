@@ -10,7 +10,10 @@
 #include "Ground.h"
 #include "IBlock.h"
 #include "Warp_Pipe.h"
+
+//ITEMS
 #include "Coin.h"
+#include "Super_Mushroom.h"
 
 //Enemies
 #include "Goomba.h"
@@ -49,8 +52,9 @@ public:
 	vector<IBlock*> underworldBlocks;
 	vector<IBlock*> globalBlocks;
 
-
+	//Collectable Item
 	vector<Coin*> coins;
+	vector<SuperMushroom*> superMushroom;
 
 	Image background;
 

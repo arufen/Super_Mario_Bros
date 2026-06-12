@@ -21,6 +21,15 @@ void RigidBody::ResolveCollision(Collidable& block)
 {
 	if (!RigidBody_collider.intersects(block.collider)) return;
 
+	if (!RigidBody_collider.intersects(block.collider)) return;
+
+	// layer ignore (check enemy and item dont collide with each other)
+	Collidable* self = dynamic_cast<Collidable*>(this);
+	if (self != nullptr)
+	{
+		if (self->layer == PhysicsLayer::ENEMY && block.layer == PhysicsLayer::ITEM) return;
+		if (self->layer == PhysicsLayer::ITEM && block.layer == PhysicsLayer::ENEMY) return;
+	}
 
 	if (block.isTrigger)
 	{
@@ -46,6 +55,7 @@ void RigidBody::ResolveCollision(Collidable& block)
 			position.y -= overlapTop;
 			RigidBody_collider.y -= overlapTop;
 			now_speed_y = 0;
+			hitVertical = true; // ADD THIS
 			block.OnHitTop(*this);
 		}
 		else
@@ -53,6 +63,7 @@ void RigidBody::ResolveCollision(Collidable& block)
 			position.y += overlapBottom;
 			RigidBody_collider.y += overlapBottom;
 			now_speed_y = 0;
+			hitVertical = true; // ADD THIS
 			block.OnHitBottom(*this);
 		}
 	}

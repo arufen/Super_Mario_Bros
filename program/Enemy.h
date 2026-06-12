@@ -14,5 +14,6 @@ class Enemy
 public:
 	EnemyState state = EnemyState::WAITING;
 
+
 	//void WaitForCamera(Camera& camera);
 };

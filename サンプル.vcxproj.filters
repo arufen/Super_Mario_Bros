@@ -72,5 +72,6 @@
     <ClInclude Include="program\Time.h" />
     <ClInclude Include="program\Warp_Pipe.h" />
     <ClInclude Include="program\Enemy.h" />
+    <ClInclude Include="program\CollectableItem.h" />
   </ItemGroup>
 </Project>

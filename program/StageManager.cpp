@@ -139,6 +139,13 @@ void CreateCoin(int fromTileX, int fromTileY, int toTileX, int toTileY)
 	}
 }
 
+void CreateSuperMushroom(float x, float y) 
+{
+	SuperMushroom* newSuperMushroom = new SuperMushroom();
+	newSuperMushroom->Init(x * BLOCK_SIZE, y * BLOCK_SIZE);
+	StageManager::GetInstance().superMushroom.push_back(newSuperMushroom);
+}
+
 vector<Collidable*> StageManager::GetCollidables()
 {
 	// returns all collidable blocks for mario to register
@@ -183,9 +190,18 @@ vector<Collidable*> StageManager::GetCollidables()
 	{
 		result.push_back(g);
 	}
+
+	//ITEMS
+	//coin
 	for (auto* g : coins)
 	{
 		result.push_back(g);
+	}
+
+	//Super Mushroom
+	for (auto* superM : superMushroom)
+	{
+		result.push_back(superM);
 	}
 
 	// when u add pipe, questionblock etc just do:
@@ -340,6 +356,9 @@ void StageManager::Init()
 	//BACKGROUND
 	background.InitialImageAndSize(LoadGraph("data/image/1-1_background.png"));
 	background.pos.Set(0.0f, 0.0f);
+
+	//tmp
+	CreateSuperMushroom(5, 10);
 }
 
 void StageManager::Update(Camera& camera)
@@ -390,6 +409,22 @@ void StageManager::Update(Camera& camera)
 		}
 	}
 
+	for (int i = 0; i < superMushroom.size(); i++)
+	{
+		//Update for moving
+		superMushroom[i]->Update();
+		if (!superMushroom[i]->active)
+		{
+			// remove from collidables list too!
+			RigidBody::collidables.erase(
+				remove(RigidBody::collidables.begin(), RigidBody::collidables.end(), superMushroom[i]),
+				RigidBody::collidables.end()
+			);
+			//remove coins from stage manager
+			superMushroom.erase(superMushroom.begin() + i);
+		}
+	}
+
 }
 
 void StageManager::Render(Camera& camera)
@@ -425,12 +460,20 @@ void StageManager::Render(Camera& camera)
 		goomba[i]->RenderGlobal(camera);
 	}
 
-	int i = 0;
+	//ITEMS
 	for (Coin* coin: coins)
 	{
 		if (coin->active)
 		{
 			coin->RenderGlobal(camera);
+		}
+	}
+
+	for (SuperMushroom* superM : superMushroom)
+	{
+		if (superM->active)
+		{
+			superM->RenderGlobal(camera);
 		}
 	}
 
