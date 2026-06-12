@@ -43,12 +43,21 @@ void StageManager::TransferWorldZone(WorldZone newZone)
 	}
 }
 
+//ENEMIES ÅiìGÅj
 template <typename T1, typename T2>
 void CreateGoomba(T1 x, T2 y)
 {
 	Goomba* newGoomba = new Goomba();
-	newGoomba->Init(x * BLOCK_SIZE, y * BLOCK_SIZE, LoadGraph("data/image/goomba.png"));
+	newGoomba->Init(x * BLOCK_SIZE, y * BLOCK_SIZE, LoadGraph("data/image/GoombaAnimation.png"));
 	StageManager::GetInstance().goomba.push_back(newGoomba);
+}
+
+template <typename T1, typename T2>
+void CreateKoopaTroopa(T1 x, T2 y)
+{
+	KoopaTroopa* newKoopaTroopa = new KoopaTroopa();
+	newKoopaTroopa->Init(x * BLOCK_SIZE, y * BLOCK_SIZE);
+	StageManager::GetInstance().koopaTroopa.push_back(newKoopaTroopa);
 }
 
 
@@ -202,9 +211,15 @@ vector<Collidable*> StageManager::GetCollidables()
 		}
 	}
 
+	//ENEMIES
 	for (auto* g : goomba)
 	{
 		result.push_back(g);
+	}
+
+	for (auto* k : koopaTroopa)
+	{
+		result.push_back(k);
 	}
 
 	//ITEMS
@@ -345,7 +360,7 @@ void StageManager::Init()
 	CreateStairs(181, 5, 189, 12, false);
 	
 	//ENEMIES
-	//GOOMBA
+	//goomba
 	CreateGoomba(22, 12);
 	CreateGoomba(42, 12);
 	CreateGoomba(52, 12);
@@ -371,6 +386,9 @@ void StageManager::Init()
 	CreateGoomba(174, 12);
 	CreateGoomba(175.5f, 12);
 
+	//koopa
+	CreateKoopaTroopa(106, 12);
+
 	//COINS
 	//underworld coins
 	CreateCoin(61, 20, 65, 20); 
@@ -385,6 +403,7 @@ void StageManager::Init()
 	CreateSuperMushroom(5, 10);
 	CreateFireFlower(6, 10);
 	CreateSuperStar(7, 10);
+	
 }
 
 void StageManager::Update(Camera& camera)
@@ -407,6 +426,21 @@ void StageManager::Update(Camera& camera)
 					RigidBody::collidables.end()
 				);
 				goomba.erase(goomba.begin() + i);
+			}
+		}
+
+		for (int i = 0; i < koopaTroopa.size(); i++)
+		{
+			koopaTroopa[i]->Update(camera, MainMario);
+
+			if (koopaTroopa[i]->state == EnemyState::DEAD)
+			{
+				// remove from collidables list too!
+				RigidBody::collidables.erase(
+					remove(RigidBody::collidables.begin(), RigidBody::collidables.end(), koopaTroopa[i]),
+					RigidBody::collidables.end()
+				);
+				koopaTroopa.erase(koopaTroopa.begin() + i);
 			}
 		}
 	}
@@ -520,6 +554,11 @@ void StageManager::Render(Camera& camera)
 	for (int i = 0; i < goomba.size(); i++)
 	{
 		goomba[i]->RenderGlobal(camera);
+	}
+
+	for (int i = 0; i < koopaTroopa.size(); i++)
+	{
+		koopaTroopa[i]->RenderGlobal(camera);
 	}
 
 	//ITEMS

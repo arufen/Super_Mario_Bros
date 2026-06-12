@@ -19,6 +19,7 @@
 
 //Enemies
 #include "Goomba.h"
+#include "Koopa_Troopa.h"
 
 using namespace std;
 
@@ -39,6 +40,7 @@ public:
 
 	//Enemy ÅiìGÅj
 	vector<Goomba*> goomba;
+	vector<KoopaTroopa*> koopaTroopa;
 
 	// returns all collidable blocks for mario to register
 	vector<Collidable*> GetCollidables();

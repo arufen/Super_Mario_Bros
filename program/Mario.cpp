@@ -80,6 +80,7 @@ void Mario::ResolveCollision(Collidable& block)
 			if (enemy != nullptr)
 			{
 				Jump();
+				/*enemy->TakeDamage(*this);*/
 			}
 
 			

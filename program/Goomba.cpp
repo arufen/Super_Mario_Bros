@@ -3,9 +3,11 @@
 void Goomba::Init(float x, float y, int handle)
 {
 	this->position.Set(x, y);
-	this->image.pos = position;
-	this->image.InitialImageAndSize(handle);
-	this->RigidBody_collider = Collider(x, y, (float)this->image.sizeX, (float)this->image.sizeY);
+	//not in shell sprite
+	this->spriteAnimation.InitialAnimation(handle, 2, 6);
+	this->spriteAnimation.x = position.x;
+	this->spriteAnimation.y = position.y;
+	this->RigidBody_collider = Collider(x, y, (float)this->spriteAnimation.sprite.sizeX, (float)this->spriteAnimation.sprite.sizeY);
 	this->now_speed_y = 0.0f;
 	this->now_speed_x = 1.0f;
 	this->direction = -1.0f;
@@ -24,7 +26,9 @@ void Goomba::Update(Camera& camera)
 	collider = RigidBody_collider;
 
 	//image update
-	image.pos = position;
+	spriteAnimation.x = position.x;
+	spriteAnimation.y = position.y;
+	spriteAnimation.AnimationUpdateLoop();
 
 	WaitForCamera(camera);
 
@@ -62,23 +66,28 @@ void Goomba::Update(Camera& camera)
 void Goomba::WaitForCamera(Camera& camera)
 {
 	Float2 cameraSize{ SCREEN_W, SCREEN_H };
-	Float2 enemySize{ (float)image.sizeX, (float)image.sizeY };
+	Float2 enemySize{ (float)spriteAnimation.sprite.sizeX, (float)spriteAnimation.sprite.sizeY };
 	if (CheckBoxHit(camera.pos, cameraSize, position, enemySize))
 	{
 		if (state == EnemyState::WAITING)
 		{
 			state = EnemyState::ACTIVE;
 		}
-			
+
 	}
 }
 
 void Goomba::OnHitTop(RigidBody& player)
 {
-	state = EnemyState::DEAD;
+	TakeDamage(player);
 }
 
 void Goomba::RenderGlobal(Camera& camera)
 {
-	camera.GlobalRenderImage(image);
+	camera.GlobalRenderAnimation(spriteAnimation);
+}
+
+void Goomba::TakeDamage(RigidBody& attacker) 
+{
+	state = EnemyState::DEAD;
 }
