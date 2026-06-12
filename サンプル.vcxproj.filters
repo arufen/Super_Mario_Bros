@@ -30,9 +30,6 @@
     <ClCompile Include="program\Fire_Flower.cpp">
       <Filter>game</Filter>
     </ClCompile>
-    <ClCompile Include="program\Fireworks.cpp">
-      <Filter>program</Filter>
-    </ClCompile>
     <ClCompile Include="program\Float2.cpp">
       <Filter>system</Filter>
     </ClCompile>
@@ -44,9 +41,6 @@
     </ClCompile>
     <ClCompile Include="program\Goomba.cpp">
       <Filter>game</Filter>
-    </ClCompile>
-    <ClCompile Include="program\Ground.cpp">
-      <Filter>program</Filter>
     </ClCompile>
     <ClCompile Include="program\Hard_Block.cpp">
       <Filter>system</Filter>
@@ -99,6 +93,12 @@
     <ClCompile Include="program\Warp_Pipe.cpp">
       <Filter>game</Filter>
     </ClCompile>
+    <ClCompile Include="program\Fireworks.cpp">
+      <Filter>game</Filter>
+    </ClCompile>
+    <ClCompile Include="program\Ground.cpp">
+      <Filter>program</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="program\Game.h" />
@@ -130,9 +130,6 @@
     <ClInclude Include="program\Fire_Flower.h">
       <Filter>game</Filter>
     </ClInclude>
-    <ClInclude Include="program\Fireworks.h">
-      <Filter>program</Filter>
-    </ClInclude>
     <ClInclude Include="program\Float2.h">
       <Filter>system</Filter>
     </ClInclude>
@@ -144,9 +141,6 @@
     </ClInclude>
     <ClInclude Include="program\Goomba.h">
       <Filter>game</Filter>
-    </ClInclude>
-    <ClInclude Include="program\Ground.h">
-      <Filter>program</Filter>
     </ClInclude>
     <ClInclude Include="program\Hard_Block.h">
       <Filter>system</Filter>
@@ -201,6 +195,12 @@
     </ClInclude>
     <ClInclude Include="program\Warp_Pipe.h">
       <Filter>game</Filter>
+    </ClInclude>
+    <ClInclude Include="program\Fireworks.h">
+      <Filter>game</Filter>
+    </ClInclude>
+    <ClInclude Include="program\Ground.h">
+      <Filter>program</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
