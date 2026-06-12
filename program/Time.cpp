@@ -4,7 +4,7 @@
 #include "Sound.h"
 
 // 1カウント減少させるのに必要なフレーム数 (60FPS × 0.4秒 = 24フレーム)
-const int UPDATE_INTERVAL_FRAME = 24;
+const int UPDATE_INTERVAL_FRAME = 60;
 
 void GameTime::Init()
 {

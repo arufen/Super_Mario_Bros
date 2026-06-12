@@ -3,7 +3,7 @@
 #include "Mario.h"
 #include "Debug.h"
 #include "Camera.h"
-
+#include "StageManager.h"
 extern Camera MainCamera;
 
 // Camera.cpp との互換性を保つためのグローバル変数
@@ -35,6 +35,7 @@ void Mario::ResolveCollision(Collidable& block)
 
 	if (!RigidBody_collider.intersects(block.collider)) return;
 
+	//for isTrigger Collision
 	if (block.isTrigger)
 	{
 		//Coin
@@ -81,7 +82,7 @@ void Mario::ResolveCollision(Collidable& block)
 				Jump();
 			}
 
-
+			
 			block.OnHitTop(*this);
 		}
 		else
@@ -90,8 +91,42 @@ void Mario::ResolveCollision(Collidable& block)
 			RigidBody_collider.y += overlapBottom;
 			now_speed_y = 0;
 
-		
-			block.OnHitBottom(*this);
+			// find closest block to mario center
+			float marioCX = RigidBody_collider.x + RigidBody_collider.width / 2.0f;
+			float marioCY = RigidBody_collider.y + RigidBody_collider.height / 2.0f;
+
+			Collidable* closest = nullptr;
+			float closestDist = 999999.0f;
+
+			for (auto* c : collidables)
+			{
+				if (!RigidBody_collider.intersects(c->collider)) continue;
+				float cx = c->collider.x + c->collider.width / 2.0f;
+				float cy = c->collider.y + c->collider.height / 2.0f;
+				float dist = (marioCX - cx) * (marioCX - cx) + (marioCY - cy) * (marioCY - cy);
+				if (dist < closestDist)
+				{
+					closestDist = dist;
+					closest = c;
+				}
+			}
+
+			// only trigger item/break on closest block
+			if (closest == &block)
+			{
+				QuestionBlock* questionBlock = dynamic_cast<QuestionBlock*>(&block);
+				if (questionBlock != nullptr && questionBlock->IsAvailable())
+				{
+					switch (questionBlock->itemType)
+					{
+					case QuestionBlockItem::COIN:
+						AddCoin();
+						break;
+					}
+				}
+
+				block.OnHitBottom(*this);
+			}
 		}
 	}
 	else
@@ -113,15 +148,28 @@ void Mario::ResolveCollision(Collidable& block)
 	}
 }
 
-void Mario::Warping(float pipeY)
+//void Mario::Warping(float pipeY)
+//{
+//	currentState = MarioState::WARPING;
+//	warpTimer = 0.0f;
+//
+//	now_speed_x = 0.0f;
+//	now_speed_y = 0.0f;
+//
+//	position.y = pipeY;
+//}
+void Mario::Warping(float targetX, float targetY, WarpDir dir)
 {
 	currentState = MarioState::WARPING;
+	currentWarpDir = dir; // Store the direction
 	warpTimer = 0.0f;
 
 	now_speed_x = 0.0f;
 	now_speed_y = 0.0f;
 
-	position.y = pipeY;
+	// Set Mario to the starting position of the animation
+	position.x = targetX;
+	position.y = targetY;
 }
 void Mario::Init()
 {
@@ -150,10 +198,23 @@ void Mario::Update()
 {
 	if (currentState == MarioState::WARPING)
 	{
-		warpTimer += 0.016f; // Standard frame step speed calculation
+		warpTimer += 0.016f; 
+		
+		if (currentWarpDir == WarpDir::DOWN)
+		{
+			position.y += 1.5f;
+		}
+		else if (currentWarpDir == WarpDir::RIGHT)
+		{
+			position.x += 1.5f;
+		}
+		else if (currentWarpDir == WarpDir::UP)
+		{
+			position.y -= 1.5f;
+		}
 
-		// Slowly descend Mario down past the threshold grid block boundaries (1.5px frame scale)
-		position.y += 1.5f;
+		now_speed_x = 0.0f;
+		now_speed_y = 0.0f;
 
 		marioImage.pos = position;
 		RigidBody_collider.x = position.x;
@@ -168,16 +229,26 @@ void Mario::Update()
 		mario_debug_x2 = mScrX + marioImage.sizeX;
 		mario_debug_y2 = mScrY + marioImage.sizeY;
 
-		// If time finishes, teleport or transition player location
 		if (warpTimer >= WARP_DURATION)
 		{
 			currentState = MarioState::NORMAL;
 
-			// Trigger Underworld level load or coordinate placement modifications here:
-			//position.Set(UnderWorldSpawnX, UnderWorldSpawnY);
+			if (currentWarpDir == WarpDir::DOWN)
+			{
+				// the Overworld pipe -> Underworld
+				StageManager::GetInstance().TransferWorldZone(WorldZone::UNDERWORLD);
+			}
+			else if (currentWarpDir == WarpDir::RIGHT)
+			{
+				//  the Underworld side pipe -> Overworld
+				StageManager::GetInstance().TransferWorldZone(WorldZone::OVERWORLD);
+			}
+			else if (currentWarpDir == WarpDir::UP)
+			{
+				//rising UP out of the Overworld pipe!
+			}
 		}
-
-		return; // Stop processing and drop loop cycles early. Skips normal controls.
+		return;
 	}
 	//image and position update
 	marioImage.pos = position;
@@ -263,12 +334,14 @@ void Mario::Update()
 	//position.x += now_speed_x;
 
 	// Dキーの押し下げに関係なく、マリオが画面中央を越えたらカメラを動かすように外に出しました
+	if(MainCamera.pos.y < 960)
+	{ 
 	float marioWorldCenterX = position.x + (marioImage.sizeX / 2.0f);
 	if (marioWorldCenterX >= MainCamera.pos.x + (SCREEN_W / 2))
 	{
 		MainCamera.pos.x = marioWorldCenterX - (SCREEN_W / 2);
 	}
-
+	}
 	// カメラの移動可能範囲を制限 (0 ～ 12480)
 	if (MainCamera.pos.x < 0) MainCamera.pos.x = 0;
 	if (MainCamera.pos.x > 12480) MainCamera.pos.x = 12480;
@@ -346,10 +419,11 @@ void Mario::Render()
 	if (map_mode == MODE_DEBUG)
 	{
 		DrawFormatString(0, 40, GetColor(255, 255, 255), "Mario pos X : %f, Mario pos Y : %f", position.x, position.y);
+		DrawFormatString(0, 60, GetColor(255, 255, 255), "now_speed X : %f", now_speed_x);
+	}
 	}
 
-	DrawFormatString(0, 40, GetColor(255, 255, 255), "now_speed X : %f", now_speed_x);
-}
+	
 
 //Jump player
 void Mario::Jump()

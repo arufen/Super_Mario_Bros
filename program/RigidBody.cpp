@@ -19,8 +19,6 @@ Collidable* RigidBody::Raycast(float x, float y)
 
 void RigidBody::ResolveCollision(Collidable& block)
 {
-
-
 	if (!RigidBody_collider.intersects(block.collider)) return;
 
 

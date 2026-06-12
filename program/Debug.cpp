@@ -52,12 +52,14 @@ void Debug::Update()
 //---------------------------------------------------------------------------------
 void Debug::Render()
 {
-	// カメラの現在位置を表示
-	DrawFormatString(0, 0, GetColor(255, 255, 255), "camera pos X : %f, camera pos Y : %f", MainCamera.pos.x, MainCamera.pos.y);
+	
 
 	// 現在のモードと、モードに応じた補助線の描画
 	if (map_mode == MODE_DEBUG) 
 	{
+		// カメラの現在位置を表示
+		DrawFormatString(0, 0, GetColor(255, 255, 255), "camera pos X : %f, camera pos Y : %f", MainCamera.pos.x, MainCamera.pos.y);
+
 		DrawString(0, 20, "DEBUG MODE ACTIVE", GetColor(255, 0, 0));
 		// デバッグモード時は画面中央を示す縦線を引く
 		DrawLine(SCREEN_W/2, 0, SCREEN_W/2, SCREEN_H, GetColor(0, 255, 255));

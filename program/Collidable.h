@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Collider.h"
+#include "Camera.h"
 
 //Debug
 #include "Camera.h"
@@ -22,6 +23,6 @@ public:
     //debug
     void Render(Camera& camera)
     {
-        camera.GlobalRenderBox(collider.x, collider.y, collider.x + collider.width, collider.y + collider.height, GetColor(0, 0, 255), 0);
+        camera.GlobalRenderBox(collider.x, collider.y, collider.x + collider.width, collider.y + collider.height, GetColor(255, 255, 255), 0);
     }
 };

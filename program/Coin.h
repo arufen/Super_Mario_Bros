@@ -8,9 +8,11 @@ class Coin : public Collidable
 {
 public:
 	Float2 position;
-	Image image;
+	/*Image image;*/
+	Animation coinAnim;
 	bool active = true; // To track if the coin is still active (not collected)
 	
-	void Init(float x, float y, int handle);
+	void Init(float x, float y);
+	void AnimationUpdate();
 	void RenderGlobal(Camera& camera);
 };
