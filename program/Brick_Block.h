@@ -26,8 +26,8 @@ private:
     Image image;
 
     // Animation / State variables
-    /*bool isBouncing;
-    float bounceTimer;*/
+    bool isBouncing;
+    float bounceTimer;
     /*int texActive;
     int texEmpty;*/
 };

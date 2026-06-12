@@ -11,11 +11,12 @@ using namespace std;
 extern float marioSpeed;
 extern int mario_centerX;
 // デバッグ描画用にマリオの画面座標の矩形情報を外部参照可能にする
-extern int mario_debug_x1;
-extern int mario_debug_y1;
-extern int mario_debug_x2;
-extern int mario_debug_y2;
-enum class MarioState{NORMAL, WARPING};
+extern int small_mario_debug_x1;
+extern int small_mario_debug_y1;
+extern int small_mario_debug_x2;
+extern int small_mario_debug_y2;
+enum class MarioState { NORMAL, WARPING, DEAD };
+enum class MarioForm { SMALL, SUPER, FIRE }; // マリオの形態
 
 // プレイヤーキャラクター（マリオ）の挙動や描画を管理するクラス
 class Mario : public RigidBody
@@ -39,9 +40,10 @@ public:
 
 
 	//Mario image/animation variables (画像/アニメーション変数)
-	Image mario_waitImage;	 // マリオの待機画像情報
-	Image mario_jumpImage;   //	マリオのジャンプ画像情報
-	Animation walkAnim;		 // 歩きアニメーション管理オブジェクト
+	Image small_mario_waitImage;	 // マリオの待機画像情報
+	Image small_mario_jumpImage;   // マリオのジャンプ画像情報
+	Image small_mario_deadImage;   // マリオの死亡画像情報
+	Animation small_mario_walkAnim;		 // 歩きアニメーション管理オブジェクト
 
 	// 後入力優先のためのキー状態保持
 	bool prevKeyA = false;
@@ -68,6 +70,15 @@ public:
 
 	void ResolveCollision(Collidable& block) override;
 
+	// 現在のマリオの形態を取得・変更する関数
+	MarioForm GetForm() const { return currentForm; }
+	void SetForm(MarioForm form) { currentForm = form; }
+
+	// ゲーム管理クラス（Game.cppなど）からマリオの状態を確認するための関数
+	MarioState GetState() const { return currentState; }
+
+	// エネミーに横・下から接触したときに死亡状態へ移行させる関数
+	void ToDeadState();
 
 	//for main thread
 	void Init();
@@ -81,4 +92,5 @@ public:
 
 private:
 	int texWarp;
+	MarioForm currentForm = MarioForm::SMALL; // デフォルトはスモールマリオ
 };

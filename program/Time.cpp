@@ -15,6 +15,9 @@ void GameTime::Init()
     isTimeStarted = false;
     isHurryBGMPlayed = false;
     isBGMStopped = false;
+
+    // リスタート（再初期化）時に前回のBGMが残らないように一度完全に止める
+    SoundManager::GetInstance().StopBGM();
 }
 
 void GameTime::Update()

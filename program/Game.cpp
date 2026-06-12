@@ -72,6 +72,24 @@ void GameUpdate()
 {
 	MainCamera.Update();
 	MainMario.Update();
+
+	// マリオが死亡状態（DEAD）の場合の処理
+	if (MainMario.GetState() == MarioState::DEAD)
+	{
+		// マリオが画面（SCREEN_H）の下に完全に落ちきったか判定
+		// マリオの現在の画面Y座標 = ワールド座標Y - カメラ座標Y
+		float marioScreenY = MainMario.position.y - MainCamera.pos.y;
+
+		// 画面下に消え去ったら、ゲームを最初からリスタートする
+		if (marioScreenY > SCREEN_H + 100)
+		{
+			GameInit(); // 初期化関数をもう一度呼び出して最初からやり直す
+		}
+
+		// マリオが死んでいる間は、タイムや敵（StageManager）の更新をスキップして完全にストップさせる
+		return;
+	}
+
 	MainTime.Update();
 	StageManager::GetInstance().Update();
 	

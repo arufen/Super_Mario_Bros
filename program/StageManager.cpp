@@ -91,6 +91,10 @@ vector<Collidable*> StageManager::GetCollidables()
 	vector<Collidable*> result;
 	for (auto& g : ground)
 		result.push_back(&g);
+
+	for (auto& gmb : goomba)
+		result.push_back(&gmb);
+
 	/*for (auto& g : brick_block)
 		result.push_back(&g);*/
 	for (auto* block : globalBlocks) {

@@ -193,6 +193,7 @@
     <ClInclude Include="program\Collidable.h" />
     <ClInclude Include="program\Collider.h" />
     <ClInclude Include="program\Debug.h" />
+    <ClInclude Include="program\Enemy.h" />
     <ClInclude Include="program\Fireworks.h" />
     <ClInclude Include="program\Fire_Flower.h" />
     <ClInclude Include="program\Float2.h" />
