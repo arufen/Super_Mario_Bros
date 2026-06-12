@@ -58,7 +58,6 @@ public:
 
 	void ResolveCollision(Collidable& block) override;
 
-
 	//for main thread
 	void Init();
 	void Update();
@@ -67,6 +66,9 @@ public:
 	//mechanics function
 	void AddCoin();
 	void Jump();
+
+	void Star();
+
 
 	//void Warping(float pipeY);
 

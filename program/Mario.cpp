@@ -437,3 +437,23 @@ void Mario::AddCoin()
 {
 	coin++;
 }
+void Mario::Star()
+{
+	enum
+	{
+		MODE_STAR,
+	};
+	Animation starmario;
+	int handle = LoadGraph("data/image/starmario_Animation.png");
+	starmario.InitialAnimation(handle, 6, 10);
+	starmario.x = position.x;
+	starmario.y = position.y;
+
+
+
+
+
+
+
+
+}
