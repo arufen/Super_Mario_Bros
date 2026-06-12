@@ -1,6 +1,7 @@
 #include "Warp_Pipe.h"
 #include "Mario.h"
 #include "Dxlib.h"
+#include "StageManager.h"
 
 Pipe::Pipe()
 {
@@ -42,10 +43,11 @@ void Pipe::OnHitTop(RigidBody& player)
 			if (mario != nullptr)
 			{
 				float pipeCenterX = this->pos.x + (BLOCK_SIZE);
-				mario->position.x = pipeCenterX - ((float)mario->small_mario_waitImage.sizeX / 2.0f);
+				mario->position.x = pipeCenterX - ((float)mario->marioImage.sizeX / 2.0f);
 
-				float surfaceY = this->pos.y - ((float)mario->small_mario_waitImage.sizeX + 2.0f);
-				mario->Warping(surfaceY);
+				float surfaceY = this->pos.y - ((float)mario->marioImage.sizeY + 2.0f);
+				//mario->Warping(surfaceY);
+				mario->Warping(mario->position.x, surfaceY, Mario::WarpDir::DOWN);
 			}
 		}
 	}
@@ -78,4 +80,43 @@ void Pipe::Render(Camera camera)
 		DrawGraph(screenX, currentBodyRowY, texBL, TRUE);
 		DrawGraph(screenX + sizeI, currentBodyRowY, texBR, TRUE);
 	}
+}
+
+UnderWorldPipe::UnderWorldPipe()
+{
+	pos.Set(0.0f, 0.0f);
+	active = false;
+}
+void UnderWorldPipe::Init(Float2 startPos, int graphHandle)
+{
+	pos = startPos;
+	active = true;
+
+	image.InitialImageAndSize(graphHandle);
+	image.pos = pos;
+	collider = Collider(pos.x, pos.y, (float)image.sizeX, (float)image.sizeY);
+}
+
+void UnderWorldPipe::OnHitSide(RigidBody& player)
+{
+	Mario* mario = dynamic_cast<Mario*>(&player);
+	if (mario != nullptr && mario->currentState != MarioState::WARPING)
+	{
+		float targetY = this->pos.y + 64.0f;
+
+		// Start warping from where he currently stands, but slide him to the RIGHT
+		mario->Warping(mario->position.x, targetY, Mario::WarpDir::RIGHT);
+	}
+}
+void UnderWorldPipe::Update()
+{
+
+}
+
+
+void UnderWorldPipe::Render(Camera camera)
+{
+	if (!active) return;
+
+	camera.GlobalRenderImage(image);
 }

@@ -10,6 +10,7 @@
 #include "Ground.h"
 #include "IBlock.h"
 #include "Warp_Pipe.h"
+#include "Coin.h"
 
 //Enemies
 #include "Goomba.h"
@@ -29,24 +30,40 @@ public:
 	//Ground （床）
 	vector<Ground> ground;
 
+	vector<Ground> underworld_ground;
+
 	//Enemy （敵）
-	vector<Goomba> goomba;
+	vector<Goomba*> goomba;
 
 	// returns all collidable blocks for mario to register
 	vector<Collidable*> GetCollidables();
 
+	vector<Pipe*> globalPipes;
+	vector<UnderWorldPipe*> underWorldPipe;
+	vector<IBlock*> hardPipe;
+
+	WorldZone currentzone;
+
 	//for all blocks
+	vector<IBlock*> overworld1_1Blocks;
+	vector<IBlock*> underworldBlocks;
 	vector<IBlock*> globalBlocks;
 
-	vector<Pipe*> globalPipes;
+
+	vector<Coin*> coins;
+
+	Image background;
 
 	//Main thread 
 	void Init();	//Load blocks (ブロックの初期化）
-	void Update();	//Check Collision （当たり判定チェック）
+	void Update(Camera& camera);	//Check Collision （当たり判定チェック）
 	void Render(Camera& camera); //Camera is for render globally (グロバール座標を使うためにカメラが必要）
+
+	void TransferWorldZone(WorldZone newZone); // handle world zone transitions (ワールドゾーンの切り替えを処理)
+	bool GetIsUnderworld() const { return currentzone == WorldZone::UNDERWORLD; }
 
 private:
 	//singleton pattern(シングルトンパターン）
-	StageManager() {};
-
+	StageManager() : currentzone(WorldZone::OVERWORLD){}
+	~StageManager() {};
 };

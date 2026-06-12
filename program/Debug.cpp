@@ -52,12 +52,14 @@ void Debug::Update()
 //---------------------------------------------------------------------------------
 void Debug::Render()
 {
-	// カメラの現在位置を表示
-	DrawFormatString(0, 0, GetColor(255, 255, 255), "camera pos X : %f, camera pos Y : %f", MainCamera.pos.x, MainCamera.pos.y);
+	
 
 	// 現在のモードと、モードに応じた補助線の描画
 	if (map_mode == MODE_DEBUG) 
 	{
+		// カメラの現在位置を表示
+		DrawFormatString(0, 0, GetColor(255, 255, 255), "camera pos X : %f, camera pos Y : %f", MainCamera.pos.x, MainCamera.pos.y);
+
 		DrawString(0, 20, "DEBUG MODE ACTIVE", GetColor(255, 0, 0));
 
 		// マップ（ワールド座標）のX座標100ごとに縦の白線を引く

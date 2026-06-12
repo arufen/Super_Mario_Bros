@@ -158,6 +158,7 @@
     <ClCompile Include="program\Collidable.cpp" />
     <ClCompile Include="program\Collider.cpp" />
     <ClCompile Include="program\Debug.cpp" />
+    <ClCompile Include="program\Enemy.cpp" />
     <ClCompile Include="program\Fireworks.cpp" />
     <ClCompile Include="program\Fire_Flower.cpp" />
     <ClCompile Include="program\Float2.cpp" />

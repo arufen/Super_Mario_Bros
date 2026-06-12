@@ -20,6 +20,14 @@ void QuestionBlock::Init(Float2 startPos, int active_graph, int empty_graph)
 	image.InitialImageAndSize(texActive);
 	image.pos = pos;
 	collider = Collider(pos.x, pos.y, (float)image.sizeX, (float)image.sizeY);
+	itemType = QuestionBlockItem::COIN; // Default item type (can be set to other types as needed)
+
+	if (itemType == QuestionBlockItem::COIN)
+	{
+		itemCoinAnim.InitialAnimation(LoadGraph("data/image/item_coin.png"), 4, 10);
+		itemCoinAnim.x = pos.x + image.sizeX / 2.0f - itemCoinAnim.sprite.sizeX/ 2.0f;
+		itemCoinAnim.y = pos.y + image.sizeY / 2.0f - itemCoinAnim.sprite.sizeY / 2.0f;
+	}
 }
 //void QuestionBlock::Bump()
 //{
@@ -32,11 +40,30 @@ void QuestionBlock::OnHitBottom(RigidBody& player)
 
 	isBouncing = true;
 	bounceTimer = 0.0f;
+	itemCoinAnimationTimer.ResetTimer();
+
+	isAvailable = false;
+
+	image.InitialImageAndSize(texEmpty);
 
 	// TODO: Spawn a coin or powerup item here!
+	
 }
 void QuestionBlock::Update()
 {
+	if (itemCoinAnimationTimer.GetCurrentTimer() > 0.0f && !isAvailable)
+	{
+		itemCoinAnimationTimer.Update();
+		itemCoinAnim.AnimationUpdateLoop();
+		float totalTime = itemCoinAnimationTimer.MAX_TIMER; // match this to your timer's MAX_TIMER
+		float elapsed = totalTime - itemCoinAnimationTimer.GetCurrentTimer();
+		float t = elapsed / totalTime; // goes 0.0 ¨ 1.0
+		float offset = -16.0f; // how much to offset the coin's starting position (pixels)
+		float length = 64.0f * 3.5; // how high the coin goes (pixels)
+		itemCoinAnim.y = pos.y + offset - sinf(t * 3.14) * length;
+	}
+	
+
 	if (!active)return;
 
 	if (isBouncing)
@@ -58,7 +85,7 @@ void QuestionBlock::Update()
 			isBouncing = false;
 			isAvailable = false;
 
-			image.InitialImageAndSize(texEmpty);
+		
 		}
 	}
 	image.pos = pos;
@@ -68,7 +95,16 @@ void QuestionBlock::Update()
 
 void QuestionBlock::Render(Camera camera)
 {
+	//COIN
+	if (itemCoinAnimationTimer.GetCurrentTimer() > 0.0f)
+	{
+		camera.GlobalRenderAnimation(itemCoinAnim);
+	}
+
 	if (!active) return;
 
 	camera.GlobalRenderImage(image);
+
+	
+	
 }

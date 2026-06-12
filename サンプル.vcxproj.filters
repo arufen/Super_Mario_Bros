@@ -34,6 +34,7 @@
     <ClCompile Include="program\Super_Star.cpp" />
     <ClCompile Include="program\Time.cpp" />
     <ClCompile Include="program\Warp_Pipe.cpp" />
+    <ClCompile Include="program\Enemy.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="program\1-Up_Mushroom.h" />

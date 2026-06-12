@@ -4,6 +4,9 @@
 #include "Collidable.h"
 #include <vector>
 #include "RigidBody.h"
+#include "Enemy.h"
+#include "Coin.h"
+#include "Question_Block.h"
 using namespace std;
 
 // 外部ファイル（Camera.cppなど）からマリオの移動速度や中心座標を
@@ -50,10 +53,6 @@ public:
 	bool prevKeyD = false;
 	bool preferLeftInput = false;
 
-	//Mario game mechanics variables (メカニック変数)
-	//Float2 position; //Mario position (座標)
-	//float now_speed_x;	// 現在の横方向の速度
-	//float now_speed_y;	// 現在の縦方向の速度
 	bool isLeft;		// 向きフラグ（trueなら左向き、falseなら右向き）
 	bool isWalking = false;      // 現在歩いているかどうかの状態フラグ
 	bool isJumping = false;
@@ -63,10 +62,9 @@ public:
 	MarioState currentState = MarioState::NORMAL;
 	float warpTimer = 0.0f;
 
-	//Collider collider; // Collider (マリオの当たり判定)
-
-	////Check Every collision that has registered here （登録した当たり判定をチェックする）
-	//vector<Collidable*> collidables; // all blocks register here （登録の当たり判定）
+	//item and score (アイテムとスコア)
+	int score = 0;
+	int coin = 0;
 
 	void ResolveCollision(Collidable& block) override;
 
@@ -86,9 +84,16 @@ public:
 	void Render();
 
 	//mechanics function
+	void AddCoin();
 	void Jump();
 
-	void Warping(float pipeY);
+	//void Warping(float pipeY);
+
+	enum class WarpDir { DOWN, RIGHT, UP, };
+	WarpDir currentWarpDir = WarpDir::DOWN;
+
+	// Update the function signature
+	void Warping(float targetX, float targetY, WarpDir dir);
 
 private:
 	int texWarp;

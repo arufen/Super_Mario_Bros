@@ -1,16 +1,18 @@
 #pragma once
-#include "RigidBody.h"
-#include "Collidable.h"
+
 #include "Camera.h"
 
-// すべてのエネミーの基底クラス
-class Enemy : public RigidBody, public Collidable
+enum class EnemyState
+{
+	WAITING, //Wait until enemy is inside camera
+	ACTIVE,
+	DEAD,
+};
+
+class Enemy
 {
 public:
-    virtual ~Enemy() = default;
+	EnemyState state = EnemyState::WAITING;
 
-    // 派生クラス（クリボーなど）で必ず固有の実装をさせる仮想関数
-    virtual void Init(float x, float y, int handle) = 0;
-    virtual void Update() = 0;
-    virtual void RenderGlobal(Camera& camera) = 0;
+	//void WaitForCamera(Camera& camera);
 };

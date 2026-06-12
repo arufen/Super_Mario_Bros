@@ -58,11 +58,10 @@ void GameInit()
 
 	StageManager::GetInstance().Init();
 
-	// register all collidables into mario
-	// (StageManager probably owns the blocks, so grab them from there)
+	// register all collidables into for every object that has RigidBody
 	for (auto* block : StageManager::GetInstance().GetCollidables())
 	{
-		MainMario.collidables.push_back(block);
+		RigidBody::collidables.push_back(block);
 	}
 }
 //---------------------------------------------------------------------------------
@@ -70,28 +69,19 @@ void GameInit()
 //---------------------------------------------------------------------------------
 void GameUpdate()
 {
-	MainCamera.Update();
-	MainMario.Update();
-
-	// マリオが死亡状態（DEAD）の場合の処理
-	if (MainMario.GetState() == MarioState::DEAD)
+	if (StageManager::GetInstance().currentzone == WorldZone::UNDERWORLD)
 	{
-		// マリオが画面（SCREEN_H）の下に完全に落ちきったか判定
-		// マリオの現在の画面Y座標 = ワールド座標Y - カメラ座標Y
-		float marioScreenY = MainMario.position.y - MainCamera.pos.y;
-
-		// 画面下に消え去ったら、ゲームを最初からリスタートする
-		if (marioScreenY > SCREEN_H + 100)
-		{
-			GameInit(); // 初期化関数をもう一度呼び出して最初からやり直す
-		}
-
-		// マリオが死んでいる間は、タイムや敵（StageManager）の更新をスキップして完全にストップさせる
-		return;
+		MainCamera.pos.x = 56 * BLOCK_SIZE;
+		MainCamera.pos.y = 15 * BLOCK_SIZE;
+	}
+	else
+	{
+		MainCamera.Update();
 	}
 
+	MainMario.Update();
 	MainTime.Update();
-	StageManager::GetInstance().Update();
+	StageManager::GetInstance().Update(MainCamera);
 	
 
 	// デバッグ機能（モード切り替えなど）の更新
@@ -102,17 +92,39 @@ void GameUpdate()
 //---------------------------------------------------------------------------------
 void GameRender()
 {
+	//BACKGROUND
+	MainCamera.GlobalRenderImage(StageManager::GetInstance().background);
 	
-	// マップの手前にマリオを描画
-	MainMario.Render();
+	
 
 	// マリオの手前に残り時間を描画
 	MainTime.Render();
 
-	StageManager::GetInstance().Render(MainCamera);
-
 	// 一番手前にデバッグ情報を描画
 	MainDebug.Render();
+
+	//// マップの手前にマリオを描画
+	//MainMario.Render();
+	if (StageManager::GetInstance().currentzone == WorldZone::UNDERWORLD)
+	{
+		DrawBox(0, 0, SCREEN_W, SCREEN_H, GetColor(0, 0, 0), TRUE);
+	}
+	// マップの手前にマリオを描画
+	MainMario.Render();
+	StageManager::GetInstance().Render(MainCamera);
+	
+
+
+	DrawFormatString(0, 80, GetColor(255, 255, 255), "Mario coin : %d", MainMario.coin);
+
+	//debug
+	if (map_mode == MODE_DEBUG)
+	{
+		for (auto& c : RigidBody::collidables)
+		{
+			c->Render(MainCamera);
+		}
+	}
 }
 //---------------------------------------------------------------------------------
 //	終了処理
