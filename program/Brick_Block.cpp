@@ -1,6 +1,7 @@
 #include "Brick_Block.h"
 #include "Dxlib.h"
 #include "Mario.h"
+#include "Sound.h"
 
 // Constructor
 BrickBlock::BrickBlock()
@@ -43,6 +44,7 @@ void BrickBlock::OnHitBottom(RigidBody& player)
                 isBouncing = true;
                 bounceTimer = 0.0f;
                 // ここでブロックを叩いた時（壊れない方）のSEを鳴らすとさらに最高です！
+                SoundManager::GetInstance().PlaySE("Bump");
             }
             return; // 破壊処理にいかせず、ここで終了する
         }

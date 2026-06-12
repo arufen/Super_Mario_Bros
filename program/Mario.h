@@ -39,6 +39,10 @@ public:
 	static constexpr float JUMP_INITIAL = -15;  // first jump force (negative = up)
 	static constexpr float JUMP_HOLD_FORCE = -0.7f; // extra boost per frame while holding
 
+	// ※マリオの初期Y座標が700.0fなので、地上は980.0fに設定しています。地下の高さに合わせて数値は調整してください。
+	static constexpr float DEAD_LINE_OVERWORLD = 980.0f;
+	static constexpr float DEAD_LINE_UNDERWORLD = 1940.0f;
+
 	static constexpr float WARP_DURATION = 1.0f; // warp timer
 
 
@@ -52,10 +56,13 @@ public:
 	bool prevKeyA = false;
 	bool prevKeyD = false;
 	bool preferLeftInput = false;
+	bool prevKeySpace = false;
 
 	bool isLeft;		// 向きフラグ（trueなら左向き、falseなら右向き）
-	bool isWalking = false;      // 現在歩いているかどうかの状態フラグ
+	bool isWalking = false;     // 現在歩いているかどうか
 	bool isJumping = false;
+	bool isDeadJumped = false;	// 死亡ジャンプをすでに受け取ったか
+	bool isFellDown = false;	// 落下死したかどうか
 	float jumpHoldTimer = 0.0f;
 
 	// State machine controllers
@@ -76,7 +83,7 @@ public:
 	MarioState GetState() const { return currentState; }
 
 	// エネミーに横・下から接触したときに死亡状態へ移行させる関数
-	void ToDeadState();
+	void ToDeadState(bool isFall = false);
 
 	//for main thread
 	void Init();

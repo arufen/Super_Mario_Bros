@@ -32,7 +32,11 @@ public:
 	// 機能
 	void Init();                               // サウンドファイルの読み込み
 	void PlayBGM(const std::string& name);     // BGMの再生
+	void PlayBGMOnce(const std::string& name); // BGMを1回だけ再生
 	void StopBGM();                            // BGMの停止
+	void PlayDeadBGM();
+	bool IsPlayingBGM(const std::string& name); // BGMが再生中か確認
 	void PlaySE(const std::string& name);      // 効果音(SE)の再生
+	bool IsPlayingSE(const std::string& name);
 	void Release();                            // サウンドメモリの解放
 };

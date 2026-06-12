@@ -17,6 +17,9 @@ public:
 	//Update
 	void WaitForCamera(Camera& camera);
 	virtual void OnHitTop(RigidBody& player) override;
+	virtual void OnHitSide(RigidBody& player) override;
+	virtual void OnHitBottom(RigidBody& player) override;
+
 	void Destroy();
 
 	//Main thread

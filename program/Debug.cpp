@@ -3,6 +3,7 @@
 #include "Debug.h"
 #include "Camera.h"
 #include "Mario.h"
+#include "StageManager.h"
 
 // メインのカメラはMain.cppで定義されているため、externを使って参照する
 extern Camera MainCamera;
@@ -79,6 +80,22 @@ void Debug::Render()
 
 		// デバッグモード時は画面中央を示す縦線を引く
 		DrawLine(SCREEN_W/2, 0, SCREEN_W/2, SCREEN_H, GetColor(0, 255, 255));
+
+		// 落下死亡ライン（デッドライン）のデバッグ描画
+		// Marioクラスから定数を、StageManagerから現在のゾーンを取得する
+		float currentDeadLineY = (StageManager::GetInstance().GetWorldZone() == WorldZone::OVERWORLD)
+			? Mario::DEAD_LINE_OVERWORLD
+			: Mario::DEAD_LINE_UNDERWORLD;
+
+		// ワールド座標から画面座標（スクリーン座標）に変換
+		int screenDeadLineY = (int)(currentDeadLineY - MainCamera.pos.y);
+
+		// 死亡ラインが現在の画面の縦幅に収まっているときだけ描画
+		if (screenDeadLineY >= 0 && screenDeadLineY <= SCREEN_H)
+		{
+			DrawLine(0, screenDeadLineY, SCREEN_W, screenDeadLineY, GetColor(255, 0, 0), 2);
+			DrawString(10, screenDeadLineY - 22, "=== DEAD LINE ===", GetColor(255, 0, 0));
+		}
 
 		// マリオの当たり判定矩形（Mario.cpp で更新されるスクリーン座標）を描画
 		DrawBox(small_mario_debug_x1, small_mario_debug_y1, small_mario_debug_x2, small_mario_debug_y2, GetColor(0, 255, 0), FALSE);
