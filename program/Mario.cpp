@@ -82,7 +82,7 @@ void Mario::ResolveCollision(Collidable& block)
 				Jump();
 			}
 
-			
+
 			block.OnHitTop(*this);
 		}
 		else
@@ -198,8 +198,8 @@ void Mario::Update()
 {
 	if (currentState == MarioState::WARPING)
 	{
-		warpTimer += 0.016f; 
-		
+		warpTimer += 0.016f;
+
 		if (currentWarpDir == WarpDir::DOWN)
 		{
 			position.y += 1.5f;
@@ -258,9 +258,9 @@ void Mario::Update()
 	RigidBody_collider.x = position.x + offsetWidth / 2;
 	//collider.x = position.x + 20.0f / 2;
 	//collider.y = position.y;
-	
 
-    // LSHIFT + 方向キー の組み合わせは単独の方向キー判定より先に評価する (speed)
+
+	// LSHIFT + 方向キー の組み合わせは単独の方向キー判定より先に評価する (speed)
 	if (CheckHitKey(KEY_INPUT_LSHIFT) && CheckHitKey(KEY_INPUT_D)) {
 		marioSpeed = MARIO_DASH_MAX_SPEED; // ダッシュの最高速度（右向き）
 	}
@@ -284,44 +284,44 @@ void Mario::Update()
 	{
 		isLeft = false; // 右を向く
 
-		if (now_speed_x < 0.0f) 
+		if (now_speed_x < 0.0f)
 		{
 			now_speed_x += MARIO_DECEL_TURN; // 左に動いていたら急ブレーキ
 		}
-        else
+		else
 		{
-            now_speed_x += MARIO_ACCEL;      // 通常加速
-        }
+			now_speed_x += MARIO_ACCEL;      // 通常加速
+		}
 	}
 	else if (CheckHitKey(KEY_INPUT_A) || (CheckHitKey(KEY_INPUT_LSHIFT) && CheckHitKey(KEY_INPUT_A))) // 歩きとダッシュの左移動
 	{
 		isLeft = true;  // 左を向く
 
-		if (now_speed_x > 0.0f) 
+		if (now_speed_x > 0.0f)
 		{
 			now_speed_x -= MARIO_DECEL_TURN; // 右に動いていたら急ブレーキ
 		}
-        else 
+		else
 		{
-            now_speed_x -= MARIO_ACCEL;      // 通常加速
-        }
+			now_speed_x -= MARIO_ACCEL;      // 通常加速
+		}
 	}
 	else // 何も押していないとき
 	{
 		// 摩擦（自然減速）の処理
-		if (now_speed_x > 0.0f) 
+		if (now_speed_x > 0.0f)
 		{
 			now_speed_x -= MARIO_FRICTION;
 			if (now_speed_x < 0.0f) now_speed_x = 0.0f; // 減速しすぎて逆走するのを防ぐ
 		}
-		else if (now_speed_x < 0.0f) 
+		else if (now_speed_x < 0.0f)
 		{
 			now_speed_x += MARIO_FRICTION;
 			if (now_speed_x > 0.0f) now_speed_x = 0.0f; // 減速しすぎて逆走するのを防ぐ
 		}
 	}
 
-    // 2. 最高速度の制限（クランプ）
+	// 2. 最高速度の制限（クランプ）
 	// 現在押されているキーに応じて最大速度を決定する（ダッシュ中は大きな値）
 	float MarioMoovMaxSpeed = MARIO_WALK_MAX_SPEED;
 	if (CheckHitKey(KEY_INPUT_LSHIFT) && (CheckHitKey(KEY_INPUT_D) || CheckHitKey(KEY_INPUT_A))) {
@@ -334,13 +334,13 @@ void Mario::Update()
 	//position.x += now_speed_x;
 
 	// Dキーの押し下げに関係なく、マリオが画面中央を越えたらカメラを動かすように外に出しました
-	if(MainCamera.pos.y < 960)
-	{ 
-	float marioWorldCenterX = position.x + (marioImage.sizeX / 2.0f);
-	if (marioWorldCenterX >= MainCamera.pos.x + (SCREEN_W / 2))
+	if (MainCamera.pos.y < 960)
 	{
-		MainCamera.pos.x = marioWorldCenterX - (SCREEN_W / 2);
-	}
+		float marioWorldCenterX = position.x + (marioImage.sizeX / 2.0f);
+		if (marioWorldCenterX >= MainCamera.pos.x + (SCREEN_W / 2))
+		{
+			MainCamera.pos.x = marioWorldCenterX - (SCREEN_W / 2);
+		}
 	}
 	// カメラの移動可能範囲を制限 (0 ～ 12480)
 	if (MainCamera.pos.x < 0) MainCamera.pos.x = 0;
@@ -394,6 +394,18 @@ void Mario::Update()
 
 	//RigidBody update
 	PhysicsUpdate();
+
+	if (isStarMode)
+	{
+		starTimer -= 1.0f;
+		if (starTimer <= 0.0f)
+		{
+			isStarMode = false; // 時間切れで通常状態に戻る
+		}
+
+		// アニメーションの更新
+		starmarioAnim.AnimationUpdateLoop();
+	}
 }
 
 void Mario::Render()
@@ -401,29 +413,42 @@ void Mario::Render()
 	// カメラの座標に合わせてマリオの描画位置（スクリーン座標）を計算
 	int screenX = (int)(marioImage.pos.x - MainCamera.pos.x);
 	int screenY = (int)(marioImage.pos.y - MainCamera.pos.y);
-	
+	// ===== 【追記】スター状態の描画分岐 =====
+	if (isStarMode)
+	{
+		// Animationクラスの描画関数を使用するためにスクリーン座標をセット
+		starmarioAnim.x = (float)screenX;
+		starmarioAnim.y = (float)screenY;
+
+		// 向いている方向に合わせて描画 (引数の reverseFlag に isLeft を渡す)
+		starmarioAnim.AnimationRenderCenter(isLeft);
+	}
 	// 向きに応じて反転させて描画 (画像の左上を基準点として等倍で描画)
-	if (isLeft)
-	{
-		// 左向き (左右反転)
-		DrawRotaGraph2(screenX, screenY, 0, 0, 1.0f, 0.0, marioImage.image, TRUE, TRUE);
-	}
-	else
-	{
-		// 右向き (反転なし)
-		DrawRotaGraph2(screenX, screenY, 0, 0, 1.0f, 0.0, marioImage.image, TRUE, FALSE);
-	}
+	else {
+		if (isLeft)
+		{
+			// 左向き (左右反転)
+			DrawRotaGraph2(screenX, screenY, 0, 0, 1.0f, 0.0, marioImage.image, TRUE, TRUE);
+		}
+		else
+		{
+			// 右向き (反転なし)
+			DrawRotaGraph2(screenX, screenY, 0, 0, 1.0f, 0.0, marioImage.image, TRUE, FALSE);
+		}
 
 
-	//DEBUG MODE
-	if (map_mode == MODE_DEBUG)
-	{
-		DrawFormatString(0, 40, GetColor(255, 255, 255), "Mario pos X : %f, Mario pos Y : %f", position.x, position.y);
-		DrawFormatString(0, 60, GetColor(255, 255, 255), "now_speed X : %f", now_speed_x);
-	}
-	}
+		//DEBUG MODE
+		if (map_mode == MODE_DEBUG)
+		{
+			DrawFormatString(0, 40, GetColor(255, 255, 255), "Mario pos X : %f, Mario pos Y : %f", position.x, position.y);
+			DrawFormatString(0, 60, GetColor(255, 255, 255), "now_speed X : %f", now_speed_x);
+			if (isStarMode) DrawFormatString(0, 80, GetColor(255, 255, 0), "STAR MODE: %.0f", starTimer);
 
-	
+		}
+	}
+}
+
+
 
 //Jump player
 void Mario::Jump()
@@ -448,6 +473,9 @@ void Mario::Star()
 	starmario.InitialAnimation(handle, 6, 10);
 	starmario.x = position.x;
 	starmario.y = position.y;
+
+	isStarMode = true;
+	starTimer = 600.0f; // 例: 60fps環境で10秒間 (60 * 10)
 
 
 

@@ -56,6 +56,11 @@ public:
 	int score = 0;
 	int coin = 0;
 
+	//star power-up variables(ƒXƒ^[ó‘Ô‚Ìæ“¾)
+	Animation starmarioAnim; 
+	bool isStarMode;         
+	float starTimer;         
+
 	void ResolveCollision(Collidable& block) override;
 
 	//for main thread
@@ -67,7 +72,9 @@ public:
 	void AddCoin();
 	void Jump();
 
+
 	void Star();
+	
 
 
 	//void Warping(float pipeY);
