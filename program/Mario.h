@@ -76,11 +76,10 @@ public:
 	//star power-up variables(スター状態の取得)
 	Animation starmarioAnim; 
 	bool isStarMode;         
-	float starTimer;         
+	float starTimer;       
 
-<<<<<<< HEAD
 	void ResolveCollision(Collidable& block) override;
-=======
+
 	// 現在のマリオの形態を取得・変更する関数
 	MarioForm GetForm() const { return currentForm; }
 	void SetForm(MarioForm form) { currentForm = form; }
@@ -90,7 +89,6 @@ public:
 
 	// エネミーに横・下から接触したときに死亡状態へ移行させる関数
 	void ToDeadState(bool isFall = false);
->>>>>>> origin/ID#a0004
 
 	//for main thread
 	void Init();
