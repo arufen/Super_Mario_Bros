@@ -20,8 +20,6 @@ void CreateGoomba(T1 x, T2 y)
 	StageManager::GetInstance().goomba.push_back(newGoomba);
 }
 
-
-
 //Create ground tiles from (fromTileX, fromTileY) to (toTileX, toTileY) (max Y: 14)
 void CreateGrounds(int fromTileX, int fromTileY, int toTileX, int toTileY)
 {

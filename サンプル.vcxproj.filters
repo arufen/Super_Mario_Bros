@@ -1,76 +1,217 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <ClCompile Include="program\1-Up_Mushroom.cpp" />
-    <ClCompile Include="program\Brick_Block.cpp" />
-    <ClCompile Include="program\Camera.cpp" />
-    <ClCompile Include="program\Coin.cpp" />
-    <ClCompile Include="program\Collidable.cpp" />
-    <ClCompile Include="program\Collider.cpp" />
-    <ClCompile Include="program\Debug.cpp" />
-    <ClCompile Include="program\Fireworks.cpp" />
-    <ClCompile Include="program\Fire_Flower.cpp" />
-    <ClCompile Include="program\Float2.cpp" />
     <ClCompile Include="program\Game.cpp" />
-    <ClCompile Include="program\Game_Over.cpp" />
-    <ClCompile Include="program\Goal_Pole.cpp" />
-    <ClCompile Include="program\Goomba.cpp" />
-    <ClCompile Include="program\Hard_Block.cpp" />
-    <ClCompile Include="program\Ground.cpp" />
-    <ClCompile Include="program\HelpfulFunc.cpp" />
-    <ClCompile Include="program\Hidden_Block.cpp" />
-    <ClCompile Include="program\Hit.cpp" />
-    <ClCompile Include="program\Koopa_Troopa.cpp" />
     <ClCompile Include="program\Main.cpp" />
-    <ClCompile Include="program\Map.cpp" />
-    <ClCompile Include="program\RigidBody.cpp" />
-    <ClCompile Include="program\Sound.cpp" />
-    <ClCompile Include="program\StageManager.cpp" />
-    <ClCompile Include="program\Mario.cpp" />
-    <ClCompile Include="program\Question_Block.cpp" />
-    <ClCompile Include="program\Random.cpp" />
-    <ClCompile Include="program\Score.cpp" />
-    <ClCompile Include="program\Super_Mushroom.cpp" />
-    <ClCompile Include="program\Super_Star.cpp" />
-    <ClCompile Include="program\Time.cpp" />
-    <ClCompile Include="program\Warp_Pipe.cpp" />
-    <ClCompile Include="program\Enemy.cpp" />
+    <ClCompile Include="program\1-Up_Mushroom.cpp">
+      <Filter>game</Filter>
+    </ClCompile>
+    <ClCompile Include="program\Brick_Block.cpp">
+      <Filter>game</Filter>
+    </ClCompile>
+    <ClCompile Include="program\Camera.cpp">
+      <Filter>program</Filter>
+    </ClCompile>
+    <ClCompile Include="program\Collidable.cpp">
+      <Filter>system</Filter>
+    </ClCompile>
+    <ClCompile Include="program\Coin.cpp">
+      <Filter>game</Filter>
+    </ClCompile>
+    <ClCompile Include="program\Debug.cpp">
+      <Filter>program</Filter>
+    </ClCompile>
+    <ClCompile Include="program\Collider.cpp">
+      <Filter>system</Filter>
+    </ClCompile>
+    <ClCompile Include="program\Enemy.cpp">
+      <Filter>program</Filter>
+    </ClCompile>
+    <ClCompile Include="program\Fire_Flower.cpp">
+      <Filter>game</Filter>
+    </ClCompile>
+    <ClCompile Include="program\Fireworks.cpp">
+      <Filter>program</Filter>
+    </ClCompile>
+    <ClCompile Include="program\Float2.cpp">
+      <Filter>system</Filter>
+    </ClCompile>
+    <ClCompile Include="program\Game_Over.cpp">
+      <Filter>program</Filter>
+    </ClCompile>
+    <ClCompile Include="program\Goal_Pole.cpp">
+      <Filter>game</Filter>
+    </ClCompile>
+    <ClCompile Include="program\Goomba.cpp">
+      <Filter>game</Filter>
+    </ClCompile>
+    <ClCompile Include="program\Ground.cpp">
+      <Filter>program</Filter>
+    </ClCompile>
+    <ClCompile Include="program\Hard_Block.cpp">
+      <Filter>system</Filter>
+    </ClCompile>
+    <ClCompile Include="program\HelpfulFunc.cpp">
+      <Filter>system</Filter>
+    </ClCompile>
+    <ClCompile Include="program\Hidden_Block.cpp">
+      <Filter>game</Filter>
+    </ClCompile>
+    <ClCompile Include="program\Super_Mushroom.cpp">
+      <Filter>game</Filter>
+    </ClCompile>
+    <ClCompile Include="program\Super_Star.cpp">
+      <Filter>game</Filter>
+    </ClCompile>
+    <ClCompile Include="program\StageManager.cpp">
+      <Filter>system</Filter>
+    </ClCompile>
+    <ClCompile Include="program\Koopa_Troopa.cpp">
+      <Filter>game</Filter>
+    </ClCompile>
+    <ClCompile Include="program\Hit.cpp">
+      <Filter>system</Filter>
+    </ClCompile>
+    <ClCompile Include="program\Question_Block.cpp">
+      <Filter>game</Filter>
+    </ClCompile>
+    <ClCompile Include="program\Mario.cpp">
+      <Filter>game</Filter>
+    </ClCompile>
+    <ClCompile Include="program\Random.cpp">
+      <Filter>system</Filter>
+    </ClCompile>
+    <ClCompile Include="program\RigidBody.cpp">
+      <Filter>system</Filter>
+    </ClCompile>
+    <ClCompile Include="program\Score.cpp">
+      <Filter>system</Filter>
+    </ClCompile>
+    <ClCompile Include="program\Map.cpp">
+      <Filter>program</Filter>
+    </ClCompile>
+    <ClCompile Include="program\Sound.cpp">
+      <Filter>program</Filter>
+    </ClCompile>
+    <ClCompile Include="program\Time.cpp">
+      <Filter>system</Filter>
+    </ClCompile>
+    <ClCompile Include="program\Warp_Pipe.cpp">
+      <Filter>game</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="program\1-Up_Mushroom.h" />
-    <ClInclude Include="program\Brick_Block.h" />
-    <ClInclude Include="program\Camera.h" />
-    <ClInclude Include="program\Coin.h" />
-    <ClInclude Include="program\Collidable.h" />
-    <ClInclude Include="program\Collider.h" />
-    <ClInclude Include="program\Debug.h" />
-    <ClInclude Include="program\Fireworks.h" />
-    <ClInclude Include="program\Fire_Flower.h" />
-    <ClInclude Include="program\Float2.h" />
     <ClInclude Include="program\Game.h" />
-    <ClInclude Include="program\Game_Over.h" />
-    <ClInclude Include="program\Goal_Pole.h" />
-    <ClInclude Include="program\Goomba.h" />
-    <ClInclude Include="program\Hard_Block.h" />
-    <ClInclude Include="program\Ground.h" />
-    <ClInclude Include="program\HelpfulFunc.h" />
-    <ClInclude Include="program\Hidden_Block.h" />
-    <ClInclude Include="program\Hit.h" />
-    <ClInclude Include="program\IBlock.h" />
-    <ClInclude Include="program\Koopa_Troopa.h" />
     <ClInclude Include="program\Main.h" />
-    <ClInclude Include="program\Map.h" />
-    <ClInclude Include="program\RigidBody.h" />
-    <ClInclude Include="program\Sound.h" />
-    <ClInclude Include="program\StageManager.h" />
-    <ClInclude Include="program\Mario.h" />
-    <ClInclude Include="program\Question_Block.h" />
-    <ClInclude Include="program\Random.h" />
-    <ClInclude Include="program\Score.h" />
-    <ClInclude Include="program\Super_Mushroom.h" />
-    <ClInclude Include="program\Super_Star.h" />
-    <ClInclude Include="program\Time.h" />
-    <ClInclude Include="program\Warp_Pipe.h" />
-    <ClInclude Include="program\Enemy.h" />
+    <ClInclude Include="program\1-Up_Mushroom.h">
+      <Filter>game</Filter>
+    </ClInclude>
+    <ClInclude Include="program\Brick_Block.h">
+      <Filter>game</Filter>
+    </ClInclude>
+    <ClInclude Include="program\Camera.h">
+      <Filter>program</Filter>
+    </ClInclude>
+    <ClInclude Include="program\Collidable.h">
+      <Filter>system</Filter>
+    </ClInclude>
+    <ClInclude Include="program\Coin.h">
+      <Filter>game</Filter>
+    </ClInclude>
+    <ClInclude Include="program\Debug.h">
+      <Filter>program</Filter>
+    </ClInclude>
+    <ClInclude Include="program\Collider.h">
+      <Filter>system</Filter>
+    </ClInclude>
+    <ClInclude Include="program\Enemy.h">
+      <Filter>program</Filter>
+    </ClInclude>
+    <ClInclude Include="program\Fire_Flower.h">
+      <Filter>game</Filter>
+    </ClInclude>
+    <ClInclude Include="program\Fireworks.h">
+      <Filter>program</Filter>
+    </ClInclude>
+    <ClInclude Include="program\Float2.h">
+      <Filter>system</Filter>
+    </ClInclude>
+    <ClInclude Include="program\Game_Over.h">
+      <Filter>program</Filter>
+    </ClInclude>
+    <ClInclude Include="program\Goal_Pole.h">
+      <Filter>game</Filter>
+    </ClInclude>
+    <ClInclude Include="program\Goomba.h">
+      <Filter>game</Filter>
+    </ClInclude>
+    <ClInclude Include="program\Ground.h">
+      <Filter>program</Filter>
+    </ClInclude>
+    <ClInclude Include="program\Hard_Block.h">
+      <Filter>system</Filter>
+    </ClInclude>
+    <ClInclude Include="program\HelpfulFunc.h">
+      <Filter>system</Filter>
+    </ClInclude>
+    <ClInclude Include="program\Hidden_Block.h">
+      <Filter>game</Filter>
+    </ClInclude>
+    <ClInclude Include="program\Super_Star.h">
+      <Filter>game</Filter>
+    </ClInclude>
+    <ClInclude Include="program\Super_Mushroom.h">
+      <Filter>game</Filter>
+    </ClInclude>
+    <ClInclude Include="program\StageManager.h">
+      <Filter>system</Filter>
+    </ClInclude>
+    <ClInclude Include="program\Koopa_Troopa.h">
+      <Filter>game</Filter>
+    </ClInclude>
+    <ClInclude Include="program\IBlock.h">
+      <Filter>system</Filter>
+    </ClInclude>
+    <ClInclude Include="program\Hit.h">
+      <Filter>system</Filter>
+    </ClInclude>
+    <ClInclude Include="program\Question_Block.h">
+      <Filter>game</Filter>
+    </ClInclude>
+    <ClInclude Include="program\Mario.h">
+      <Filter>game</Filter>
+    </ClInclude>
+    <ClInclude Include="program\Random.h">
+      <Filter>system</Filter>
+    </ClInclude>
+    <ClInclude Include="program\RigidBody.h">
+      <Filter>system</Filter>
+    </ClInclude>
+    <ClInclude Include="program\Score.h">
+      <Filter>system</Filter>
+    </ClInclude>
+    <ClInclude Include="program\Map.h">
+      <Filter>program</Filter>
+    </ClInclude>
+    <ClInclude Include="program\Sound.h">
+      <Filter>program</Filter>
+    </ClInclude>
+    <ClInclude Include="program\Time.h">
+      <Filter>system</Filter>
+    </ClInclude>
+    <ClInclude Include="program\Warp_Pipe.h">
+      <Filter>game</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="game">
+      <UniqueIdentifier>{1ba1e24d-9dbb-44ba-9044-c248ced50667}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="system">
+      <UniqueIdentifier>{e12c9df5-7b42-4297-a3fc-3bf79febcbee}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="program">
+      <UniqueIdentifier>{8a3a0d46-6968-4cf9-8d38-90005d850f3b}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
 </Project>
