@@ -23,6 +23,12 @@
 
 using namespace std;
 
+enum class Stage
+{
+	WORLD_1_1,
+	WORLD_1_4,
+};
+
 class StageManager
 {
 public:
@@ -65,8 +71,11 @@ public:
 
 	Image background;
 
+	//Cleanup all vectors
+	void ClearStage();
+
 	//Main thread 
-	void Init();	//Load blocks (ブロックの初期化）
+	void Init(Stage stageNumber);	//Load blocks (ブロックの初期化）
 	void Update(Camera& camera);	//Check Collision （当たり判定チェック）
 	void Render(Camera& camera); //Camera is for render globally (グロバール座標を使うためにカメラが必要）
 

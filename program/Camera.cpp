@@ -9,6 +9,7 @@ extern Camera MainCamera;
 Camera::Camera() 
 {
 	pos = { 0.0f, 0.0f };
+	cameraPosXLimit = 13504 - SCREEN_W; // カメラの移動可能範囲の右端を設定（ワールドの幅 - 画面の幅）
 }
 
 // カメラの位置を設定する
@@ -46,7 +47,7 @@ void Camera::Update()
 	if( MainCamera.pos.x <= 0){
 		MainCamera.pos.x = 0;
 	}
-	if (MainCamera.pos.x >= 12480) {
-		MainCamera.pos.x = 12480;
+	if (MainCamera.pos.x >= cameraPosXLimit) {
+		MainCamera.pos.x = cameraPosXLimit;
 	}
 }
