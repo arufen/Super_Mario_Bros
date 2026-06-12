@@ -15,6 +15,7 @@
 #include "Coin.h"
 #include "Super_Mushroom.h"
 #include "Fire_Flower.h"
+#include "Super_Star.h"
 
 //Enemies
 #include "Goomba.h"
@@ -57,6 +58,8 @@ public:
 	vector<Coin*> coins;
 	vector<SuperMushroom*> superMushroom;
 	vector<FireFlower*> fireFlower;
+	vector<SuperStar*> superStar;
+
 
 	Image background;
 

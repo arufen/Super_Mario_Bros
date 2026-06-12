@@ -154,6 +154,14 @@ void CreateFireFlower(float x, float y)
 	StageManager::GetInstance().fireFlower.push_back(newFireFlower);
 }
 
+void CreateSuperStar(float x, float y)
+{
+	SuperStar* newSuperStar = new SuperStar();
+	newSuperStar->Init(x * BLOCK_SIZE, y * BLOCK_SIZE);
+	StageManager::GetInstance().superStar.push_back(newSuperStar);
+}
+
+
 vector<Collidable*> StageManager::GetCollidables()
 {
 	// returns all collidable blocks for mario to register
@@ -214,6 +222,10 @@ vector<Collidable*> StageManager::GetCollidables()
 	for (auto* fireF: fireFlower)
 	{
 		result.push_back(fireF);
+	}
+	for (auto* superS : superStar)
+	{
+		result.push_back(superS);
 	}
 
 	// when u add pipe, questionblock etc just do:
@@ -372,6 +384,7 @@ void StageManager::Init()
 	//tmp
 	CreateSuperMushroom(5, 10);
 	CreateFireFlower(6, 10);
+	CreateSuperStar(7, 10);
 }
 
 void StageManager::Update(Camera& camera)
@@ -456,6 +469,24 @@ void StageManager::Update(Camera& camera)
 		}
 	}
 
+	//Super Star
+	for (int i = 0; i < superStar.size(); i++)
+	{
+		//Update for moving
+		superStar[i]->Update();
+		if (!superStar[i]->active)
+		{
+			// remove from collidables list too!
+			RigidBody::collidables.erase(
+				remove(RigidBody::collidables.begin(), RigidBody::collidables.end(), superStar[i]),
+				RigidBody::collidables.end()
+			);
+			//remove coins from stage manager
+			superStar.erase(superStar.begin() + i);
+		}
+	}
+
+
 }
 
 void StageManager::Render(Camera& camera)
@@ -512,6 +543,14 @@ void StageManager::Render(Camera& camera)
 		if (fireF->active)
 		{
 			fireF->RenderGlobal(camera);
+		}
+	}
+
+	for (SuperStar* superS : superStar)
+	{
+		if (superS->active)
+		{
+			superS->RenderGlobal(camera);
 		}
 	}
 

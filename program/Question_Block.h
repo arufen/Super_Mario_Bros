@@ -1,6 +1,7 @@
 #pragma once
 #include "IBlock.h"
 #include "HelpfulFunc.h"
+#include "Mario.h"
 
 enum class QuestionBlockItem 
 { 

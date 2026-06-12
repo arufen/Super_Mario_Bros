@@ -20,7 +20,7 @@ void SuperMushroom::Init(float x, float y)
 	this->originalPosition;
 	this->active = true;
 	this->canMove = false;
-	this->now_speed_x = 1.0f;
+	this->now_speed_x = MOVE_SPEED;
 	this->now_speed_y = 0.0f;
 }
 
@@ -45,16 +45,17 @@ void SuperMushroom::Update()
 	Collidable* hit = Raycast(checkX, checkY);
 	if (hit != nullptr)
 	{
-		//not colliding with enemy 
+		//not colliding with enemy  & item
 		Enemy* enemy= dynamic_cast<Enemy*>(hit);
-		if (enemy == nullptr)
+		CollectableItem* item= dynamic_cast<CollectableItem*>(hit);
+		if (enemy == nullptr && item == nullptr)
 		{
 			direction *= -1.0f;
 		}
 			
 	}
 
-	now_speed_x = direction; // reset every frame FIRST
+	now_speed_x = direction * MOVE_SPEED; // reset every frame FIRST
 
 	if (canMove)
 	{	

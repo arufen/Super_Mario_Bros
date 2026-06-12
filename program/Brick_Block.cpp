@@ -23,6 +23,10 @@ void BrickBlock::Init(Float2 startPos, int graphHandle)
 
 void BrickBlock::OnHitBottom(RigidBody& player)
 {
+    //ignore object other than mario
+    Mario* mario = dynamic_cast<Mario*>(&player);
+    if (!mario) return;
+
     active = false;
 
     collider.x = -9999.0f;

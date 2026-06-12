@@ -1,6 +1,7 @@
 #pragma once
 #include "IBlock.h"
 #include "Camera.h"
+#include "Mario.h"
 
 class BrickBlock : public IBlock, public Collidable
 {

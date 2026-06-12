@@ -29,6 +29,7 @@ void RigidBody::ResolveCollision(Collidable& block)
 	{
 		if (self->layer == PhysicsLayer::ENEMY && block.layer == PhysicsLayer::ITEM) return;
 		if (self->layer == PhysicsLayer::ITEM && block.layer == PhysicsLayer::ENEMY) return;
+		if (self->layer == PhysicsLayer::ITEM && block.layer == PhysicsLayer::ITEM) return;
 	}
 
 	if (block.isTrigger)

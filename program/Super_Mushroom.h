@@ -8,6 +8,9 @@
 class SuperMushroom : public CollectableItem, public RigidBody
 {
 public:
+
+	//const 
+	static constexpr float MOVE_SPEED = 3.0f;
 	//variables
 	Image image;
 	float direction;
