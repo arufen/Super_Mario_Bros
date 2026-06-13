@@ -5,17 +5,20 @@
 #include "HelpfulFunc.h"
 #include "Camera.h"
 #include "Hit.h"
+#include  "CollectableItem.h"
 
 
 
 class Goomba : public RigidBody, public Collidable, public Enemy
 {
 public:
-	Image image;
+	/*Image image;*/ //change to animation
+	Animation spriteAnimation;
 	float direction;
 
 	//Update
-	void WaitForCamera(Camera& camera);
+	virtual void WaitForCamera(Camera& camera) override;
+	virtual void TakeDamage(RigidBody& attacker) override;
 	virtual void OnHitTop(RigidBody& player) override;
 	virtual void OnHitSide(RigidBody& player) override;
 	virtual void OnHitBottom(RigidBody& player) override;

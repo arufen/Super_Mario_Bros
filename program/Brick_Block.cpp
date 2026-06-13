@@ -30,27 +30,29 @@ void BrickBlock::Init(Float2 startPos, int graphHandle)
 
 void BrickBlock::OnHitBottom(RigidBody& player)
 {
-    // ������ player �� Mario �N���X�Ɉ��S�ɃL���X�g
+    // 引数の player を Mario クラスに安全にキャスト
+    //ignore object other than mario
     Mario* mario = dynamic_cast<Mario*>(&player);
+    if (!mario) return;
 
     if (mario != nullptr)
     {
-        // �X���[���}���I�̎��̓u���b�N���󂳂Ȃ��I
+        // スモールマリオの時はブロックを壊さない！
         if (mario->GetForm() == MarioForm::SMALL)
         {
-            // �܂����˂Ă��Ȃ����������˕Ԃ�A�j���[�V�������J�n
+            // まだ跳ねていない時だけ跳ね返りアニメーションを開始
             if (!isBouncing)
             {
                 isBouncing = true;
                 bounceTimer = 0.0f;
-                // �����Ńu���b�N��@�������i���Ȃ����j��SE��炷�Ƃ���ɍō��ł��I
+                // ここでブロックを叩いた時（壊れない方）のSEを鳴らすとさらに最高です！
                 SoundManager::GetInstance().PlaySE("Bump");
             }
-            return; // �j�󏈗��ɂ��������A�����ŏI������
+            return; // 破壊処理にいかせず、ここで終了する
         }
     }
 
-    // �X�[�p�[�}���I�ȏ�̏ꍇ�́A�]���ʂ�u���b�N��j��i���Łj������
+    // スーパーマリオ以上の場合は、従来通りブロックを破壊（消滅）させる
     active = false;
 
     collider.x = -9999.0f;
@@ -62,30 +64,30 @@ void BrickBlock::Update()
 {
     if (!active) return;
 
-    // �@���ꂽ���́u�|�R�b�v�Ƃ������˕Ԃ�A�j���[�V��������
+    // 叩かれた時の「ポコッ」という跳ね返りアニメーション処理
     if (isBouncing)
     {
-        bounceTimer += 1.0f; // ���t���[�� 1.0 ���i�߂�
+        bounceTimer += 1.0f; // 毎フレーム 1.0 ずつ進める
 
-        // �O��6�t���[���F�����ŏ�Ɉړ��i1�t���[���ɂ�3px�A�v18px�㏸�j
+        // 前半6フレーム：高速で上に移動（1フレームにつき3px、計18px上昇）
         if (bounceTimer <= 6.0f)
         {
             pos.y -= 3.0f;
         }
-        // �㔼6�t���[���F�������x�ŉ��Ɉړ����Ė߂�
+        // 後半6フレーム：同じ速度で下に移動して戻る
         else if (bounceTimer <= 12.0f)
         {
             pos.y += 3.0f;
         }
-        // 12�t���[���𒴂�����A�j���[�V�����I��
+        // 12フレームを超えたらアニメーション終了
         else
         {
-            pos.y = originalPos.y; // �Y����h�����߂Ɍ��̈ʒu�Ƀs�b�^���Œ�
+            pos.y = originalPos.y; // ズレを防ぐために元の位置にピッタリ固定
             isBouncing = false;
         }
     }
 
-    // �摜�ƃR���C�_�[�̈ʒu�����݂� pos �ɓ����i����ŕ����Ă���Ԃ����肪�Y���܂���j
+    // 画像とコライダーの位置を現在の pos に同期（これで浮いている間も判定がズレません）
     image.pos = pos;
     collider.x = pos.x;
     collider.y = pos.y;
@@ -94,7 +96,7 @@ void BrickBlock::Update()
 
 
 
-    // �}���I�̓X�[�p�[�}���I�Ƃ��t�@�C�A�}���I�ɂȂ�����c
+    // マリオはスーパーマリオとかファイアマリオになったら…
 }
 
 void BrickBlock::Render(Camera camera)

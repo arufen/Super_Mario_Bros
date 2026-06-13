@@ -7,6 +7,8 @@ class Camera
 public: 
 	Float2 pos;
 
+	float cameraPosXLimit;
+
 	// コンストラクタ
 	// ※posはカメラの中心ではなく、画面左上角に相当するワールド座標を表します
 	Camera();
