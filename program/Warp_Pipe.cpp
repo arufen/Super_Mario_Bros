@@ -2,6 +2,7 @@
 #include "Mario.h"
 #include "Dxlib.h"
 #include "StageManager.h"
+#include "Sound.h"
 
 Pipe::Pipe()
 {
@@ -33,7 +34,7 @@ void Pipe::Init(Float2 startPos, int tLeft, int tRight, int bLeft, int bRight, i
 
 void Pipe::OnHitTop(RigidBody& player)
 {
-	if (!isWarpPipe)return;
+	if (!isWarpPipe) return;
 
 	if (isWarpPipe && CheckHitKey(KEY_INPUT_S))
 	{
@@ -43,11 +44,12 @@ void Pipe::OnHitTop(RigidBody& player)
 			if (mario != nullptr)
 			{
 				float pipeCenterX = this->pos.x + (BLOCK_SIZE);
-				mario->position.x = pipeCenterX - ((float)mario->marioImage.sizeX / 2.0f);
+				mario->position.x = pipeCenterX - ((float)mario->small_mario_waitImage.sizeX / 2.0f);
 
-				float surfaceY = this->pos.y - ((float)mario->marioImage.sizeY + 2.0f);
-				//mario->Warping(surfaceY);
+				float surfaceY = this->pos.y - ((float)mario->small_mario_waitImage.sizeY + 2.0f);
 				mario->Warping(mario->position.x, surfaceY, Mario::WarpDir::DOWN);
+
+				SoundManager::GetInstance().PlaySE("Warp");
 			}
 		}
 	}
@@ -106,6 +108,8 @@ void UnderWorldPipe::OnHitSide(RigidBody& player)
 
 		// Start warping from where he currently stands, but slide him to the RIGHT
 		mario->Warping(mario->position.x, targetY, Mario::WarpDir::RIGHT);
+
+		SoundManager::GetInstance().PlaySE("Warp");
 	}
 }
 void UnderWorldPipe::Update()

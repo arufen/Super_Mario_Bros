@@ -82,6 +82,9 @@ public:
 	void TransferWorldZone(WorldZone newZone); // handle world zone transitions (ワールドゾーンの切り替えを処理)
 	bool GetIsUnderworld() const { return currentzone == WorldZone::UNDERWORLD; }
 
+	// 現在のワールドゾーン（地上/地下）を返す関数
+	WorldZone GetWorldZone() const { return currentzone; }
+
 private:
 	//singleton pattern(シングルトンパターン）
 	StageManager() : currentzone(WorldZone::OVERWORLD){}

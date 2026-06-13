@@ -20,6 +20,10 @@ public:
 	virtual void WaitForCamera(Camera& camera) override;
 	virtual void TakeDamage(RigidBody& attacker) override;
 	virtual void OnHitTop(RigidBody& player) override;
+	virtual void OnHitSide(RigidBody& player) override;
+	virtual void OnHitBottom(RigidBody& player) override;
+
+	void Destroy();
 
 	//Main thread
 	void Init(float x, float y, int handle);

@@ -1,4 +1,5 @@
 #include "Goomba.h"
+#include "Mario.h"
 
 void Goomba::Init(float x, float y, int handle)
 {
@@ -80,6 +81,33 @@ void Goomba::WaitForCamera(Camera& camera)
 void Goomba::OnHitTop(RigidBody& player)
 {
 	TakeDamage(player);
+}
+
+// 横からマリオがぶつかった時の処理
+void Goomba::OnHitSide(RigidBody& player)
+{
+	// すでに踏まれて死んでいる（潰れかけの）クリボーなら判定しない
+	if (state == EnemyState::DEAD) return;
+
+	// 当たってきたオブジェクトがマリオかどうかをチェック
+	Mario* mario = dynamic_cast<Mario*>(&player);
+	if (mario != nullptr)
+	{
+		// マリオを死亡状態にする
+		mario->ToDeadState();
+	}
+}
+
+// 下からマリオがぶつかった時の処理（ジャンプ中に頭をぶつけるなど）
+void Goomba::OnHitBottom(RigidBody& player)
+{
+	if (state == EnemyState::DEAD) return;
+
+	Mario* mario = dynamic_cast<Mario*>(&player);
+	if (mario != nullptr)
+	{
+		mario->ToDeadState();
+	}
 }
 
 void Goomba::RenderGlobal(Camera& camera)
