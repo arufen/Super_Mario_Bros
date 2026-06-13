@@ -124,7 +124,16 @@ void Mario::ResolveCollision(Collidable& block)
 						break;
 					}
 				}
-
+				CoinBrickBlock* coinBrickBlock = dynamic_cast<CoinBrickBlock*>(&block);
+				if (coinBrickBlock != nullptr && coinBrickBlock->IsAvailable())
+				{
+					switch (coinBrickBlock->itemType)
+					{
+					case CoinBrickBlockItem::COIN:
+						AddCoin();
+						break;
+					}
+				}
 				block.OnHitBottom(*this);
 			}
 		}

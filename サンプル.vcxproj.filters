@@ -35,6 +35,7 @@
     <ClCompile Include="program\Time.cpp" />
     <ClCompile Include="program\Warp_Pipe.cpp" />
     <ClCompile Include="program\Enemy.cpp" />
+    <ClCompile Include="program\Firebar.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="program\1-Up_Mushroom.h" />
@@ -72,5 +73,6 @@
     <ClInclude Include="program\Time.h" />
     <ClInclude Include="program\Warp_Pipe.h" />
     <ClInclude Include="program\Enemy.h" />
+    <ClInclude Include="program\Firebar.h" />
   </ItemGroup>
 </Project>

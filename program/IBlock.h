@@ -8,7 +8,7 @@ const int line2 = 25;
 const int line3 = 26;
 const int line4 = 27;
 
-enum class BlockType {BRICK, QUESTION, HARD, PIPE, UNDERWORLDPIPE, HARDPIPE, HIDDEN};
+enum class BlockType {BRICK, COINBRICK, QUESTION, HARD, PIPE, UNDERWORLDPIPE, HARDPIPE, HIDDEN};
 
 enum class WorldZone { OVERWORLD, UNDERWORLD};
 
@@ -40,7 +40,7 @@ const BlockSpawnData world1_1data[] = {
 
     // 3rd Block Cluster (91-115)
     {94, 5, BlockType::QUESTION},
-    { 91, 5 , BlockType::BRICK}, { 92, 5 , BlockType::BRICK}, { 93, 5 , BlockType::BRICK}, { 94, 9 , BlockType::BRICK},
+    { 91, 5 , BlockType::BRICK}, { 92, 5 , BlockType::BRICK}, { 93, 5 , BlockType::BRICK}, { 94, 9 , BlockType::COINBRICK},
     { 100, 9 , BlockType::BRICK},{ 101, 9 , BlockType::BRICK},
     {106, 9, BlockType::QUESTION},{109, 5, BlockType::QUESTION},{109, 9, BlockType::QUESTION},{112, 9, BlockType::QUESTION},
     // 4th Block Cluster (Double row block bridge spanning across columns 118-132)
@@ -92,6 +92,11 @@ const BlockSpawnData underworld1_1data[] =
   { 60, line4 , BlockType::HARD },{ 61, line4 , BlockType::HARD },{ 62, line4 , BlockType::HARD },{ 63, line4, BlockType::HARD },{ 64, line4 , BlockType::HARD },{ 65, line4 , BlockType::HARD },{ 66, line4 , BlockType::HARD },
 };
 
+const BlockSpawnData world1_4data[] = 
+{
+    { 20, 9 , BlockType::BRICK},
+    
+};
 class IBlock
 {
 public:

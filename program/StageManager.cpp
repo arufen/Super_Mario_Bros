@@ -154,6 +154,13 @@ vector<Collidable*> StageManager::GetCollidables()
 			if (physicsObject != nullptr) {
 				result.push_back(physicsObject);
 			}
+			// Unpack the spinning fireballs if this block is a FireBar
+			FireBar* fireBar = dynamic_cast<FireBar*>(block);
+			if (fireBar != nullptr) {
+				for (auto& fireball : fireBar->GetFireballs()) {
+					result.push_back(&fireball); // Safe conversion to Collidable*
+				}
+			}
 		}
 	}
 	for (auto* pipe : globalPipes) {
@@ -161,6 +168,7 @@ vector<Collidable*> StageManager::GetCollidables()
 			result.push_back(pipe); // Makes the pipe solid to Mario!
 		}
 	}
+	
 	
 	for (auto& g : underworld_ground)
 		result.push_back(&g);
@@ -219,6 +227,7 @@ void StageManager::Init()
 
 	int texBrick =	LoadGraph("data/image/brick_block.png");
 	int texQuestion = LoadGraph("data/image/question_block.png");
+	//int texQuestion = LoadGraph("data/image/QuestionBlockAnimation.png");
 	int texEmpty =	LoadGraph("data/image/empty_block.png");
 	int texHard = LoadGraph("data/image/hard_block.png");
 	int tLeft =	LoadGraph("data/image/top_left.png");
@@ -229,7 +238,27 @@ void StageManager::Init()
 	int pHole = LoadGraph("data/image/underworld_pipe.png");
 	int pLong = LoadGraph("data/image/underworld_lpipe.png");
 
+	int fireSpriteHandle = LoadGraph("data/image/firebar.png");
+	int blockSpriteHandle = LoadGraph("data/image/hard_block.png");
+
+	// 2. Create the fire bar block
+	FireBar* testFireBar = new FireBar();
+	testFireBar->Init(Float2(448.0f, 640.0f), blockSpriteHandle, fireSpriteHandle,CLOCKWISE, 6);
+
+	// FIX: Change 'blockList' to 'overworld1_1Blocks'
+	// This seamlessly registers it into StageManager's active tracking loop!
+	overworld1_1Blocks.push_back(testFireBar);
+
+	// 2. Create the fire bar block
+	FireBar* testFireBar2 = new FireBar();
+	testFireBar2->Init(Float2(640.0f, 640.0f), blockSpriteHandle, fireSpriteHandle, COUNTERCLOCKWISE, 6);
+
+	// FIX: Change 'blockList' to 'overworld1_1Blocks'
+	// This seamlessly registers it into StageManager's active tracking loop!
+	overworld1_1Blocks.push_back(testFireBar2);
+
 	int totalOVerworldBlocks = sizeof(world1_1data) / sizeof(BlockSpawnData);
+
 
 	for (int i = 0; i < totalOVerworldBlocks; i++)
 	{
@@ -243,17 +272,23 @@ void StageManager::Init()
 			brick->Init(pixelPos, texBrick);
 			overworld1_1Blocks.push_back(brick);
 		}
+		else if (world1_1data[i].type == BlockType::COINBRICK)
+		{
+			CoinBrickBlock* coinbrick = new CoinBrickBlock();
+			coinbrick->Init(pixelPos, texBrick, texHard);
+			overworld1_1Blocks.push_back(coinbrick);
+		}
 		else if (world1_1data[i].type == BlockType::QUESTION)
 		{
 			QuestionBlock* qblock = new QuestionBlock();
 			qblock->Init(pixelPos, texQuestion, texHard);
 			overworld1_1Blocks.push_back(qblock);
 		}
-		//else if (world1_1data[i].type == BlockType::HIDDEN)
-		//{
-		//	HiddenBlock* hiddenBlk = new HiddenBlock(pixelPos, texHard);
-		//	overworld1_1Blocks.push_back(hiddenBlk);
-		//}
+		else if (world1_1data[i].type == BlockType::HIDDEN)
+		{
+			HiddenBlock* hiddenBlk = new HiddenBlock(pixelPos, texHard);
+			overworld1_1Blocks.push_back(hiddenBlk);
+		}
 		else if (world1_1data[i].type == BlockType::HARD)
 		{
 			HardBlock* hblock = new HardBlock();

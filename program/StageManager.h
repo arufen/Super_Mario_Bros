@@ -11,6 +11,7 @@
 #include "IBlock.h"
 #include "Warp_Pipe.h"
 #include "Coin.h"
+#include "Firebar.h"
 
 //Enemies
 #include "Goomba.h"
