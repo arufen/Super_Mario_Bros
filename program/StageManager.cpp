@@ -598,6 +598,9 @@ void StageManager::Init(Stage stageNumber)
 
 void StageManager::Update(Camera& camera)
 {
+
+	
+
 	if (currentzone == WorldZone::OVERWORLD) {
 		for (IBlock* b : overworld1_1Blocks) { b->Update(); }
 		for (IBlock* b : overworld1_4Blocks) { b->Update(); }
@@ -608,6 +611,14 @@ void StageManager::Update(Camera& camera)
 		for (int i = 0; i < goomba.size(); i++)
 		{
 			goomba[i]->Update(camera);
+			if (MainMario.isStarMode)
+			{
+				goomba[i]->isTrigger = true;
+			}
+			else
+			{
+				goomba[i]->isTrigger = false;
+			}
 
 			if (goomba[i]->state == EnemyState::DEAD)
 			{
@@ -623,6 +634,16 @@ void StageManager::Update(Camera& camera)
 		for (int i = 0; i < koopaTroopa.size(); i++)
 		{
 			koopaTroopa[i]->Update(camera, MainMario);
+
+
+			if (MainMario.isStarMode)
+			{
+				koopaTroopa[i]->isTrigger = true;
+			}
+			else
+			{
+				koopaTroopa[i]->isTrigger = false;
+			}
 
 			if (koopaTroopa[i]->state == EnemyState::DEAD)
 			{
