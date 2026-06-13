@@ -9,11 +9,22 @@
 
 class RigidBody; 
 
+enum class PhysicsLayer
+{
+    DEFAULT,
+    ENEMY,
+    ITEM,
+    PLAYER,
+};
+
 class Collidable
 {
 public:
     Collider collider;
     bool isTrigger = false;
+
+    //to make sure enemy is not colliding with collectable item
+    PhysicsLayer layer = PhysicsLayer::DEFAULT;
 
     virtual void OnHitTop(RigidBody& mario) {}
     virtual void OnHitBottom(RigidBody& mario) {}

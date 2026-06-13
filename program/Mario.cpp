@@ -63,7 +63,7 @@ void Mario::ResolveCollision(Collidable& block)
 	float bias = 0.5f;
 	if (dynamic_cast<Enemy*>(&block) != nullptr)
 	{
-		bias = 14.0f; // 10.0f〜15.0f 程度にすると「理不尽な横死」がなくなります
+ 		bias = 14.0f; // 10.0f〜15.0f 程度にすると「理不尽な横死」がなくなります
 	}
 
 	if (minY < minX + bias)
@@ -87,6 +87,7 @@ void Mario::ResolveCollision(Collidable& block)
 			if (enemy != nullptr)
 			{
 				Jump();
+				/*enemy->TakeDamage(*this);*/
 			}
 			
 
@@ -131,7 +132,16 @@ void Mario::ResolveCollision(Collidable& block)
 						break;
 					}
 				}
-
+				CoinBrickBlock* coinBrickBlock = dynamic_cast<CoinBrickBlock*>(&block);
+				if (coinBrickBlock != nullptr && coinBrickBlock->IsAvailable())
+				{
+					switch (coinBrickBlock->itemType)
+					{
+					case CoinBrickBlockItem::COIN:
+						AddCoin();
+						break;
+					}
+				}
 				block.OnHitBottom(*this);
 			}
 		}
@@ -155,16 +165,6 @@ void Mario::ResolveCollision(Collidable& block)
 	}
 }
 
-//void Mario::Warping(float pipeY)
-//{
-//	currentState = MarioState::WARPING;
-//	warpTimer = 0.0f;
-//
-//	now_speed_x = 0.0f;
-//	now_speed_y = 0.0f;
-//
-//	position.y = pipeY;
-//}
 void Mario::Warping(float targetX, float targetY, WarpDir dir)
 {
 	currentState = MarioState::WARPING;
@@ -473,10 +473,6 @@ void Mario::Update()
 			MainCamera.pos.x = marioWorldCenterX - (SCREEN_W / 2);
 		}
 	}
-
-	// カメラの移動可能範囲を制限 (0 ～ 12480)
-	if (MainCamera.pos.x < 0) MainCamera.pos.x = 0;
-	if (MainCamera.pos.x > 12480) MainCamera.pos.x = 12480;
 
 	// マリオがカメラの左端より外に出ないようにする
 	if (position.x < MainCamera.pos.x)

@@ -10,12 +10,25 @@
 #include "Ground.h"
 #include "IBlock.h"
 #include "Warp_Pipe.h"
+
+//ITEMS
 #include "Coin.h"
+#include "Firebar.h"
+#include "Super_Mushroom.h"
+#include "Fire_Flower.h"
+#include "Super_Star.h"
 
 //Enemies
 #include "Goomba.h"
+#include "Koopa_Troopa.h"
 
 using namespace std;
+
+enum class Stage
+{
+	WORLD_1_1,
+	WORLD_1_4,
+};
 
 class StageManager
 {
@@ -34,6 +47,7 @@ public:
 
 	//Enemy （敵）
 	vector<Goomba*> goomba;
+	vector<KoopaTroopa*> koopaTroopa;
 
 	// returns all collidable blocks for mario to register
 	vector<Collidable*> GetCollidables();
@@ -49,13 +63,20 @@ public:
 	vector<IBlock*> underworldBlocks;
 	vector<IBlock*> globalBlocks;
 
-
+	//Collectable Item
 	vector<Coin*> coins;
+	vector<SuperMushroom*> superMushroom;
+	vector<FireFlower*> fireFlower;
+	vector<SuperStar*> superStar;
+
 
 	Image background;
 
+	//Cleanup all vectors
+	void ClearStage();
+
 	//Main thread 
-	void Init();	//Load blocks (ブロックの初期化）
+	void Init(Stage stageNumber);	//Load blocks (ブロックの初期化）
 	void Update(Camera& camera);	//Check Collision （当たり判定チェック）
 	void Render(Camera& camera); //Camera is for render globally (グロバール座標を使うためにカメラが必要）
 

@@ -19,9 +19,6 @@ void BrickBlock::Init(Float2 startPos, int graphHandle)
     pos = startPos;
     originalPos = startPos;
     active = true;
-    
-    isBouncing = false;
-    bounceTimer = 0.0f;
 
     image.InitialImageAndSize(graphHandle);
     image.pos = pos;
@@ -30,27 +27,29 @@ void BrickBlock::Init(Float2 startPos, int graphHandle)
 
 void BrickBlock::OnHitBottom(RigidBody& player)
 {
-    // ˆø”‚Ì player ‚ğ Mario ƒNƒ‰ƒX‚ÉˆÀ‘S‚ÉƒLƒƒƒXƒg
+    // å¼•æ•°ã® player ã‚’ Mario ã‚¯ãƒ©ã‚¹ã«å®‰å…¨ã«ã‚­ãƒ£ã‚¹ãƒˆ
+    //ignore object other than mario
     Mario* mario = dynamic_cast<Mario*>(&player);
+    if (!mario) return;
 
     if (mario != nullptr)
     {
-        // ƒXƒ‚[ƒ‹ƒ}ƒŠƒI‚Ì‚ÍƒuƒƒbƒN‚ğ‰ó‚³‚È‚¢I
+        // ã‚¹ãƒ¢ãƒ¼ãƒ«ãƒãƒªã‚ªã®æ™‚ã¯ãƒ–ãƒ­ãƒƒã‚¯ã‚’å£Šã•ãªã„ï¼
         if (mario->GetForm() == MarioForm::SMALL)
         {
-            // ‚Ü‚¾’µ‚Ë‚Ä‚¢‚È‚¢‚¾‚¯’µ‚Ë•Ô‚èƒAƒjƒ[ƒVƒ‡ƒ“‚ğŠJn
+            // ã¾ã è·³ã­ã¦ã„ãªã„æ™‚ã ã‘è·³ã­è¿”ã‚Šã‚¢ãƒ‹ãƒ¡ãƒ¼ã‚·ãƒ§ãƒ³ã‚’é–‹å§‹
             if (!isBouncing)
             {
                 isBouncing = true;
                 bounceTimer = 0.0f;
-                // ‚±‚±‚ÅƒuƒƒbƒN‚ğ’@‚¢‚½i‰ó‚ê‚È‚¢•ûj‚ÌSE‚ğ–Â‚ç‚·‚Æ‚³‚ç‚ÉÅ‚‚Å‚·I
+                // ã“ã“ã§ãƒ–ãƒ­ãƒƒã‚¯ã‚’å©ã„ãŸæ™‚ï¼ˆå£Šã‚Œãªã„æ–¹ï¼‰ã®SEã‚’é³´ã‚‰ã™ã¨ã•ã‚‰ã«æœ€é«˜ã§ã™ï¼
                 SoundManager::GetInstance().PlaySE("Bump");
             }
-            return; // ”j‰óˆ—‚É‚¢‚©‚¹‚¸A‚±‚±‚ÅI—¹‚·‚é
+            return; // ç ´å£Šå‡¦ç†ã«ã„ã‹ã›ãšã€ã“ã“ã§çµ‚äº†ã™ã‚‹
         }
     }
 
-    // ƒX[ƒp[ƒ}ƒŠƒIˆÈã‚Ìê‡‚ÍA]—ˆ’Ê‚èƒuƒƒbƒN‚ğ”j‰óiÁ–Åj‚³‚¹‚é
+    // ã‚¹ãƒ¼ãƒ‘ãƒ¼ãƒãƒªã‚ªä»¥ä¸Šã®å ´åˆã¯ã€å¾“æ¥é€šã‚Šãƒ–ãƒ­ãƒƒã‚¯ã‚’ç ´å£Šï¼ˆæ¶ˆæ»…ï¼‰ã•ã›ã‚‹
     active = false;
 
     collider.x = -9999.0f;
@@ -62,30 +61,30 @@ void BrickBlock::Update()
 {
     if (!active) return;
 
-    // ’@‚©‚ê‚½‚Ìuƒ|ƒRƒbv‚Æ‚¢‚¤’µ‚Ë•Ô‚èƒAƒjƒ[ƒVƒ‡ƒ“ˆ—
+    // å©ã‹ã‚ŒãŸæ™‚ã®ã€Œãƒã‚³ãƒƒã€ã¨ã„ã†è·³ã­è¿”ã‚Šã‚¢ãƒ‹ãƒ¡ãƒ¼ã‚·ãƒ§ãƒ³å‡¦ç†
     if (isBouncing)
     {
-        bounceTimer += 1.0f; // –ˆƒtƒŒ[ƒ€ 1.0 ‚¸‚Âi‚ß‚é
+        bounceTimer += 1.0f; // æ¯ãƒ•ãƒ¬ãƒ¼ãƒ  1.0 ãšã¤é€²ã‚ã‚‹
 
-        // ‘O”¼6ƒtƒŒ[ƒ€F‚‘¬‚Åã‚ÉˆÚ“®i1ƒtƒŒ[ƒ€‚É‚Â‚«3pxAŒv18pxã¸j
+        // å‰åŠ6ãƒ•ãƒ¬ãƒ¼ãƒ ï¼šé«˜é€Ÿã§ä¸Šã«ç§»å‹•ï¼ˆ1ãƒ•ãƒ¬ãƒ¼ãƒ ã«ã¤ã3pxã€è¨ˆ18pxä¸Šæ˜‡ï¼‰
         if (bounceTimer <= 6.0f)
         {
             pos.y -= 3.0f;
         }
-        // Œã”¼6ƒtƒŒ[ƒ€F“¯‚¶‘¬“x‚Å‰º‚ÉˆÚ“®‚µ‚Ä–ß‚é
+        // å¾ŒåŠ6ãƒ•ãƒ¬ãƒ¼ãƒ ï¼šåŒã˜é€Ÿåº¦ã§ä¸‹ã«ç§»å‹•ã—ã¦æˆ»ã‚‹
         else if (bounceTimer <= 12.0f)
         {
             pos.y += 3.0f;
         }
-        // 12ƒtƒŒ[ƒ€‚ğ’´‚¦‚½‚çƒAƒjƒ[ƒVƒ‡ƒ“I—¹
+        // 12ãƒ•ãƒ¬ãƒ¼ãƒ ã‚’è¶…ãˆãŸã‚‰ã‚¢ãƒ‹ãƒ¡ãƒ¼ã‚·ãƒ§ãƒ³çµ‚äº†
         else
         {
-            pos.y = originalPos.y; // ƒYƒŒ‚ğ–h‚®‚½‚ß‚ÉŒ³‚ÌˆÊ’u‚Éƒsƒbƒ^ƒŠŒÅ’è
+            pos.y = originalPos.y; // ã‚ºãƒ¬ã‚’é˜²ããŸã‚ã«å…ƒã®ä½ç½®ã«ãƒ”ãƒƒã‚¿ãƒªå›ºå®š
             isBouncing = false;
         }
     }
 
-    // ‰æ‘œ‚ÆƒRƒ‰ƒCƒ_[‚ÌˆÊ’u‚ğŒ»İ‚Ì pos ‚É“¯Šúi‚±‚ê‚Å•‚‚¢‚Ä‚¢‚éŠÔ‚à”»’è‚ªƒYƒŒ‚Ü‚¹‚ñj
+    // ç”»åƒã¨ã‚³ãƒ©ã‚¤ãƒ€ãƒ¼ã®ä½ç½®ã‚’ç¾åœ¨ã® pos ã«åŒæœŸï¼ˆã“ã‚Œã§æµ®ã„ã¦ã„ã‚‹é–“ã‚‚åˆ¤å®šãŒã‚ºãƒ¬ã¾ã›ã‚“ï¼‰
     image.pos = pos;
     collider.x = pos.x;
     collider.y = pos.y;
@@ -94,12 +93,120 @@ void BrickBlock::Update()
 
 
 
-    // ƒ}ƒŠƒI‚ÍƒX[ƒp[ƒ}ƒŠƒI‚Æ‚©ƒtƒ@ƒCƒAƒ}ƒŠƒI‚É‚È‚Á‚½‚çc
+    // ãƒãƒªã‚ªã¯ã‚¹ãƒ¼ãƒ‘ãƒ¼ãƒãƒªã‚ªã¨ã‹ãƒ•ã‚¡ã‚¤ã‚¢ãƒãƒªã‚ªã«ãªã£ãŸã‚‰â€¦
 }
 
 void BrickBlock::Render(Camera camera)
 {
     if (!active) return;
 
+    camera.GlobalRenderImage(image);
+}
+
+CoinBrickBlock::CoinBrickBlock()
+{
+    pos.Set(0.0f, 0.0f);
+    originalPos.Set(0.0f, 0.0f);
+    active = false;
+
+    isBouncing = false;
+    isAvailable = true;
+    bounceTimer = 0.0f;
+}
+
+void CoinBrickBlock::Init(Float2 startPos, int active_graph, int next_graph)
+{
+    pos = startPos;
+    originalPos = startPos;
+    texActive = active_graph;
+    texNext = next_graph;
+    active = true;
+    hit_count = 0;
+
+    image.InitialImageAndSize(texActive);
+    image.pos = pos;
+    collider = Collider(pos.x, pos.y, (float)image.sizeX, (float)image.sizeY);
+
+    itemType = CoinBrickBlockItem::COIN; // Default item type (can be set to other types as needed)
+
+    if (itemType == CoinBrickBlockItem::COIN)
+    {
+        itemCoinAnim.InitialAnimation(LoadGraph("data/image/item_coin.png"), 4, 10);
+        itemCoinAnim.x = pos.x + image.sizeX / 2.0f - itemCoinAnim.sprite.sizeX / 2.0f;
+        itemCoinAnim.y = pos.y + image.sizeY / 2.0f - itemCoinAnim.sprite.sizeY / 2.0f;
+    }
+}
+
+void CoinBrickBlock::OnHitBottom(RigidBody& player)
+{
+    if (!isAvailable || isBouncing) return;
+
+    hit_count++;
+
+    isBouncing = true;
+    bounceTimer = 0.0f;
+
+    itemCoinAnimationTimer.ResetTimer();
+}
+void CoinBrickBlock::Update()
+{
+    if (!itemCoinAnimationTimer.TimerHit())
+    {
+        itemCoinAnimationTimer.Update();
+        itemCoinAnim.AnimationUpdateLoop();
+
+        float totalTime = itemCoinAnimationTimer.MAX_TIMER;
+        float elapsed = totalTime - itemCoinAnimationTimer.GetCurrentTimer();
+        float t = elapsed / totalTime;
+
+        float offset = -16.0f;
+        float length = 64.0f * 3.5f;
+
+        itemCoinAnim.x = pos.x + image.sizeX / 2.0f - itemCoinAnim.sprite.sizeX / 2.0f;
+        itemCoinAnim.y = pos.y + offset - sinf(t * 3.14159f) * length;
+    }
+    if (!active) return;
+
+    if (isBouncing)
+    {
+        bounceTimer += 1.0f;
+
+        // Up for 6 frames, down for 6 frames
+        if (bounceTimer <= 6.0f)
+        {
+            pos.y -= 3.0f;
+        }
+        else if (bounceTimer <= 12.0f)
+        {
+            pos.y += 3.0f;
+        }
+        else
+        {
+            pos.y = originalPos.y; // Snap back to original position
+            isBouncing = false;
+
+            // Only disable the block if it has reached max hits
+            if (hit_count >= 9)
+            {
+                isAvailable = false;
+                image.InitialImageAndSize(texNext); // Change texture immediately when it empties
+            }
+        }
+    }
+
+    image.pos = pos;
+    collider.y = pos.y;
+    collider.x = pos.x;
+}
+
+
+void CoinBrickBlock::Render(Camera camera)
+{
+    if (!itemCoinAnimationTimer.TimerHit())
+    {
+        camera.GlobalRenderAnimation(itemCoinAnim);
+    }
+
+    if (!active) return;
     camera.GlobalRenderImage(image);
 }

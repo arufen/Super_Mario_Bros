@@ -16,4 +16,5 @@ public:
     // 外部（マリオクラスなど）から時間切れを判定したい時のための関数
     int GetCount() const { return count; }
     bool IsTimeUp() const { return count <= 0; }
+    void SetCount(int newCount) { count = newCount; }
 };

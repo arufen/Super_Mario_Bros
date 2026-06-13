@@ -12,9 +12,4 @@ void Ground::Init(float x, float y, int handle)
 void Ground::RenderGlobal(Camera& camera)
 {
 	camera.GlobalRenderImage(image);
-
-
-    //debug
-	/*camera.GlobalRenderBox(collider.x, collider.y, (collider.x + collider.width), (collider.y + collider.height), GetColor(255, 0, 0), false);*/
-	/*DrawCircleAA(position.x, position.y, 5, 10, GetColor(0, 255, 0), true);*/
 }

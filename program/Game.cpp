@@ -56,7 +56,7 @@ void GameInit()
 	// カメラの初期位置を設定
 	MainCamera.pos.Set(0.0f, 0.0f);
 
-	StageManager::GetInstance().Init();
+	StageManager::GetInstance().Init(Stage::WORLD_1_1);
 
 	// register all collidables into for every object that has RigidBody
 	for (auto* block : StageManager::GetInstance().GetCollidables())
@@ -91,9 +91,25 @@ void GameUpdate()
 	MainTime.Update();
 	StageManager::GetInstance().Update(MainCamera);
 	
-
+	MainCamera.Update();
 	// デバッグ機能（モード切り替えなど）の更新
 	MainDebug.Update();
+
+	if (PushHitKey(KEY_INPUT_S) && CheckHitKey(KEY_INPUT_LCONTROL))
+	{
+		//test
+		StageManager::GetInstance().ClearStage();
+		StageManager::GetInstance().Init(Stage::WORLD_1_4);
+
+		//Change time 
+		MainTime.SetCount(300);
+
+		// register all collidables into for every object that has RigidBody
+		for (auto* block : StageManager::GetInstance().GetCollidables())
+		{
+			RigidBody::collidables.push_back(block);
+		}
+	}
 }
 //---------------------------------------------------------------------------------
 //	描画処理
@@ -142,6 +158,8 @@ void GameRender()
 			c->Render(MainCamera);
 		}
 	}
+
+	DrawString(0, 100, "CTRL + S でステージを変える", GetColor(200, 0, 0));
 }
 //---------------------------------------------------------------------------------
 //	終了処理
