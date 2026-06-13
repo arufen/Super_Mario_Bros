@@ -204,6 +204,13 @@ vector<Collidable*> StageManager::GetCollidables()
 			if (physicsObject != nullptr) {
 				result.push_back(physicsObject);
 			}
+			// Unpack the spinning fireballs if this block is a FireBar
+			FireBar* fireBar = dynamic_cast<FireBar*>(block);
+			if (fireBar != nullptr) {
+				for (auto& fireball : fireBar->GetFireballs()) {
+					result.push_back(&fireball); // Safe conversion to Collidable*
+				}
+			}
 		}
 	}
 	for (auto* pipe : globalPipes) {
@@ -211,6 +218,7 @@ vector<Collidable*> StageManager::GetCollidables()
 			result.push_back(pipe); // Makes the pipe solid to Mario!
 		}
 	}
+	
 	
 	for (auto& g : underworld_ground)
 		result.push_back(&g);
@@ -294,6 +302,7 @@ void StageManager::Init(Stage stageNumber)
 
 		int texBrick = LoadGraph("data/image/brick_block.png");
 		int texQuestion = LoadGraph("data/image/question_block.png");
+		//int texQuestion = LoadGraph("data/image/QuestionBlockAnimation.png");
 		int texEmpty = LoadGraph("data/image/empty_block.png");
 		int texHard = LoadGraph("data/image/hard_block.png");
 		int tLeft = LoadGraph("data/image/top_left.png");
@@ -304,7 +313,31 @@ void StageManager::Init(Stage stageNumber)
 		int pHole = LoadGraph("data/image/underworld_pipe.png");
 		int pLong = LoadGraph("data/image/underworld_lpipe.png");
 
+		int fireSpriteHandle = LoadGraph("data/image/firebar.png");
+		int blockSpriteHandle = LoadGraph("data/image/hard_block.png");
+
 		int totalOVerworldBlocks = sizeof(world1_1data) / sizeof(BlockSpawnData);
+
+		//Stairs
+		CreateStairs(134, 9, 137, 12, false);
+
+
+
+		// 2. Create the fire bar block
+		FireBar* testFireBar = new FireBar();
+		testFireBar->Init(Float2(448.0f, 640.0f), blockSpriteHandle, fireSpriteHandle, CLOCKWISE, 6);
+
+		// FIX: Change 'blockList' to 'overworld1_1Blocks'
+		// This seamlessly registers it into StageManager's active tracking loop!
+		overworld1_1Blocks.push_back(testFireBar);
+
+		// 2. Create the fire bar block
+		FireBar* testFireBar2 = new FireBar();
+		testFireBar2->Init(Float2(640.0f, 640.0f), blockSpriteHandle, fireSpriteHandle, COUNTERCLOCKWISE, 6);
+
+		// FIX: Change 'blockList' to 'overworld1_1Blocks'
+		// This seamlessly registers it into StageManager's active tracking loop!
+		overworld1_1Blocks.push_back(testFireBar2);
 
 		for (int i = 0; i < totalOVerworldBlocks; i++)
 		{
@@ -318,17 +351,23 @@ void StageManager::Init(Stage stageNumber)
 				brick->Init(pixelPos, texBrick);
 				overworld1_1Blocks.push_back(brick);
 			}
+			else if (world1_1data[i].type == BlockType::COINBRICK)
+			{
+				CoinBrickBlock* coinbrick = new CoinBrickBlock();
+				coinbrick->Init(pixelPos, texBrick, texHard);
+				overworld1_1Blocks.push_back(coinbrick);
+			}
 			else if (world1_1data[i].type == BlockType::QUESTION)
 			{
 				QuestionBlock* qblock = new QuestionBlock();
 				qblock->Init(pixelPos, texQuestion, texHard);
 				overworld1_1Blocks.push_back(qblock);
 			}
-			//else if (world1_1data[i].type == BlockType::HIDDEN)
-			//{
-			//	HiddenBlock* hiddenBlk = new HiddenBlock(pixelPos, texHard);
-			//	overworld1_1Blocks.push_back(hiddenBlk);
-			//}
+			else if (world1_1data[i].type == BlockType::HIDDEN)
+			{
+				HiddenBlock* hiddenBlk = new HiddenBlock(pixelPos, texHard);
+				overworld1_1Blocks.push_back(hiddenBlk);
+			}
 			else if (world1_1data[i].type == BlockType::HARD)
 			{
 				HardBlock* hblock = new HardBlock();
@@ -339,8 +378,7 @@ void StageManager::Init(Stage stageNumber)
 			{
 				Pipe* myPipe = new Pipe();
 				myPipe->Init(pixelPos, tLeft, tRight, bLeft, bRight, world1_1data[i].pipeHeight, world1_1data[i].isWarpPipe);
-
-				globalPipes.push_back(myPipe); // Save it to your vector!
+				globalPipes.push_back(myPipe);
 			}
 		}
 
@@ -433,6 +471,7 @@ void StageManager::Init(Stage stageNumber)
 		//Reset Camera (カメラをリセット）
 		MainCamera.pos.Set(0.0f, 0.0f);
 		MainCamera.cameraPosXLimit = 10240 - SCREEN_W;
+		
 
 		//Set background
 		background.InitialImageAndSize(LoadGraph("data/image/1-4_background.png"));
@@ -445,11 +484,11 @@ void StageManager::Init(Stage stageNumber)
 
 		//BOTTOM
 		CreateGrounds(0, 7, 2, 14, groundHandle);
-		CreateGrounds(3, 8, 3 , 14, groundHandle);
-		CreateGrounds(4, 9, 4 , 14, groundHandle);
-		CreateGrounds(5, 10, 12 , 14, groundHandle);
+		CreateGrounds(3, 8, 3, 14, groundHandle);
+		CreateGrounds(4, 9, 4, 14, groundHandle);
+		CreateGrounds(5, 10, 12, 14, groundHandle);
 
-		CreateGrounds(15, 10, 25 , 14, groundHandle);
+		CreateGrounds(15, 10, 25, 14, groundHandle);
 
 		CreateGrounds(29, 10, 29, 14, groundHandle);
 		CreateGrounds(30, 11, 30, 14, groundHandle);
@@ -459,11 +498,11 @@ void StageManager::Init(Stage stageNumber)
 		CreateGrounds(35, 9, 71, 14, groundHandle);
 		CreateGrounds(72, 10, 103, 14, groundHandle);
 
-		CreateGrounds(73, 13, 115, 14, groundHandle); 
+		CreateGrounds(73, 13, 115, 14, groundHandle);
 
-		CreateGrounds(116, 10, 119, 14, groundHandle); 
+		CreateGrounds(116, 10, 119, 14, groundHandle);
 
-		CreateGrounds(120, 13, 122, 14, groundHandle); 
+		CreateGrounds(120, 13, 122, 14, groundHandle);
 
 		CreateGrounds(123, 10, 127, 14, groundHandle);
 
@@ -478,22 +517,20 @@ void StageManager::Init(Stage stageNumber)
 		CreateGrounds(0, 2, 159, 2, groundHandle);
 
 		CreateGrounds(0, 3, 23, 4, groundHandle);
-		CreateGrounds(0, 2, 23, 4, groundHandle); 
+		CreateGrounds(0, 2, 23, 4, groundHandle);
 		CreateGrounds(23, 5, 23, 5, groundHandle); //one below it
 
-		CreateGrounds(37, 3, 71, 5, groundHandle); 
+		CreateGrounds(37, 3, 71, 5, groundHandle);
 
 		CreateGrounds(80, 3, 80, 3, groundHandle); //two one block
-		CreateGrounds(88, 3, 88, 3, groundHandle); 
+		CreateGrounds(88, 3, 88, 3, groundHandle);
 
-		CreateGrounds(97, 3, 103, 4, groundHandle); 
+		CreateGrounds(97, 3, 103, 4, groundHandle);
 
-		CreateGrounds(123, 3, 127, 4, groundHandle); 
+		CreateGrounds(123, 3, 127, 4, groundHandle);
 
 		//after the bridge
-		CreateGrounds(142, 3, 143, 5, groundHandle); 
-
-
+		CreateGrounds(142, 3, 143, 5, groundHandle);
 	}
 
 }

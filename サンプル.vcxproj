@@ -159,6 +159,7 @@
     <ClCompile Include="program\Collider.cpp" />
     <ClCompile Include="program\Debug.cpp" />
     <ClCompile Include="program\Enemy.cpp" />
+    <ClCompile Include="program\Firebar.cpp" />
     <ClCompile Include="program\Fireworks.cpp" />
     <ClCompile Include="program\Fire_Flower.cpp" />
     <ClCompile Include="program\Float2.cpp" />
@@ -196,6 +197,7 @@
     <ClInclude Include="program\Collider.h" />
     <ClInclude Include="program\Debug.h" />
     <ClInclude Include="program\Enemy.h" />
+    <ClInclude Include="program\Firebar.h" />
     <ClInclude Include="program\Fireworks.h" />
     <ClInclude Include="program\Fire_Flower.h" />
     <ClInclude Include="program\Float2.h" />

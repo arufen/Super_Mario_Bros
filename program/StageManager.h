@@ -13,6 +13,7 @@
 
 //ITEMS
 #include "Coin.h"
+#include "Firebar.h"
 #include "Super_Mushroom.h"
 #include "Fire_Flower.h"
 #include "Super_Star.h"

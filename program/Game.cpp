@@ -101,6 +101,9 @@ void GameUpdate()
 		StageManager::GetInstance().ClearStage();
 		StageManager::GetInstance().Init(Stage::WORLD_1_4);
 
+		//Change time 
+		MainTime.SetCount(300);
+
 		// register all collidables into for every object that has RigidBody
 		for (auto* block : StageManager::GetInstance().GetCollidables())
 		{

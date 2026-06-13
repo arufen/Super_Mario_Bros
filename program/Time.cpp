@@ -15,7 +15,7 @@ static std::string currentPlayingBGMKey = "";
 
 void GameTime::Init()
 {
-	count = 140; // サウンド確認のため一旦200スタートにしてます
+	count = 400; // サウンド確認のため一旦200スタートにしてます
     frameCounter = 0;
 
     // フラグの初期化
