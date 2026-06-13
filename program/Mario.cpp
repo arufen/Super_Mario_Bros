@@ -595,7 +595,8 @@ void Mario::Render()
 		return; // ワープ中はここで描画処理を終了する（下の歩きやジャンプを通さない）
 	}
 
-
+	if (currentForm == MarioForm::SMALL)
+	{
 	if (starEffect.isActive)
 	{
 		// スター状態の描画はお任せ
@@ -620,6 +621,18 @@ void Mario::Render()
 			else		DrawRotaGraph2(screenX, screenY, 0, 0, 1.0f, 0.0, small_mario_waitImage.image, TRUE, FALSE);
 		}
 	}
+	}
+	else if (currentForm == MarioForm::SUPER)
+	{
+		if (isLeft)	DrawRotaGraph2(screenX, screenY, 0, 0, 1.0f, 0.0, big_mario_waitImage.image, TRUE, TRUE);
+		else		DrawRotaGraph2(screenX, screenY, 0, 0, 1.0f, 0.0, big_mario_waitImage.image, TRUE, FALSE);
+	}
+	else if (currentForm == MarioForm::FIRE)
+	{
+		if (isLeft)	DrawRotaGraph2(screenX, screenY, 0, 0, 1.0f, 0.0, big_mario_fire_waitImage.image, TRUE, TRUE);
+		else		DrawRotaGraph2(screenX, screenY, 0, 0, 1.0f, 0.0, big_mario_fire_waitImage.image, TRUE, FALSE);
+	}
+
 
 	// DEBUG MODE
 	if (map_mode == MODE_DEBUG)
