@@ -124,6 +124,8 @@ public:
 	void AddCoin();
 	void Jump();
 	
+
+	void ChangeToSuper();
 	//void Warping(float pipeY);
 
 	enum class WarpDir { DOWN, RIGHT, UP, };

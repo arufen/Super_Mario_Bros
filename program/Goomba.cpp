@@ -95,7 +95,7 @@ void Goomba::OnHitSide(RigidBody& player)
 	if (mario != nullptr)
 	{
 		// ƒ}ƒŠƒI‚ðŽ€–Só‘Ô‚É‚·‚é
-		if (mario->isStarMode)
+		if (mario->starEffect.isActive)
 		{
 			TakeDamage(player);
 		}

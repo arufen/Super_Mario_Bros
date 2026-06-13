@@ -3,7 +3,7 @@
 
 void SuperStar::CollectItem(Mario& mario)
 {
-	mario.Star();
+	mario.starEffect.Start();
 	active = false;
 }
 

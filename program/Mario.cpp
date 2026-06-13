@@ -205,7 +205,7 @@ void Mario::Warping(float targetX, float targetY, WarpDir dir)
 void Mario::ToDeadState(bool isFall)
 {
 	if (currentState == MarioState::DEAD) return;
-	if (isStarMode) return;
+	if (starEffect.isActive) return;
 
 	if (currentForm == MarioForm::SMALL)
 	{
@@ -734,11 +734,6 @@ void StarEffect::Render(int screenX, int screenY, bool isLeft, bool isJumping, b
 		waitAnim.y = (float)screenY;
 		waitAnim.AnimationRenderCenter(isLeft);
 	}
-}
-void Mario::Star()
-{
-	isStarMode = true;
-	starTimer = 600.0f; // 例: 60fps環境で10秒間 (60 * 10)
 }
 
 void Mario::ChangeToSuper()
