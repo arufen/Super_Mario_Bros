@@ -1,6 +1,8 @@
 #pragma once
 #include "Collidable.h"
-#include "Mario.h"
+
+class Mario;
+
 class CollectableItem : public Collidable
 {
 public:
