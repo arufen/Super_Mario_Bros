@@ -56,7 +56,7 @@ void GameInit()
 	// カメラの初期位置を設定
 	MainCamera.pos.Set(0.0f, 0.0f);
 
-	StageManager::GetInstance().Init();
+	StageManager::GetInstance().Init(Stage::WORLD_1_1);
 
 	// register all collidables into for every object that has RigidBody
 	for (auto* block : StageManager::GetInstance().GetCollidables())
@@ -80,44 +80,77 @@ void GameUpdate()
 	}
 
 	MainMario.Update();
+
+	// マリオが死亡状態なら、これ以降の更新をすべてスキップしてフリーズさせる
+	if (MainMario.GetState() == MarioState::DEAD)
+	{
+		// タイムの進行や、StageManager（クリボーの移動など）のUpdateを通さない
+		return;
+	}
+
 	MainTime.Update();
 	StageManager::GetInstance().Update(MainCamera);
 	
-
+	MainCamera.Update();
 	// デバッグ機能（モード切り替えなど）の更新
 	MainDebug.Update();
+
+	if (PushHitKey(KEY_INPUT_S) && CheckHitKey(KEY_INPUT_LCONTROL))
+	{
+		//test
+		StageManager::GetInstance().ClearStage();
+		StageManager::GetInstance().Init(Stage::WORLD_1_4);
+
+		//Change time 
+		MainTime.SetCount(300);
+
+		// register all collidables into for every object that has RigidBody
+		for (auto* block : StageManager::GetInstance().GetCollidables())
+		{
+			RigidBody::collidables.push_back(block);
+		}
+	}
 }
 //---------------------------------------------------------------------------------
 //	描画処理
 //---------------------------------------------------------------------------------
 void GameRender()
 {
-	//BACKGROUND
+	// 1. 背景の描画
 	MainCamera.GlobalRenderImage(StageManager::GetInstance().background);
-	
-	
 
-	// マリオの手前に残り時間を描画
-	MainTime.Render();
-
-	// 一番手前にデバッグ情報を描画
-	MainDebug.Render();
-
-	//// マップの手前にマリオを描画
-	//MainMario.Render();
+	// 2. 地下なら画面全体を真っ黒に塗りつぶす（背景を上書き）
 	if (StageManager::GetInstance().currentzone == WorldZone::UNDERWORLD)
 	{
 		DrawBox(0, 0, SCREEN_W, SCREEN_H, GetColor(0, 0, 0), TRUE);
 	}
-	// マップの手前にマリオを描画
-	MainMario.Render();
-	StageManager::GetInstance().Render(MainCamera);
+
+	// 3 & 4. 状態による描画順（手前・奥）の切り替え
+	if (MainMario.GetState() == MarioState::DEAD)
+	{
+		// 死亡時：ステージを先に（奥）、マリオを後に（手前）描画する
+		StageManager::GetInstance().Render(MainCamera);
+		MainMario.Render();
+	}
+	else
+	{
+		// 通常時・ワープ時：マリオを先に（奥）、ステージを後に（手前）描画する）
+		MainMario.Render();
+		StageManager::GetInstance().Render(MainCamera);
+	}
 	
+	// 5. UI（文字や情報）の描画（すべての上に重ねるため一番最後に持ってくる）
+	
+	// マリオの手前に残り時間を描画
+	MainTime.Render();
 
-
+	// コイン数の描画
 	DrawFormatString(0, 80, GetColor(255, 255, 255), "Mario coin : %d", MainMario.coin);
 
-	//debug
+	// 一番手前にデバッグ情報を描画
+	MainDebug.Render();
+
+	// debug用の当たり判定枠など
 	if (map_mode == MODE_DEBUG)
 	{
 		for (auto& c : RigidBody::collidables)
@@ -125,6 +158,8 @@ void GameRender()
 			c->Render(MainCamera);
 		}
 	}
+
+	DrawString(0, 100, "CTRL + S でステージを変える", GetColor(200, 0, 0));
 }
 //---------------------------------------------------------------------------------
 //	終了処理

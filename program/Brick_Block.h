@@ -1,6 +1,7 @@
 #pragma once
 #include "IBlock.h"
 #include "Camera.h"
+#include "Mario.h"
 
 enum class CoinBrickBlockItem
 {
@@ -31,8 +32,8 @@ private:
     Image image;
 
     // Animation / State variables
-    /*bool isBouncing;
-    float bounceTimer;*/
+    bool isBouncing;
+    float bounceTimer;
     /*int texActive;
     int texEmpty;*/
 };

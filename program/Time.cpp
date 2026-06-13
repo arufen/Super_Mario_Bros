@@ -2,72 +2,114 @@
 #include "Time.h"
 #include "Game.h"
 #include "Sound.h"
+#include "StageManager.h"
+#include "Mario.h"
 
-// 1ƒJƒEƒ“ƒgŒ¸­‚³‚¹‚é‚Ì‚É•K—v‚ÈƒtƒŒ[ƒ€” (60FPS ~ 0.4•b = 24ƒtƒŒ[ƒ€)
-const int UPDATE_INTERVAL_FRAME = 60;
+// å¤–éƒ¨ã«ã‚ã‚‹ãƒãƒªã‚ªã®å®Ÿä½“ã‚’å‚ç…§ã™ã‚‹
+extern Mario MainMario;
+
+// 1ã‚«ã‚¦ãƒ³ãƒˆæ¸›å°‘ã•ã›ã‚‹ã®ã«å¿…è¦ãªãƒ•ãƒ¬ãƒ¼ãƒ æ•°
+const int UPDATE_INTERVAL_FRAME = 25;
+
+static std::string currentPlayingBGMKey = "";
 
 void GameTime::Init()
 {
-	count = 200; // ƒTƒEƒ“ƒhŠm”F‚Ì‚½‚ßˆê’U200ƒXƒ^[ƒg‚É‚µ‚Ä‚Ü‚·
+	count = 400; // ã‚µã‚¦ãƒ³ãƒ‰ç¢ºèªã®ãŸã‚ä¸€æ—¦200ã‚¹ã‚¿ãƒ¼ãƒˆã«ã—ã¦ã¾ã™
     frameCounter = 0;
 
-    // ƒtƒ‰ƒO‚Ì‰Šú‰»
+    // ãƒ•ãƒ©ã‚°ã®åˆæœŸåŒ–
     isTimeStarted = false;
     isHurryBGMPlayed = false;
     isBGMStopped = false;
+
+    currentPlayingBGMKey = "";
+
+    // ãƒªã‚¹ã‚¿ãƒ¼ãƒˆï¼ˆå†åˆæœŸåŒ–ï¼‰æ™‚ã«å‰å›ã®BGMãŒæ®‹ã‚‰ãªã„ã‚ˆã†ã«ä¸€åº¦å®Œå…¨ã«æ­¢ã‚ã‚‹
+    SoundManager::GetInstance().StopBGM();
 }
 
 void GameTime::Update()
 {
-    // ‰‰ñ‚ÌUpdate‚ªŒÄ‚Î‚ê‚½iŠÔ‚ªi‚İn‚ß‚½juŠÔ‚É’Êí‚ÌBGM‚ğÄ¶‚·‚é
-    if (!isTimeStarted)
+    // ãƒãƒªã‚ªãŒã™ã§ã«æ­»äº¡çŠ¶æ…‹ãªã‚‰ã€æ™‚é–“ã®é€²è¡Œã‚‚BGMã®è‡ªå‹•åˆ‡ã‚Šæ›¿ãˆã‚‚ã™ã¹ã¦åœæ­¢ã™ã‚‹
+    if (MainMario.GetState() == MarioState::DEAD)
     {
-        isTimeStarted = true;
-        SoundManager::GetInstance().PlayBGM("Stage1-1");
+        return;
     }
 
-    // c‚èŠÔ‚ª100‚É‚È‚Á‚½uŠÔ‚ÉA‹}‚¬”Å‚ÌBGM‚ÖØ‚è‘Ö‚¦‚é
-    if (count <= 100 && count > 0 && !isHurryBGMPlayed)
-    {
-        isHurryBGMPlayed = true;
-        SoundManager::GetInstance().PlayBGM("Stage1-1_Hurry");
-    }
-
-    // 0‚É‚È‚Á‚½‚çƒXƒgƒbƒv
+    // 0ã«ãªã£ãŸã‚‰ã‚¹ãƒˆãƒƒãƒ—ï¼†æ­»äº¡å‡¦ç†
     if (count <= 0)
     {
         count = 0;
 
-        // ƒ^ƒCƒ€ƒAƒbƒv‚µ‚½uŠÔ‚ÉBGM‚ğ’â~‚·‚é
+        // ã‚¿ã‚¤ãƒ ã‚¢ãƒƒãƒ—ã—ãŸç¬é–“ã«BGMã‚’åœæ­¢ã™ã‚‹
         if (!isBGMStopped)
         {
             isBGMStopped = true;
-            SoundManager::GetInstance().StopBGM();
-            // ‚±‚±‚Éƒ^ƒCƒ€ƒAƒbƒv‚ÌŒø‰Ê‰¹‚ÌÄ¶‚ğ“ü‚ê‚é
+
+            // ãƒãƒªã‚ªã‚’æ­»äº¡çŠ¶æ…‹ã¸ç§»è¡Œã•ã›ã‚‹
+            MainMario.ToDeadState();
         }
         return;
+    }
+
+    // ----------------------------------------------------
+    // ç¾åœ¨ã®çŠ¶æ…‹ï¼ˆã‚¾ãƒ¼ãƒ³ Ã— æ®‹ã‚Šæ™‚é–“ï¼‰ã«å¿œã˜ãŸBGMè‡ªå‹•åˆ‡ã‚Šæ›¿ãˆ
+    // ----------------------------------------------------
+    // 1. æ®‹ã‚Šæ™‚é–“ã‹ã‚‰ã€Œæ€¥ãï¼ˆHurryï¼‰ã€çŠ¶æ…‹ã‹ã©ã†ã‹ã‚’åˆ¤å®š
+    bool isHurry = (count <= 100);
+
+    if (isHurry && !isHurryBGMPlayed)
+    {
+        isHurryBGMPlayed = true;
+        SoundManager::GetInstance().StopBGM();
+        SoundManager::GetInstance().PlayBGMOnce("HurryAction");
+    }
+
+    // 2. StageManagerã‹ã‚‰ç¾åœ¨ã®ã‚¾ãƒ¼ãƒ³ã‚’å–å¾—
+    // â€»ã‚‚ã—ã‚³ãƒ³ãƒ‘ã‚¤ãƒ«ã‚¨ãƒ©ãƒ¼ãŒå‡ºã‚‹å ´åˆã¯ã€StageManager.hã«ã‚ã‚‹ã€Œç¾åœ¨åœ°ã‚’è¿”ã™é–¢æ•°ã€ã®åå‰ã«å·®ã—æ›¿ãˆã¦ãã ã•ã„
+    WorldZone currentZone = StageManager::GetInstance().GetWorldZone();
+
+    // 3. æ¡ä»¶ã«åˆã‚ã›ã¦ã€Œæ¬¡ã«å†ç”Ÿã™ã¹ãBGMã€ã®ã‚­ãƒ¼åã‚’æ±ºã‚ã‚‹
+    std::string targetBGM = "";
+    if (currentZone == WorldZone::OVERWORLD)
+    {
+        targetBGM = isHurry ? "Stage1-1_Hurry" : "Stage1-1";
+    }
+    else if (currentZone == WorldZone::UNDERWORLD)
+    {
+        targetBGM = isHurry ? "Stage1-1_Underground_Hurry" : "Stage1-1_Underground";
+    }
+
+    if (!SoundManager::GetInstance().IsPlayingBGM("HurryAction"))
+    {
+        if (targetBGM != "" && targetBGM != currentPlayingBGMKey)
+        {
+            currentPlayingBGMKey = targetBGM; 
+            SoundManager::GetInstance().PlayBGM(targetBGM);
+        }
     }
 
     frameCounter++;
     if (frameCounter >= UPDATE_INTERVAL_FRAME)
     {
         count--;
-        frameCounter = 0; // ƒJƒEƒ“ƒ^‚ğƒŠƒZƒbƒg
+        frameCounter = 0; // ã‚«ã‚¦ãƒ³ã‚¿ã‚’ãƒªã‚»ãƒƒãƒˆ
     }
 }
 
 void GameTime::Render()
 {
-    // ‰æ–Ê‰ğ‘œ“x‚ª‘å‚«‚¢‚½‚ßA•¶š‚ª¬‚³‚­‚È‚ç‚È‚¢‚æ‚¤ƒtƒHƒ“ƒgƒTƒCƒY‚ğİ’è
+    // ç”»é¢è§£åƒåº¦ãŒå¤§ãã„ãŸã‚ã€æ–‡å­—ãŒå°ã•ããªã‚‰ãªã„ã‚ˆã†ãƒ•ã‚©ãƒ³ãƒˆã‚µã‚¤ã‚ºã‚’è¨­å®š
     SetFontSize(32);
 
-    // ‰Eã‚É•\¦‚·‚é‚½‚ß‚ÌÀ•WŒvZi‰E’[‚©‚ç­‚µ¶Aã‚©‚ç­‚µ‰ºj
+    // å³ä¸Šã«è¡¨ç¤ºã™ã‚‹ãŸã‚ã®åº§æ¨™è¨ˆç®—ï¼ˆå³ç«¯ã‹ã‚‰å°‘ã—å·¦ã€ä¸Šã‹ã‚‰å°‘ã—ä¸‹ï¼‰
     int x = SCREEN_W - 100;
     int y = 40;
 
-    // ”’•¶š‚Åu400v‚Ì‚æ‚¤‚É3Œ…i%03dj‚Å•`‰æ
+    // ç™½æ–‡å­—ã§ã€Œ400ã€ã®ã‚ˆã†ã«3æ¡ï¼ˆ%03dï¼‰ã§æç”»
     DrawFormatString(x, y, GetColor(255, 255, 255), "%03d", count);
 
-    // ‘¼‚Ì•`‰æˆ—‚É‰e‹¿‚ğ‹y‚Ú‚³‚È‚¢‚æ‚¤AƒtƒHƒ“ƒgƒTƒCƒY‚ğƒfƒtƒHƒ‹ƒg‚É–ß‚µ‚Ä‚¨‚­
+    // ä»–ã®æç”»å‡¦ç†ã«å½±éŸ¿ã‚’åŠã¼ã•ãªã„ã‚ˆã†ã€ãƒ•ã‚©ãƒ³ãƒˆã‚µã‚¤ã‚ºã‚’ãƒ‡ãƒ•ã‚©ãƒ«ãƒˆã«æˆ»ã—ã¦ãŠã
     SetFontSize(16);
 }
