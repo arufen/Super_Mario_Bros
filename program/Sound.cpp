@@ -21,6 +21,8 @@ void SoundManager::Init()
 	seList["Coin"]  = LoadSoundMem("data/sound/se_coin.wav");
 	seList["Warp"] = LoadSoundMem("data/sound/se_warp.wav");
 	seList["Bump"] = LoadSoundMem("data/sound/se_brick_block_bump.wav");
+	seList["Kick"] = LoadSoundMem("data/sound/se_kick.wav");
+	seList["Stomp"] = LoadSoundMem("data/sound/se_stomp.wav");
 }
 
 void SoundManager::PlayBGM(const std::string& name)

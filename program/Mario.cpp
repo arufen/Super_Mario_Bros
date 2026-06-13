@@ -86,7 +86,10 @@ void Mario::ResolveCollision(Collidable& block)
 
 			if (enemy != nullptr)
 			{
-				Jump();
+				// Jump(); を削除し、代わりに音を鳴らさないジャンプ（跳ね返り）処理を直接記述する
+				now_speed_y = JUMP_INITIAL;
+				isJumping = true;
+				jumpHoldTimer = 0.0f;
 				/*enemy->TakeDamage(*this);*/
 			}
 			

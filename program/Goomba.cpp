@@ -1,5 +1,6 @@
 #include "Goomba.h"
 #include "Mario.h"
+#include "Sound.h"
 
 void Goomba::Init(float x, float y, int handle)
 {
@@ -118,4 +119,7 @@ void Goomba::RenderGlobal(Camera& camera)
 void Goomba::TakeDamage(RigidBody& attacker) 
 {
 	state = EnemyState::DEAD;
+
+	// “¥‚Ü‚ê‚½‚ÌSE‚ğÄ¶
+	SoundManager::GetInstance().PlaySE("Stomp");
 }

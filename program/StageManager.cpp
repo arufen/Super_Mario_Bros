@@ -45,7 +45,7 @@ void StageManager::TransferWorldZone(WorldZone newZone)
 	}
 }
 
-//ENEMIES （敵）
+//ENEMIES �E�敵�E�E
 template <typename T1, typename T2>
 void CreateGoomba(T1 x, T2 y)
 {
@@ -79,7 +79,7 @@ void CreateGrounds(int fromTileX, int fromTileY, int toTileX, int toTileY)
 }
 
 //Create Stationary block that has no unique feature with a custom handle
-//カスタムハンドルを持つ、特別な機能のない固定ブロックを生成する
+//カスタムハンドルを持つ、特別な機�EのなぁE��定ブロチE��を生成すめE
 
 void CreateGrounds(int fromTileX, int fromTileY, int toTileX, int toTileY, int handle)
 {
@@ -96,7 +96,7 @@ void CreateGrounds(int fromTileX, int fromTileY, int toTileX, int toTileY, int h
 
 
 
-//Stair looking ground (階段を作る関数）
+//Stair looking ground (階段を作る関数�E�E
 void CreateStairs(int fromTileX, int fromTileY, int toTileX, int toTileY, bool flipFlag)
 {
 
@@ -484,10 +484,10 @@ void StageManager::Init(Stage stageNumber)
 	}
 	else if (stageNumber == Stage::WORLD_1_4)
 	{
-		//Reset mario (マリオをリセット）
+		//Reset mario (マリオをリセチE���E�E
 		MainMario.position.Set(2 * BLOCK_SIZE, 5 * BLOCK_SIZE);
 
-		//Reset Camera (カメラをリセット）
+		//Reset Camera (カメラをリセチE���E�E
 		MainCamera.pos.Set(0.0f, 0.0f);
 		MainCamera.cameraPosXLimit = 10240 - SCREEN_W;
 		
@@ -496,7 +496,7 @@ void StageManager::Init(Stage stageNumber)
 		background.InitialImageAndSize(LoadGraph("data/image/1-4_background.png"));
 		SetBackgroundColor(0, 0, 0);
 
-		//Reset Stqage (ステージをリセット）
+		//Reset Stqage (スチE�EジをリセチE���E�E
 		int groundHandle = LoadGraph("data/image/ground_castle.png");
 		int tmpHandle = LoadGraph("data/image/tmp.png");
 		int bridgeHandle = LoadGraph("data/image/bridge.png");

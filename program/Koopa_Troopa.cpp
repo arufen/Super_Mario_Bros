@@ -1,4 +1,5 @@
 #include "Koopa_Troopa.h"
+#include "Sound.h"
 
 void KoopaTroopa::Init(float x, float y)
 {
@@ -139,6 +140,10 @@ void KoopaTroopa::TakeDamage(RigidBody& attacker)
 
 			//change hitbox to shell sprite
 			RigidBody_collider = Collider(position.x, position.y, (float)this->spriteAnimationShell.sprite.sizeX, (float)this->spriteAnimationShell.sprite.sizeY);
+
+			// “¥‚Ü‚ê‚½‚ÌSE‚ğÄ¶
+			SoundManager::GetInstance().PlaySE("Stomp");
+
 			return;
 		}
 		else if (isInShell && !isShellMoving)
@@ -150,6 +155,9 @@ void KoopaTroopa::TakeDamage(RigidBody& attacker)
 				direction = -1.0f; // shell goes left
 
 			isShellMoving = true;
+
+			// R‚Á‚½‚ÌSE‚ğÄ¶
+			SoundManager::GetInstance().PlaySE("Kick");
 		}
 	}
 	
