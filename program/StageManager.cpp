@@ -45,7 +45,7 @@ void StageManager::TransferWorldZone(WorldZone newZone)
 	}
 }
 
-//ENEMIES �域雰�
+//ENEMIES
 template <typename T1, typename T2>
 void CreateGoomba(T1 x, T2 y)
 {
@@ -79,7 +79,6 @@ void CreateGrounds(int fromTileX, int fromTileY, int toTileX, int toTileY)
 }
 
 //Create Stationary block that has no unique feature with a custom handle
-//繧ｫ繧ｹ繧ｿ繝繝上Φ繝峨Ν繧呈戟縺､縲∫音蛻･縺ｪ讖溯�縺ｮ縺ｪ縺�崋螳壹ヶ繝ｭ繝�け繧堤函謌舌☆繧
 
 void CreateGrounds(int fromTileX, int fromTileY, int toTileX, int toTileY, int handle)
 {
@@ -96,7 +95,7 @@ void CreateGrounds(int fromTileX, int fromTileY, int toTileX, int toTileY, int h
 
 
 
-//Stair looking ground (髫取ｮｵ繧剃ｽ懊ｋ髢｢謨ｰ�
+//Stair looking ground
 void CreateStairs(int fromTileX, int fromTileY, int toTileX, int toTileY, bool flipFlag)
 {
 
@@ -498,10 +497,10 @@ void StageManager::Init(Stage stageNumber)
 	}
 	else if (stageNumber == Stage::WORLD_1_4)
 	{
-		//Reset mario (繝槭Μ繧ｪ繧偵Μ繧ｻ繝�ヨ�
+		//Reset mario 
 		MainMario.position.Set(2 * BLOCK_SIZE, 5 * BLOCK_SIZE);
 
-		//Reset Camera (繧ｫ繝｡繝ｩ繧偵Μ繧ｻ繝�ヨ�
+		//Reset Camera
 		MainCamera.pos.Set(0.0f, 0.0f);
 		MainCamera.cameraPosXLimit = 10240 - SCREEN_W;
 		
@@ -510,7 +509,7 @@ void StageManager::Init(Stage stageNumber)
 		background.InitialImageAndSize(LoadGraph("data/image/1-4_background.png"));
 		SetBackgroundColor(0, 0, 0);
 
-		//Reset Stqage (繧ｹ繝��繧ｸ繧偵Μ繧ｻ繝�ヨ�
+		//Reset Stqage
 		int groundHandle = LoadGraph("data/image/ground_castle.png");
 		int tmpHandle = LoadGraph("data/image/tmp.png");
 		int bridgeHandle = LoadGraph("data/image/bridge.png");
