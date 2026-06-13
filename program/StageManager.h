@@ -22,6 +22,9 @@
 #include "Goomba.h"
 #include "Koopa_Troopa.h"
 
+#include "Goal_Pole.h"
+#include "Castle.h"
+
 using namespace std;
 
 enum class Stage
@@ -44,6 +47,10 @@ public:
 	vector<Ground> ground;
 
 	vector<Ground> underworld_ground;
+
+	// ゴールポール
+	vector<GoalPole*> goalPoles;
+	vector<Castle*> castles;
 
 	//Enemy （敵）
 	vector<Goomba*> goomba;

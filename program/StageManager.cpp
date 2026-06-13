@@ -45,7 +45,7 @@ void StageManager::TransferWorldZone(WorldZone newZone)
 	}
 }
 
-//ENEMIES �i�G�j
+//ENEMIES �域雰�
 template <typename T1, typename T2>
 void CreateGoomba(T1 x, T2 y)
 {
@@ -79,7 +79,7 @@ void CreateGrounds(int fromTileX, int fromTileY, int toTileX, int toTileY)
 }
 
 //Create Stationary block that has no unique feature with a custom handle
-//�J�X�^���n���h�������A���ʂȋ@�\�̂Ȃ��Œ�u���b�N�𐶐�����
+//繧ｫ繧ｹ繧ｿ繝繝上Φ繝峨Ν繧呈戟縺､縲∫音蛻･縺ｪ讖溯�縺ｮ縺ｪ縺�崋螳壹ヶ繝ｭ繝�け繧堤函謌舌☆繧
 
 void CreateGrounds(int fromTileX, int fromTileY, int toTileX, int toTileY, int handle)
 {
@@ -96,7 +96,7 @@ void CreateGrounds(int fromTileX, int fromTileY, int toTileX, int toTileY, int h
 
 
 
-//Stair looking ground (�K�i�����֐��j
+//Stair looking ground (髫取ｮｵ繧剃ｽ懊ｋ髢｢謨ｰ�
 void CreateStairs(int fromTileX, int fromTileY, int toTileX, int toTileY, bool flipFlag)
 {
 
@@ -276,6 +276,13 @@ vector<Collidable*> StageManager::GetCollidables()
 		result.push_back(superS);
 	}
 
+	//ゴールポールを物理判定リストに追加
+	for (auto* pole : goalPoles)
+	{
+		result.push_back(pole); // ① すり抜けるポール本体の判定
+		result.push_back(&(pole->baseCollider)); // ② 固い土台の判定
+	}
+
 	// when u add pipe, questionblock etc just do:
 	// for (auto& p : pipes)
 	//     result.push_back(&p);
@@ -287,7 +294,7 @@ void StageManager::Init(Stage stageNumber)
 	if (stageNumber == Stage::WORLD_1_1)
 	{
 		//Stage (ground1)
-		CreateGrounds(0, 13, 68, 14); //from (0, 13) to (20, 14) | (0, 13)����(68, 14)�܂�
+		CreateGrounds(0, 13, 68, 14); //from (0, 13) to (20, 14) | (0, 13)縺九ｉ(68, 14)縺ｾ縺ｧ
 		CreateGrounds(71, 13, 85, 14);
 		CreateGrounds(88, 13, 152, 14);
 		CreateGrounds(155, 13, 210, 14);
@@ -477,13 +484,24 @@ void StageManager::Init(Stage stageNumber)
 		CreateFireFlower(6, 10);
 		CreateSuperStar(7, 10);
 
+		// ゴールポールを X=12700 の位置に設置
+		// ※ Y座標(192.0f)は仮です。goal_pole.pngの画像の高さに合わせて、
+		// 床(Y=832)にぴったりくっつくように微調整してください。
+		GoalPole* pole = new GoalPole();
+		pole->Init(12670.0f, 160.0f);
+		goalPoles.push_back(pole);
+
+		// お城を設置
+		Castle* myCastle = new Castle();
+		myCastle->Init(12928.0f, 512.0f);
+		castles.push_back(myCastle);
 	}
 	else if (stageNumber == Stage::WORLD_1_4)
 	{
-		//Reset mario (�}���I�����Z�b�g�j
+		//Reset mario (繝槭Μ繧ｪ繧偵Μ繧ｻ繝�ヨ�
 		MainMario.position.Set(2 * BLOCK_SIZE, 5 * BLOCK_SIZE);
 
-		//Reset Camera (�J���������Z�b�g�j
+		//Reset Camera (繧ｫ繝｡繝ｩ繧偵Μ繧ｻ繝�ヨ�
 		MainCamera.pos.Set(0.0f, 0.0f);
 		MainCamera.cameraPosXLimit = 10240 - SCREEN_W;
 		
@@ -492,7 +510,7 @@ void StageManager::Init(Stage stageNumber)
 		background.InitialImageAndSize(LoadGraph("data/image/1-4_background.png"));
 		SetBackgroundColor(0, 0, 0);
 
-		//Reset Stqage (�X�e�[�W�����Z�b�g�j
+		//Reset Stqage (繧ｹ繝��繧ｸ繧偵Μ繧ｻ繝�ヨ�
 		int groundHandle = LoadGraph("data/image/ground_castle.png");
 		int tmpHandle = LoadGraph("data/image/tmp.png");
 		int bridgeHandle = LoadGraph("data/image/bridge.png");
@@ -694,12 +712,13 @@ void StageManager::Update(Camera& camera)
 		}
 	}
 
-
+	// ゴールポール
+	for (GoalPole* pole : goalPoles) { pole->Update(); }
 }
 
 void StageManager::Render(Camera& camera)
 {
-	
+
 
 	//ENEMIES
 	//Goomba
@@ -769,6 +788,9 @@ void StageManager::Render(Camera& camera)
 			camera.GlobalRenderBox(pipe->collider.x, pipe->collider.y, pipe->collider.x + pipe->collider.width, pipe->collider.y + pipe->collider.height, GetColor(255, 0, 0), FALSE);
 		}
 	}
+	// ゴールポール
+	for (GoalPole* pole : goalPoles) { pole->RenderGlobal(camera); }
+
 }
 
 //Clear all objects in stage
@@ -787,6 +809,8 @@ void StageManager::ClearStage()
 	for (auto* m : superMushroom) delete m;
 	for (auto* f : fireFlower) delete f;
 	for (auto* s : superStar) delete s;
+	for (auto* p : goalPoles) delete p;
+	for (auto* c : castles) delete c;
 
 	// then clear the vectors
 	ground.clear();
@@ -802,6 +826,7 @@ void StageManager::ClearStage()
 	superMushroom.clear();
 	fireFlower.clear();
 	superStar.clear();
+	goalPoles.clear();
 
 	// clear collidables in RigidBody too!
 	RigidBody::collidables.clear();

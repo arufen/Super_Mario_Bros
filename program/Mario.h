@@ -76,6 +76,11 @@ public:
 	int score = 0;
 	int coin = 0;
 
+	//star power-up variables(スター状態の取得)
+	Animation starmarioAnim; 
+	bool isStarMode;         
+	float starTimer;       
+
 	void ResolveCollision(Collidable& block) override;
 
 	// 現在のマリオの形態を取得・変更する関数
@@ -96,6 +101,11 @@ public:
 	//mechanics function
 	void AddCoin();
 	void Jump();
+
+
+	void Star();
+	
+
 
 	//void Warping(float pipeY);
 
