@@ -83,13 +83,14 @@ void Mario::ResolveCollision(Collidable& block)
 
 			//jump if hit enemy on top (like raycast)
 			Enemy* enemy = dynamic_cast<Enemy*>(&block);
+
 			if (enemy != nullptr)
 			{
 				Jump();
 				/*enemy->TakeDamage(*this);*/
 			}
-
 			
+
 			block.OnHitTop(*this);
 		}
 		else
@@ -235,6 +236,13 @@ void Mario::Init()
 	//Score and item
 	score = 0;
 	coin = 0;
+
+	//マリオのstar状態のアニメーションの初期化
+	int handle = LoadGraph("data/image/starmario_Animation_02.png");
+	starmarioAnim.InitialAnimation(handle, 3, 10); // スター画像は3フレームなので 3 を指定
+	isStarMode = false;
+	starTimer = 0.0f;
+
 }
 
 void Mario::Update()
@@ -361,6 +369,14 @@ void Mario::Update()
 	// ----------------------------------------------------
 	// 通常状態（NORMAL）の更新処理
 	// ----------------------------------------------------
+	// デバッグモードでPキーが押されたらスター状態にする
+	if (map_mode == MODE_DEBUG)
+	{
+		if (CheckHitKey(KEY_INPUT_P))
+		{
+			Star();
+		}
+	}
 	// 奈落への落下死亡チェック
 	// 現在のステージ（ゾーン）によって判定する高さを変える
 	float currentDeadLineY = (StageManager::GetInstance().GetWorldZone() == WorldZone::OVERWORLD)
@@ -530,6 +546,19 @@ void Mario::Update()
 
 	// 画面中央線や中心線の描画に使うマリオの中心X座標も、実際の当たり判定の中心にする
 	mario_centerX = scrX1 + ((int)RigidBody_collider.width / 2);
+
+	// スター状態の更新処理
+	if (isStarMode)
+	{
+		starTimer -= 1.0f;
+		if (starTimer <= 0.0f)
+		{
+			isStarMode = false; // 時間切れで通常状態に戻る
+		}
+
+		// アニメーションの更新
+		starmarioAnim.AnimationUpdateLoop();
+	}
 }
 
 void Mario::Render()
@@ -554,21 +583,30 @@ void Mario::Render()
 		return; // ワープ中はここで描画処理を終了する（下の歩きやジャンプを通さない）
 	}
 
-	if (isJumping)
+	if (isStarMode)
 	{
-		if (isLeft)	DrawRotaGraph2(screenX, screenY, 0, 0, 1.0f, 0.0, small_mario_jumpImage.image, TRUE, TRUE);
-		else		DrawRotaGraph2(screenX, screenY, 0, 0, 1.0f, 0.0, small_mario_jumpImage.image, TRUE, FALSE);
+		// スター状態なら専用のアニメーションを優先して描画する
+		starmarioAnim.x = (float)screenX;
+		starmarioAnim.y = (float)screenY;
+		starmarioAnim.AnimationRenderCenter(isLeft);
 	}
-	else if (isWalking)
-	{
-		small_mario_walkAnim.x = (float)screenX;
-		small_mario_walkAnim.y = (float)screenY;
-		small_mario_walkAnim.AnimationRenderCenter(isLeft);
-	}
-	else
-	{
-		if (isLeft)	DrawRotaGraph2(screenX, screenY, 0, 0, 1.0f, 0.0, small_mario_waitImage.image, TRUE, TRUE);
-		else		DrawRotaGraph2(screenX, screenY, 0, 0, 1.0f, 0.0, small_mario_waitImage.image, TRUE, FALSE);
+	else {
+		if (isJumping)
+		{
+			if (isLeft)	DrawRotaGraph2(screenX, screenY, 0, 0, 1.0f, 0.0, small_mario_jumpImage.image, TRUE, TRUE);
+			else		DrawRotaGraph2(screenX, screenY, 0, 0, 1.0f, 0.0, small_mario_jumpImage.image, TRUE, FALSE);
+		}
+		else if (isWalking)
+		{
+			small_mario_walkAnim.x = (float)screenX;
+			small_mario_walkAnim.y = (float)screenY;
+			small_mario_walkAnim.AnimationRenderCenter(isLeft);
+		}
+		else
+		{
+			if (isLeft)	DrawRotaGraph2(screenX, screenY, 0, 0, 1.0f, 0.0, small_mario_waitImage.image, TRUE, TRUE);
+			else		DrawRotaGraph2(screenX, screenY, 0, 0, 1.0f, 0.0, small_mario_waitImage.image, TRUE, FALSE);
+		}
 	}
 
 	// DEBUG MODE
@@ -576,10 +614,16 @@ void Mario::Render()
 	{
 		DrawFormatString(0, 40, GetColor(255, 255, 255), "Mario pos X : %f, Mario pos Y : %f", position.x, position.y);
 		DrawFormatString(0, 60, GetColor(255, 255, 255), "now_speed X : %f", now_speed_x);
+
+		//スター状態の残り時間を表示
+		if (isStarMode) {
+			DrawFormatString(0, 80, GetColor(255, 255, 0), "STAR MODE: %.0f", starTimer);
+		}
+		else {
+			DrawFormatString(0, 80, GetColor(100, 100, 100), "STAR MODE: OFF");
+		}
 	}
 }
-
-	
 
 //Jump player
 void Mario::Jump()
@@ -593,4 +637,10 @@ void Mario::Jump()
 void Mario::AddCoin()
 {
 	coin++;
+}
+
+void Mario::Star()
+{
+	isStarMode = true;
+	starTimer = 600.0f; // 例: 60fps環境で10秒間 (60 * 10)
 }
