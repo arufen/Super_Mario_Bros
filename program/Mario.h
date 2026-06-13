@@ -75,9 +75,9 @@ public:
 	int coin = 0;
 
 	//star power-up variables(ƒXƒ^[ó‘Ô‚Ìæ“¾)
-	Animation starmarioAnim; 
-	bool isStarMode;         
-	float starTimer;       
+	Animation starmarioAnim;
+	bool isStarMode;
+	float starTimer;
 
 	void ResolveCollision(Collidable& block) override;
 
@@ -99,7 +99,6 @@ public:
 	//mechanics function
 	void AddCoin();
 	void Jump();
-
 
 	void Star();
 	
