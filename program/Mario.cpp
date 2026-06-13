@@ -248,7 +248,7 @@ void Mario::Init()
 	coin = 0;
 
 	//マリオのstar状態のアニメーションの初期化
-	int handle = LoadGraph("data/image/starmario_Animation_02.png");
+	int handle = LoadGraph("data/image/star_mario/starmario_wait.png");
 	starmarioAnim.InitialAnimation(handle, 3, 10); // スター画像は3フレームなので 3 を指定
 	isStarMode = false;
 	starTimer = 0.0f;
