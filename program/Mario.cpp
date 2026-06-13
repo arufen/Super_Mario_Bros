@@ -86,6 +86,7 @@ void Mario::ResolveCollision(Collidable& block)
 			if (enemy != nullptr)
 			{
 				Jump();
+				/*enemy->TakeDamage(*this);*/
 			}
 
 			
@@ -457,10 +458,6 @@ void Mario::Update()
 			MainCamera.pos.x = marioWorldCenterX - (SCREEN_W / 2);
 		}
 	}
-
-	// カメラの移動可能範囲を制限 (0 ～ 12480)
-	if (MainCamera.pos.x < 0) MainCamera.pos.x = 0;
-	if (MainCamera.pos.x > 12480) MainCamera.pos.x = 12480;
 
 	// マリオがカメラの左端より外に出ないようにする
 	if (position.x < MainCamera.pos.x)

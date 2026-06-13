@@ -31,7 +31,9 @@ void BrickBlock::Init(Float2 startPos, int graphHandle)
 void BrickBlock::OnHitBottom(RigidBody& player)
 {
     // 引数の player を Mario クラスに安全にキャスト
+        //ignore object other than mario
     Mario* mario = dynamic_cast<Mario*>(&player);
+    if (!mario) return;
 
     if (mario != nullptr)
     {
@@ -51,6 +53,7 @@ void BrickBlock::OnHitBottom(RigidBody& player)
     }
 
     // スーパーマリオ以上の場合は、従来通りブロックを破壊（消滅）させる
+
     active = false;
 
     collider.x = -9999.0f;

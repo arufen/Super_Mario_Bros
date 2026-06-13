@@ -38,6 +38,10 @@ void QuestionBlock::OnHitBottom(RigidBody& player)
 	// Trigger the jump animation!
 	if (!isAvailable || isBouncing) return;
 
+	//ignore object other than mario
+	Mario* mario = dynamic_cast<Mario*>(&player);
+	if (!mario) return;
+
 	isBouncing = true;
 	bounceTimer = 0.0f;
 	itemCoinAnimationTimer.ResetTimer();

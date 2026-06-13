@@ -5,6 +5,7 @@
 #include "StageManager.h"
 #include "Mario.h"
 
+
 // 外部にあるマリオの実体を参照する
 extern Mario MainMario;
 
