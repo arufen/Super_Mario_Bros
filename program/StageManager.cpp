@@ -45,7 +45,7 @@ void StageManager::TransferWorldZone(WorldZone newZone)
 	}
 }
 
-//ENEMIES i“Gj
+//ENEMIES ï¼ˆæ•µï¼‰
 template <typename T1, typename T2>
 void CreateGoomba(T1 x, T2 y)
 {
@@ -79,7 +79,7 @@ void CreateGrounds(int fromTileX, int fromTileY, int toTileX, int toTileY)
 }
 
 //Create Stationary block that has no unique feature with a custom handle
-//ƒJƒXƒ^ƒ€ƒnƒ“ƒhƒ‹‚ğ‚ÂA“Á•Ê‚È‹@”\‚Ì‚È‚¢ŒÅ’èƒuƒƒbƒN‚ğ¶¬‚·‚é
+//ã‚«ã‚¹ã‚¿ãƒ ãƒãƒ³ãƒ‰ãƒ«ã‚’æŒã¤ã€ç‰¹åˆ¥ãªæ©Ÿèƒ½ã®ãªã„å›ºå®šãƒ–ãƒ­ãƒƒã‚¯ã‚’ç”Ÿæˆã™ã‚‹
 
 void CreateGrounds(int fromTileX, int fromTileY, int toTileX, int toTileY, int handle)
 {
@@ -96,7 +96,7 @@ void CreateGrounds(int fromTileX, int fromTileY, int toTileX, int toTileY, int h
 
 
 
-//Stair looking ground (ŠK’i‚ğì‚éŠÖ”j
+//Stair looking ground (éšæ®µã‚’ä½œã‚‹é–¢æ•°ï¼‰
 void CreateStairs(int fromTileX, int fromTileY, int toTileX, int toTileY, bool flipFlag)
 {
 
@@ -280,7 +280,7 @@ void StageManager::Init(Stage stageNumber)
 	if (stageNumber == Stage::WORLD_1_1)
 	{
 		//Stage (ground1)
-		CreateGrounds(0, 13, 68, 14); //from (0, 13) to (20, 14) | (0, 13)‚©‚ç(68, 14)‚Ü‚Å
+		CreateGrounds(0, 13, 68, 14); //from (0, 13) to (20, 14) | (0, 13)ã‹ã‚‰(68, 14)ã¾ã§
 		CreateGrounds(71, 13, 85, 14);
 		CreateGrounds(88, 13, 152, 14);
 		CreateGrounds(155, 13, 210, 14);
@@ -465,10 +465,10 @@ void StageManager::Init(Stage stageNumber)
 	}
 	else if (stageNumber == Stage::WORLD_1_4)
 	{
-		//Reset mario (ƒ}ƒŠƒI‚ğƒŠƒZƒbƒgj
+		//Reset mario (ãƒãƒªã‚ªã‚’ãƒªã‚»ãƒƒãƒˆï¼‰
 		MainMario.position.Set(2 * BLOCK_SIZE, 5 * BLOCK_SIZE);
 
-		//Reset Camera (ƒJƒƒ‰‚ğƒŠƒZƒbƒgj
+		//Reset Camera (ã‚«ãƒ¡ãƒ©ã‚’ãƒªã‚»ãƒƒãƒˆï¼‰
 		MainCamera.pos.Set(0.0f, 0.0f);
 		MainCamera.cameraPosXLimit = 10240 - SCREEN_W;
 		
@@ -477,7 +477,7 @@ void StageManager::Init(Stage stageNumber)
 		background.InitialImageAndSize(LoadGraph("data/image/1-4_background.png"));
 		SetBackgroundColor(0, 0, 0);
 
-		//Reset Stqage (ƒXƒe[ƒW‚ğƒŠƒZƒbƒgj
+		//Reset Stqage (ã‚¹ãƒ†ãƒ¼ã‚¸ã‚’ãƒªã‚»ãƒƒãƒˆï¼‰
 		int groundHandle = LoadGraph("data/image/ground_castle.png");
 		int tmpHandle = LoadGraph("data/image/tmp.png");
 		int bridgeHandle = LoadGraph("data/image/bridge.png");
