@@ -8,6 +8,9 @@
 // 外部にあるマリオの実体を参照する
 extern Mario MainMario;
 
+// タイムストップ用のグローバル変数の実体
+bool g_IsTimerStopped = false;
+
 // 1カウント減少させるのに必要なフレーム数
 const int UPDATE_INTERVAL_FRAME = 25;
 
@@ -22,6 +25,7 @@ void GameTime::Init()
     isTimeStarted = false;
     isHurryBGMPlayed = false;
     isBGMStopped = false;
+    g_IsTimerStopped = false;
 
     currentPlayingBGMKey = "";
 
@@ -50,6 +54,12 @@ void GameTime::Update()
             // マリオを死亡状態へ移行させる
             MainMario.ToDeadState();
         }
+        return;
+    }
+
+    // ゴールに到達してタイマーが停止フラグになったら以降の処理を行わない
+    if (g_IsTimerStopped)
+    {
         return;
     }
 

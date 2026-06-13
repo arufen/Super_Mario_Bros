@@ -36,6 +36,7 @@
     <ClCompile Include="program\Warp_Pipe.cpp" />
     <ClCompile Include="program\Enemy.cpp" />
     <ClCompile Include="program\Firebar.cpp" />
+    <ClCompile Include="program\Castle.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="program\1-Up_Mushroom.h" />
@@ -75,5 +76,6 @@
     <ClInclude Include="program\Enemy.h" />
     <ClInclude Include="program\Firebar.h" />
     <ClInclude Include="program\CollectableItem.h" />
+    <ClInclude Include="program\Castle.h" />
   </ItemGroup>
 </Project>

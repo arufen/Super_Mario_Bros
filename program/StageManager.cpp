@@ -218,6 +218,7 @@ vector<Collidable*> StageManager::GetCollidables()
 			result.push_back(pipe); // Makes the pipe solid to Mario!
 		}
 	}
+
 	
 	
 	for (auto& g : underworld_ground)
@@ -267,6 +268,13 @@ vector<Collidable*> StageManager::GetCollidables()
 	for (auto* superS : superStar)
 	{
 		result.push_back(superS);
+	}
+
+	//ゴールポールを物理判定リストに追加
+	for (auto* pole : goalPoles)
+	{
+		result.push_back(pole); // ① すり抜けるポール本体の判定
+		result.push_back(&(pole->baseCollider)); // ② 固い土台の判定
 	}
 
 	// when u add pipe, questionblock etc just do:
@@ -462,6 +470,17 @@ void StageManager::Init(Stage stageNumber)
 		CreateFireFlower(6, 10);
 		CreateSuperStar(7, 10);
 
+		// ゴールポールを X=12700 の位置に設置
+		// ※ Y座標(192.0f)は仮です。goal_pole.pngの画像の高さに合わせて、
+		// 床(Y=832)にぴったりくっつくように微調整してください。
+		GoalPole* pole = new GoalPole();
+		pole->Init(12670.0f, 160.0f);
+		goalPoles.push_back(pole);
+
+		// お城を設置
+		Castle* myCastle = new Castle();
+		myCastle->Init(12928.0f, 512.0f);
+		castles.push_back(myCastle);
 	}
 	else if (stageNumber == Stage::WORLD_1_4)
 	{
@@ -649,13 +668,16 @@ void StageManager::Update(Camera& camera)
 		}
 	}
 
-
+	// ゴールポール
+	for (GoalPole* pole : goalPoles) { pole->Update(); }
 }
 
 void StageManager::Render(Camera& camera)
 {
 	if (currentzone == WorldZone::OVERWORLD)
 	{
+		for (Castle* c : castles) { c->RenderGlobal(camera); }
+
 		for (size_t i = 0; i < ground.size(); i++) ground[i].RenderGlobal(camera);
 		for (IBlock* b : overworld1_1Blocks) b->Render(camera);
 		for (Pipe* pipe : globalPipes)
@@ -722,6 +744,9 @@ void StageManager::Render(Camera& camera)
 		}
 	}
 
+	// ゴールポール
+	for (GoalPole* pole : goalPoles) { pole->RenderGlobal(camera); }
+
 }
 
 //Clear all objects in stage
@@ -740,6 +765,8 @@ void StageManager::ClearStage()
 	for (auto* m : superMushroom) delete m;
 	for (auto* f : fireFlower) delete f;
 	for (auto* s : superStar) delete s;
+	for (auto* p : goalPoles) delete p;
+	for (auto* c : castles) delete c;
 
 	// then clear the vectors
 	ground.clear();
@@ -755,6 +782,7 @@ void StageManager::ClearStage()
 	superMushroom.clear();
 	fireFlower.clear();
 	superStar.clear();
+	goalPoles.clear();
 
 	// clear collidables in RigidBody too!
 	RigidBody::collidables.clear();
