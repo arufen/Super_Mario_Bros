@@ -784,6 +784,11 @@ void StageManager::Render(Camera& camera)
 		}
 	}
 
+	for (Castle* c : castles)
+	{
+		c->RenderGlobal(camera);
+	}
+
 	if (currentzone == WorldZone::OVERWORLD)
 	{
 		for (size_t i = 0; i < ground.size(); i++) ground[i].RenderGlobal(camera);
