@@ -10,6 +10,7 @@
 #include "Brick_Block.h"
 #include "CollectableItem.h"
 #include "Hidden_Block.h"
+
 using namespace std;
 
 // 外部ファイル（Camera.cppなど）からマリオの移動速度や中心座標を
@@ -28,19 +29,10 @@ enum class MarioForm { SMALL, SUPER, FIRE }; // マリオの形態
 class Mario : public RigidBody
 {
 public:
-
-	//const
-	static constexpr float GRAVITY = 1.0f;	// gravity (重力)
-	static constexpr float JUMP_FORCE = 1.0f;	// jump force (ジャンプの初速)
-	static constexpr float MARIO_ACCEL = 0.4f;		// 1フレームごとの加速度（増やすとキレが良くなる）
-	static constexpr float MARIO_WALK_MAX_SPEED = 4.5f;	// 歩き状態の最高速度（これ以上速くならない）
-	static constexpr float MARIO_DASH_MAX_SPEED = 8.0f;   // ダッシュ状態の最高速度（これ以上速くならない）
-	static constexpr float MARIO_FRICTION = 0.3f;	// キーを離したときの摩擦・ブレーキ（減らすとよく滑る）
-	static constexpr float MARIO_DECEL_TURN = 0.8f;  // 逆キーを入れたときの急ブレーキの強さ
-
-	static constexpr float JUMP_HOLD_MAX = 0.3f;   // max seconds u can hold for extra boost
-	static constexpr float JUMP_INITIAL = -15;  // first jump force (negative = up)
-	static constexpr float JUMP_HOLD_FORCE = -0.7f; // extra boost per frame while holding
+	// ==========================================
+	// 公開定数（ステージギミックや物理のベース）
+	// ==========================================
+	static constexpr float GRAVITY = 2.0f;	// gravity (重力)
 
 	// ※マリオの初期Y座標が700.0fなので、地上は980.0fに設定しています。地下の高さに合わせて数値は調整してください。
 	static constexpr float DEAD_LINE_OVERWORLD = 980.0f;
@@ -48,21 +40,25 @@ public:
 
 	static constexpr float WARP_DURATION = 1.0f; // warp timer
 
-
-	//Mario image/animation variables (画像/アニメーション変数)
+	// ==========================================
+	// 画像/アニメーション変数
+	// ==========================================
 	Image small_mario_waitImage;	 // マリオの待機画像情報
-	Image small_mario_jumpImage;   // マリオのジャンプ画像情報
-	Image small_mario_deadImage;   // マリオの死亡画像情報
-	Animation small_mario_walkAnim;		 // 歩きアニメーション管理オブジェクト
+	Image small_mario_jumpImage;	 // マリオのジャンプ画像情報
+	Image small_mario_deadImage;	 // マリオの死亡画像情報
+	Animation small_mario_walkAnim;  // 歩きアニメーション管理オブジェクト
 
+	// ==========================================
+	// ステータス・状態フラグ
+	// ==========================================
 	// 後入力優先のためのキー状態保持
 	bool prevKeyA = false;
 	bool prevKeyD = false;
 	bool preferLeftInput = false;
 	bool prevKeySpace = false;
 
-	bool isLeft;		// 向きフラグ（trueなら左向き、falseなら右向き）
-	bool isWalking = false;     // 現在歩いているかどうか
+	bool isLeft;				// 向きフラグ（trueなら左向き、falseなら右向き）
+	bool isWalking = false;		// 現在歩いているかどうか
 	bool isJumping = false;
 	bool isDeadJumped = false;	// 死亡ジャンプをすでに受け取ったか
 	bool isFellDown = false;	// 落下死したかどうか
@@ -72,15 +68,18 @@ public:
 	MarioState currentState = MarioState::NORMAL;
 	float warpTimer = 0.0f;
 
-	//item and score (アイテムとスコア)
+	// item and score (アイテムとスコア)
 	int score = 0;
 	int coin = 0;
 
-	//star power-up variables(スター状態の取得)
-	Animation starmarioAnim; 
-	bool isStarMode;         
-	float starTimer;       
+	// star power-up variables(スター状態の取得)
+	Animation starmarioAnim;
+	bool isStarMode;
+	float starTimer;
 
+	// ==========================================
+	// 関数群
+	// ==========================================
 	void ResolveCollision(Collidable& block) override;
 
 	// 現在のマリオの形態を取得・変更する関数
@@ -93,22 +92,16 @@ public:
 	// エネミーに横・下から接触したときに死亡状態へ移行させる関数
 	void ToDeadState(bool isFall = false);
 
-	//for main thread
+	// for main thread
 	void Init();
 	void Update();
 	void Render();
 
-	//mechanics function
+	// mechanics function
 	void AddCoin();
 	void Jump();
-
-
 	void Star();
 	void ChangeToSuper();
-	
-
-
-	//void Warping(float pipeY);
 
 	enum class WarpDir { DOWN, RIGHT, UP, };
 	WarpDir currentWarpDir = WarpDir::DOWN;

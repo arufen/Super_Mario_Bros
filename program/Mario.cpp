@@ -21,14 +21,19 @@ int small_mario_debug_y2;
 // ==========================================
 // 調整用の物理パラメータ（定数）
 // ==========================================
-// NOTE: 他箇所で同名のシンボルが定義されている可能性があるため
-// 定数名を一意にする（C2377 対策）。
-const float MARIO_ACCEL = 0.4f;		// 1フレームごとの加速度（増やすとキレが良くなる）
-const float MARIO_WALK_MAX_SPEED = 10.5f;	// 歩き状態の最高速度（これ以上速くならない）
-const float MARIO_DASH_MAX_SPEED = 8.0f;   // ダッシュ状態の最高速度（これ以上速くならない）
-const float MARIO_FRICTION = 0.3f;	// キーを離したときの摩擦・ブレーキ（減らすとよく滑る）
-const float MARIO_DECEL_TURN = 0.8f;  // 逆キーを入れたときの急ブレーキの強さ
+const float MARIO_ACCEL_WALK = 0.18f;		// 歩き時の加速度（はじまりはじわっと遅い）
+const float MARIO_ACCEL_DASH = 0.18f;		// ダッシュ時の加速度（じわじわとスピードに乗る）
+const float MARIO_WALK_MAX_SPEED = 4.5f;	// 歩き状態の最高速度
+const float MARIO_DASH_MAX_SPEED = 8.0f;	// ダッシュ状態の最高速度
+const float MARIO_FRICTION = 0.22f;			// キーを離したときの摩擦（ツルッと滑る心地よい慣性）
+const float MARIO_DECEL_TURN = 0.60f;		// 逆キーを入れたときの急ブレーキ（「キキーッ」と滑る独特の挙動）
 
+// ジャンプパラメータ
+const float JUMP_BASE_WALK = -15.0f;		// 通常（静止・歩き）時のジャンプ初速
+const float JUMP_BASE_DASH = -16.0f;		// ダッシュ時のジャンプ初速（より高く飛び出す）
+const float JUMP_HOLD_WALK = -0.4f;			// 通常ジャンプ時の長押し上昇力
+const float JUMP_HOLD_DASH = -0.7f;			// ダッシュジャンプ時の長押し上昇力（空中でもフワッと伸びる）
+const float JUMP_HOLD_MAX = 0.3f;			// 長押しジャンプが効く最大時間（秒）
 
 void Mario::ResolveCollision(Collidable& block)
 {
@@ -58,8 +63,6 @@ void Mario::ResolveCollision(Collidable& block)
 			}
 		}
 	
-		
-
 		block.OnHitSide(*this);  // just calls callback, no pushing
 		return;
 	}
@@ -75,7 +78,7 @@ void Mario::ResolveCollision(Collidable& block)
 	float bias = 0.5f;
 	if (dynamic_cast<Enemy*>(&block) != nullptr)
 	{
- 		bias = 14.0f; // 10.0f〜15.0f 程度にすると「理不尽な横死」がなくなります
+ 		bias = 13.0f; // 10.0f〜15.0f 程度にすると「理不尽な横死」がなくなる
 	}
 
 	if (minY < minX + bias)
@@ -98,13 +101,21 @@ void Mario::ResolveCollision(Collidable& block)
 
 			if (enemy != nullptr)
 			{
-				// Jump(); を削除し、代わりに音を鳴らさないジャンプ（跳ね返り）処理を直接記述する
-				now_speed_y = JUMP_INITIAL;
+				// 敵を踏んだ時の跳ね返り（初代マリオは踏みつけ時、Aボタンを押しっぱなしにしていると大ジャンプになる）
+				if (CheckHitKey(KEY_INPUT_SPACE))
+				{
+					// スペース長押し時はダッシュジャンプ級の跳ね返り
+					now_speed_y = JUMP_BASE_DASH;
+				}
+				else
+				{
+					// ボタンを離していれば通常の跳ね返り
+					now_speed_y = JUMP_BASE_WALK;
+				}
 				isJumping = true;
 				jumpHoldTimer = 0.0f;
 				/*enemy->TakeDamage(*this);*/
 			}
-			
 
 			block.OnHitTop(*this);
 		}
@@ -220,8 +231,6 @@ void Mario::ToDeadState(bool isFall)
 		now_speed_y = 0.0f;
 
 		// 当たり判定を完全に無くしてステージや敵をすり抜けさせる
-		//RigidBody_collider.x = -9999.0f;
-		//RigidBody_collider.y = -9999.0f;
 		RigidBody_collider.width = 0;
 		RigidBody_collider.height = 0;
 
@@ -243,7 +252,7 @@ void Mario::Init()
 	small_mario_walkAnim.InitialAnimation(LoadGraph("data/image/mario/small_mario_walk.png"), 3, 10);
 
 	currentForm = MarioForm::SMALL;
-	position.Set(165.0f, 700.0f); //772
+	position.Set(165.0f, 700.0f);
 	isLeft = false; // 最初は右向き
 	isDeadJumped = false;
 	isFellDown = false;
@@ -422,15 +431,13 @@ void Mario::Update()
 	float offsetWidth = 20.0f;
 	RigidBody_collider.x = position.x + offsetWidth / 2;
 	RigidBody_collider.y = position.y;
-	//collider.x = position.x + 20.0f / 2;
-	//collider.y = position.y;
 	
 	bool currKeyA = CheckHitKey(KEY_INPUT_A);
 	bool currKeyD = CheckHitKey(KEY_INPUT_D);
 	bool isDashing = CheckHitKey(KEY_INPUT_LSHIFT);
 	bool currKeySpace = CheckHitKey(KEY_INPUT_SPACE);
 
-	// 後入力優先の方向決定ロジック (ID#a0004から復活)
+	// 後入力優先の方向決定ロジック
 	if (currKeyA && !prevKeyA) preferLeftInput = true;
 	if (currKeyD && !prevKeyD) preferLeftInput = false;
 	if (currKeyA && !currKeyD) preferLeftInput = true;
@@ -444,35 +451,47 @@ void Mario::Update()
 	// 外部参照用(Camera.cpp等)の移動速度設定
 	if (moveKeyPressed)
 	{
+		float currentAccel = isDashing ? MARIO_ACCEL_DASH : MARIO_ACCEL_WALK;
 		float currentMax = isDashing ? MARIO_DASH_MAX_SPEED : MARIO_WALK_MAX_SPEED;
-		marioSpeed = preferLeftInput ? -currentMax : currentMax;
-	}
-	else
-	{
-		marioSpeed = MARIO_WALK_MAX_SPEED;
-	}
 
-	// キー入力に応じた速度（now_speed_x）と向きの計算 (後入力優先ベース)
-	if (moveKeyPressed)
-	{
 		if (preferLeftInput)
 		{
 			if (!isJumping) isLeft = true;
 
-			if (now_speed_x > 0.0f)	now_speed_x -= MARIO_DECEL_TURN; // 急ブレーキ
-			else					now_speed_x -= MARIO_ACCEL;      // 通常加速
+			if (now_speed_x > 0.0f) {
+				now_speed_x -= MARIO_DECEL_TURN; // 滑りながら急ブレーキ
+			}
+			else {
+				now_speed_x -= currentAccel;     // 左へ徐々に加速
+
+				// ダッシュから歩きに落とした時、急に減速させず摩擦で滑らかに落とす
+				if (now_speed_x < -currentMax) {
+					now_speed_x += MARIO_FRICTION;
+					if (now_speed_x > -currentMax) now_speed_x = -currentMax;
+				}
+			}
 		}
 		else
 		{
 			if (!isJumping) isLeft = false;
 
-			if (now_speed_x < 0.0f)	now_speed_x += MARIO_DECEL_TURN; // 急ブレーキ
-			else					now_speed_x += MARIO_ACCEL;      // 通常加速
+			if (now_speed_x < 0.0f) {
+				now_speed_x += MARIO_DECEL_TURN; // 滑りながら急ブレーキ
+			}
+			else {
+				now_speed_x += currentAccel;     // 右へ徐々に加速
+
+				// ダッシュから歩きに落とした時、急に減速させず摩擦で滑らかに落とす
+				if (now_speed_x > currentMax) {
+					now_speed_x -= MARIO_FRICTION;
+					if (now_speed_x < currentMax) now_speed_x = currentMax;
+				}
+			}
 		}
 	}
 	else
 	{
-		// 摩擦（自然減速）の処理
+		// 摩擦（自然減速）の処理 - 初代のようにスーッと滑って止まる
 		if (now_speed_x > 0.0f)
 		{
 			now_speed_x -= MARIO_FRICTION;
@@ -490,7 +509,7 @@ void Mario::Update()
 	if (now_speed_x > MarioMoovMaxSpeed)  now_speed_x = MarioMoovMaxSpeed;
 	if (now_speed_x < -MarioMoovMaxSpeed) now_speed_x = -MarioMoovMaxSpeed;
 
-	// Dキーの押し下げに関係なく、マリオが画面中央を越えたらカメラを動かすように外に出しました
+	// マリオが画面中央を越えたらカメラを動かす
 	if (MainCamera.pos.y < 960)
 	{
 		float marioWorldCenterX = position.x + (small_mario_waitImage.sizeX / 2.0f);
@@ -507,25 +526,29 @@ void Mario::Update()
 	}
 
 	// マリオの表示幅を計算
-	float marioWidth = small_mario_waitImage.sizeX;  // マリオの画像の幅を計算
-	float marioHeight = small_mario_waitImage.sizeY; // マリオの画像の高さを計算
-	// マリオの右端のワールド座標
-	float marioRightX = position.x + marioWidth;
+	float marioWidth = small_mario_waitImage.sizeX;		// マリオの画像の幅を計算
+	float marioHeight = small_mario_waitImage.sizeY;	// マリオの画像の高さを計算
+	float marioRightX = position.x + marioWidth;		// マリオの右端のワールド座標
 
 	// ステージの右端を設定 (カメラの最大移動量 + 画面幅)
 	float stageRightLimit = 12480.0f + SCREEN_W;
 
-	// first press — initial jump
+	// 速度連動ジャンプシステム
+	// 初押し込み（地上にいて、スペースキーが押された瞬間）
 	if (currKeySpace && !prevKeySpace && !isJumping)
 	{
 		Jump();
 	}
 
-	// hold to go higher
+	// 長押しによる上昇の維持処理（空中＆ボタン押しっぱなし＆規定タイマー内）
 	if (currKeySpace && isJumping && jumpHoldTimer < JUMP_HOLD_MAX)
 	{
-		now_speed_y += JUMP_HOLD_FORCE;  // extra upward push
-		jumpHoldTimer += 0.016f;         // add time (~1 frame at 60fps)
+		// ジャンプした瞬間のダッシュ状態（または現在の速度の絶対値）に合わせて空中上昇力を動的に変化させる
+		// 初代マリオはダッシュしているほど重力を無視して上にググッと伸びる特性がある
+		float currentHoldForce = (abs(now_speed_x) > MARIO_WALK_MAX_SPEED + 0.5f) ? JUMP_HOLD_DASH : JUMP_HOLD_WALK;
+
+		now_speed_y += currentHoldForce;  // 上方向へ追加の押し出し（負の値を加算）
+		jumpHoldTimer += 0.016f;         // 1フレーム分の時間を加算（約60fps想定）
 	}
 
 	// 次のフレームのために現在の状態を過去の状態として保存
@@ -535,7 +558,13 @@ void Mario::Update()
 	if (moveKeyPressed && !isJumping)
 	{
 		isWalking = true;
-		small_mario_walkAnim.FPS = isDashing ? 15 : 9;
+
+		// 初代マリオのパタパタしたアニメーション速度を再現
+		// 動き出し（低速）はゆっくり、最高速に向けて滑らかに足の回転が上がります
+		int baseFPS = 5;
+		int speedBonus = (int)(abs(now_speed_x) * 1.2f);
+		small_mario_walkAnim.FPS = baseFPS + speedBonus;
+
 		small_mario_walkAnim.AnimationUpdateLoop();
 	}
 	else
@@ -642,19 +671,33 @@ void Mario::Render()
 		DrawFormatString(0, 60, GetColor(255, 255, 255), "now_speed X : %f", now_speed_x);
 
 		//スター状態の残り時間を表示
-		if (isStarMode) {
+		if (isStarMode) 
+		{
 			DrawFormatString(0, 80, GetColor(255, 255, 0), "STAR MODE: %.0f", starTimer);
 		}
-		else {
+		else 
+		{
 			DrawFormatString(0, 80, GetColor(100, 100, 100), "STAR MODE: OFF");
 		}
 	}
 }
 
-//Jump player
+// ジャンプ処理
 void Mario::Jump()
 {
-	now_speed_y = JUMP_INITIAL;  // shoot up
+	// 飛び立つ瞬間の水平速度（絶対値）を確認
+	float speedXAbs = abs(now_speed_x);
+
+	// 【変更】歩きの最高速度を明確に超えている場合のみダッシュジャンプにする
+	if (speedXAbs > MARIO_WALK_MAX_SPEED + 0.5f)
+	{
+		now_speed_y = JUMP_BASE_DASH; // ダッシュジャンプの初速 (-16.0f)
+	}
+	else
+	{
+		now_speed_y = JUMP_BASE_WALK; // 通常・歩きジャンプの初速 (-13.0f)
+	}
+
 	isJumping = true;
 	jumpHoldTimer = 0.0f;
 	SoundManager::GetInstance().PlaySE("Jump_Small");
