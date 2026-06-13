@@ -1,10 +1,10 @@
 #include "Super_Mushroom.h"
-
+#include "Mario.h"
 
 
 void SuperMushroom::CollectItem(Mario& mario)
 {
-	//TODO change mario state to big
+	mario.ChangeToSuper();
 	active = false;
 }
 
@@ -20,7 +20,7 @@ void SuperMushroom::Init(float x, float y)
 	this->canCollect = false;
 	this->originalPosition;
 	this->active = true;
-	this->canMove = false;
+	this->isSpawning = false;
 	this->now_speed_x = MOVE_SPEED;
 	this->now_speed_y = 0.0f;
 }
@@ -58,14 +58,14 @@ void SuperMushroom::Update()
 
 	now_speed_x = direction * MOVE_SPEED; // reset every frame FIRST
 
-	if (canMove)
-	{	
+	if (!isSpawning && canCollect)
+	{
 		//Move the item
 		PhysicsUpdate();
 	}
 
 	//only moving up wehen it can be collected but not moving yet
-	if (canCollect && !canMove)
+	if (isSpawning && !canCollect)
 	{
 		MovingUp();
 	}
@@ -73,11 +73,10 @@ void SuperMushroom::Update()
 
 void SuperMushroom::SpawnItem()
 {
-	if (!canCollect)
+	if (!isSpawning)
 	{
-		
 		originalPosition = position;
-		canCollect = true;
+		isSpawning = true;
 	}
 }
 
@@ -92,11 +91,13 @@ void SuperMushroom::MovingUp()
 	}
 	else
 	{
-		//Physisc update
-		canMove = true;
+		//Physics update
+		isSpawning = false;
+		canCollect = true;
 	}
 
 }
+
 
 void SuperMushroom::RenderGlobal(Camera& camera)
 {

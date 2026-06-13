@@ -238,6 +238,9 @@ void Mario::Init()
 	small_mario_jumpImage.InitialImageAndSize(LoadGraph("data/image/mario/small_mario_jump.png"));
 	small_mario_deadImage.InitialImageAndSize(LoadGraph("data/image/mario/small_mario_dead.png"));
 	small_mario_walkAnim.InitialAnimation(LoadGraph("data/image/mario/small_mario_walk.png"), 3, 10);
+	big_mario_waitImage.InitialImageAndSize(LoadGraph("data/image/big_mario_wait.png"));
+	big_mario_fire_waitImage.InitialImageAndSize(LoadGraph("data/image/big_mario_fire_wait.png"));
+
 
 	currentForm = MarioForm::SMALL;
 	position.Set(165.0f, 700.0f); //772
@@ -252,9 +255,8 @@ void Mario::Init()
 
 	//Shrink collider (当たり判定を画像より少し小さくする)
 	RigidBody_collider = Collider(position.x, position.y, small_mario_waitImage.sizeX, small_mario_waitImage.sizeY);
-	float offsetWidth = 20.0f; // how much to shrink total width
-	RigidBody_collider.width -= offsetWidth;
-	RigidBody_collider.x += offsetWidth / 2; // shift right so it's centered
+	RigidBody_collider.width -= COLLIDER_OFFSET;
+	RigidBody_collider.x += COLLIDER_OFFSET / 2; // shift right so it's centered
 
 	//Score and item
 	score = 0;
@@ -347,8 +349,8 @@ void Mario::Update()
 		now_speed_y = 0.0f;
 
 		small_mario_waitImage.pos = position;
-		RigidBody_collider.x = position.x;
-		RigidBody_collider.y = position.y;
+		//RigidBody_collider.x = position.x;
+		//RigidBody_collider.y = position.y;
 
 		// Frame debug layout configuration parameters
 		int scrX1 = (int)(RigidBody_collider.x - MainCamera.pos.x);
@@ -414,8 +416,7 @@ void Mario::Update()
 	small_mario_waitImage.pos = position;
 
 	////Collider update
-	float offsetWidth = 20.0f;
-	RigidBody_collider.x = position.x + offsetWidth / 2;
+	RigidBody_collider.x = position.x + COLLIDER_OFFSET / 2;
 	RigidBody_collider.y = position.y;
 	//collider.x = position.x + 20.0f / 2;
 	//collider.y = position.y;
@@ -552,8 +553,7 @@ void Mario::Update()
 		position.x = stageRightLimit - marioWidth; // 座標を右端限界にクランプ
 
 		// 実際の当たり判定（RigidBody_collider）のX座標も即座に再同期させる
-		float offsetWidth = 20.0f;
-		RigidBody_collider.x = position.x + offsetWidth / 2;
+		RigidBody_collider.x = position.x + COLLIDER_OFFSET / 2;
 
 		// 右へ進もうとする慣性速度をゼロにする
 		if (now_speed_x > 0.0f) now_speed_x = 0.0f;
@@ -738,5 +738,22 @@ void StarEffect::Render(int screenX, int screenY, bool isLeft, bool isJumping, b
 
 void Mario::ChangeToSuper()
 {
+	if (currentForm == MarioForm::FIRE) return;
+
+	RigidBody_collider = Collider(position.x, position.y, big_mario_waitImage.sizeX, big_mario_waitImage.sizeY);
+	RigidBody_collider.width -= COLLIDER_OFFSET;
+	RigidBody_collider.x += COLLIDER_OFFSET / 2; // shift right so it's centered
+	position.y -= (float)(big_mario_waitImage.sizeY / 2.0f);
 	currentForm = MarioForm::SUPER;
+}
+
+void Mario::ChangeToFire()
+{
+	//Change Collider
+	RigidBody_collider = Collider(position.x, position.y, big_mario_waitImage.sizeX, big_mario_waitImage.sizeY);
+	RigidBody_collider.width -= COLLIDER_OFFSET;
+	RigidBody_collider.x += COLLIDER_OFFSET / 2; // shift right so it's centered
+	/*position.y -= (float)(big_mario_waitImage.sizeY / 2.0f);*/
+
+	currentForm = MarioForm::FIRE;
 }

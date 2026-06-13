@@ -72,12 +72,16 @@ public:
 
 	static constexpr float WARP_DURATION = 1.0f; // warp timer
 
+	static constexpr float COLLIDER_OFFSET = 20.0f; //shirnk collider offset
+
 
 	//Mario image/animation variables (画像/アニメーション変数)
 	Image small_mario_waitImage;	 // マリオの待機画像情報
 	Image small_mario_jumpImage;   // マリオのジャンプ画像情報
 	Image small_mario_deadImage;   // マリオの死亡画像情報
 	Animation small_mario_walkAnim;		 // 歩きアニメーション管理オブジェクト
+	Image big_mario_waitImage;
+	Image big_mario_fire_waitImage;
 
 	// 後入力優先のためのキー状態保持
 	bool prevKeyA = false;
@@ -126,6 +130,10 @@ public:
 	
 
 	void ChangeToSuper();
+	void ChangeToFire();
+	
+
+
 	//void Warping(float pipeY);
 
 	enum class WarpDir { DOWN, RIGHT, UP, };
