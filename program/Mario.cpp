@@ -132,12 +132,22 @@ void Mario::ResolveCollision(Collidable& block)
 						break;
 					}
 				}
-				CoinBrickBlock* coinBrickBlock = dynamic_cast<CoinBrickBlock*>(&block);
-				if (coinBrickBlock != nullptr && coinBrickBlock->IsAvailable())
+				BrickBlock* brickBlock = dynamic_cast<BrickBlock*>(&block);
+				if (brickBlock != nullptr && brickBlock->IsAvailable())
 				{
-					switch (coinBrickBlock->itemType)
+					switch (brickBlock->itemType)
 					{
-					case CoinBrickBlockItem::COIN:
+					case BrickBlockItem::COIN:
+						AddCoin();
+						break;
+					}
+				}
+				HiddenBlock* hiddenBlock = dynamic_cast<HiddenBlock*>(&block);
+				if (hiddenBlock != nullptr && hiddenBlock->IsRevealed())
+				{
+					switch (hiddenBlock->itemType)
+					{
+					case HiddenItemType::COIN:
 						AddCoin();
 						break;
 					}
@@ -637,6 +647,9 @@ void Mario::Jump()
 void Mario::AddCoin()
 {
 	coin++;
+
+	// コイン獲得のSEを再生する処理を追加
+	SoundManager::GetInstance().PlaySE("Coin");
 }
 
 void Mario::Star()

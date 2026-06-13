@@ -22,6 +22,10 @@ public:
 
     struct Fireball : public Collidable {
         float x, y;
+        Fireball() {
+            isTrigger = true;            // Allow Mario to overlap cleanly without getting physically blocked
+            layer = PhysicsLayer::ENEMY; // Tag it properly for your physics layers
+        }
     };
     std::vector<Fireball>& GetFireballs() { return fireballs; }
     bool IsActive() const { return active; }
