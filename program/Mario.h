@@ -8,6 +8,7 @@
 #include "Coin.h"
 #include "Question_Block.h"
 #include "Brick_Block.h"
+//#include "Koopa_Troopa.h"
 using namespace std;
 
 // 外部ファイル（Camera.cppなど）からマリオの移動速度や中心座標を
@@ -78,6 +79,7 @@ public:
 	Animation starmarioAnim; 
 	bool isStarMode;         
 	float starTimer;       
+	Timer invincibleTimer{ 0.0f };
 
 	void ResolveCollision(Collidable& block) override;
 

@@ -161,6 +161,18 @@ void Mario::ResolveCollision(Collidable& block)
 
 		now_speed_x = 0;
 
+		//reduce damage when hit by enemy on the side
+		Enemy* enemy = dynamic_cast<Enemy*>(&block);
+		//KoopaTroopa* koopa = dynamic_cast<KoopaTroopa*>(enemy);
+
+		//if (enemy != nullptr)
+		//{
+		//	//if(koopa->isShellMoving && koopa->isInShell ||
+		//	//	!koopa->isInShell)
+		//	ToDeadState();
+
+		//}
+
 		block.OnHitSide(*this);
 	}
 }
@@ -183,6 +195,7 @@ void Mario::Warping(float targetX, float targetY, WarpDir dir)
 void Mario::ToDeadState(bool isFall)
 {
 	if (currentState == MarioState::DEAD) return;
+	if (invincibleTimer.GetCurrentTimer() > 0.0f) return;
 
 	if (currentForm == MarioForm::SMALL)
 	{
@@ -247,6 +260,7 @@ void Mario::Init()
 
 void Mario::Update()
 {
+	invincibleTimer.Update();
 	// ----------------------------------------------------
 	// 死亡状態（DEAD）の更新処理
 	// ----------------------------------------------------
