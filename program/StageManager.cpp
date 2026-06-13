@@ -45,7 +45,7 @@ void StageManager::TransferWorldZone(WorldZone newZone)
 	}
 }
 
-//ENEMIES （敵）
+//ENEMIES
 template <typename T1, typename T2>
 void CreateGoomba(T1 x, T2 y)
 {
@@ -79,7 +79,6 @@ void CreateGrounds(int fromTileX, int fromTileY, int toTileX, int toTileY)
 }
 
 //Create Stationary block that has no unique feature with a custom handle
-//カスタムハンドルを持つ、特別な機能のない固定ブロックを生成する
 
 void CreateGrounds(int fromTileX, int fromTileY, int toTileX, int toTileY, int handle)
 {
@@ -96,7 +95,7 @@ void CreateGrounds(int fromTileX, int fromTileY, int toTileX, int toTileY, int h
 
 
 
-//Stair looking ground (階段を作る関数）
+//Stair looking ground
 void CreateStairs(int fromTileX, int fromTileY, int toTileX, int toTileY, bool flipFlag)
 {
 
@@ -204,6 +203,19 @@ vector<Collidable*> StageManager::GetCollidables()
 			if (physicsObject != nullptr) {
 				result.push_back(physicsObject);
 			}
+		}
+	}
+	for (auto* pipe : globalPipes) {
+		if (pipe->IsActive()) {
+			result.push_back(pipe); // Makes the pipe solid to Mario!
+		}
+	}
+	for (auto* block : overworld1_4Blocks) {
+		if (block->IsActive()) {
+			Collidable* physicsObject = dynamic_cast<Collidable*>(block);
+			if (physicsObject != nullptr) {
+				result.push_back(physicsObject);
+			}
 			// Unpack the spinning fireballs if this block is a FireBar
 			FireBar* fireBar = dynamic_cast<FireBar*>(block);
 			if (fireBar != nullptr) {
@@ -213,12 +225,6 @@ vector<Collidable*> StageManager::GetCollidables()
 			}
 		}
 	}
-	for (auto* pipe : globalPipes) {
-		if (pipe->IsActive()) {
-			result.push_back(pipe); // Makes the pipe solid to Mario!
-		}
-	}
-	
 	
 	for (auto& g : underworld_ground)
 		result.push_back(&g);
@@ -269,6 +275,13 @@ vector<Collidable*> StageManager::GetCollidables()
 		result.push_back(superS);
 	}
 
+	//ゴールポールを物理判定リストに追加
+	for (auto* pole : goalPoles)
+	{
+		result.push_back(pole); // ① すり抜けるポール本体の判定
+		result.push_back(&(pole->baseCollider)); // ② 固い土台の判定
+	}
+
 	// when u add pipe, questionblock etc just do:
 	// for (auto& p : pipes)
 	//     result.push_back(&p);
@@ -280,7 +293,7 @@ void StageManager::Init(Stage stageNumber)
 	if (stageNumber == Stage::WORLD_1_1)
 	{
 		//Stage (ground1)
-		CreateGrounds(0, 13, 68, 14); //from (0, 13) to (20, 14) | (0, 13)から(68, 14)まで
+		CreateGrounds(0, 13, 68, 14); //from (0, 13) to (20, 14) | (0, 13)縺九ｉ(68, 14)縺ｾ縺ｧ
 		CreateGrounds(71, 13, 85, 14);
 		CreateGrounds(88, 13, 152, 14);
 		CreateGrounds(155, 13, 210, 14);
@@ -313,49 +326,55 @@ void StageManager::Init(Stage stageNumber)
 		int pHole = LoadGraph("data/image/underworld_pipe.png");
 		int pLong = LoadGraph("data/image/underworld_lpipe.png");
 
-		int fireSpriteHandle = LoadGraph("data/image/firebar.png");
-		int blockSpriteHandle = LoadGraph("data/image/hard_block.png");
 
-		int totalOVerworldBlocks = sizeof(world1_1data) / sizeof(BlockSpawnData);
+		int totalOverworldBlocks = sizeof(world1_1data) / sizeof(BlockSpawnData);
 
 		//Stairs
 		CreateStairs(134, 9, 137, 12, false);
 
 
 
-		// 2. Create the fire bar block
-		FireBar* testFireBar = new FireBar();
-		testFireBar->Init(Float2(448.0f, 640.0f), blockSpriteHandle, fireSpriteHandle, CLOCKWISE, 6);
+		//// 2. Create the fire bar block
+		//FireBar* testFireBar = new FireBar();
+		//testFireBar->Init(Float2(448.0f, 640.0f), blockSpriteHandle, fireSpriteHandle, CLOCKWISE, 6);
 
-		// FIX: Change 'blockList' to 'overworld1_1Blocks'
-		// This seamlessly registers it into StageManager's active tracking loop!
-		overworld1_1Blocks.push_back(testFireBar);
+		//// FIX: Change 'blockList' to 'overworld1_1Blocks'
+		//// This seamlessly registers it into StageManager's active tracking loop!
+		//overworld1_1Blocks.push_back(testFireBar);
 
-		// 2. Create the fire bar block
-		FireBar* testFireBar2 = new FireBar();
-		testFireBar2->Init(Float2(640.0f, 640.0f), blockSpriteHandle, fireSpriteHandle, COUNTERCLOCKWISE, 6);
+		//// 2. Create the fire bar block
+		//FireBar* testFireBar2 = new FireBar();
+		//testFireBar2->Init(Float2(640.0f, 640.0f), blockSpriteHandle, fireSpriteHandle, COUNTERCLOCKWISE, 6);
 
-		// FIX: Change 'blockList' to 'overworld1_1Blocks'
-		// This seamlessly registers it into StageManager's active tracking loop!
-		overworld1_1Blocks.push_back(testFireBar2);
+		//// FIX: Change 'blockList' to 'overworld1_1Blocks'
+		//// This seamlessly registers it into StageManager's active tracking loop!
+		//overworld1_1Blocks.push_back(testFireBar2);
 
-		for (int i = 0; i < totalOVerworldBlocks; i++)
+		for (int i = 0; i < totalOverworldBlocks; i++)
 		{
 			Float2 pixelPos;
 			pixelPos.x = world1_1data[i].gridX * 64.0f;
 			pixelPos.y = world1_1data[i].gridY * 64.0f;
 
+			
 			if (world1_1data[i].type == BlockType::BRICK)
 			{
-				BrickBlock* brick = new BrickBlock();
-				brick->Init(pixelPos, texBrick);
-				overworld1_1Blocks.push_back(brick);
+				BrickBlock* regularBrick = new BrickBlock();
+				regularBrick->Init(pixelPos, texBrick);
+				overworld1_1Blocks.push_back(regularBrick);
 			}
 			else if (world1_1data[i].type == BlockType::COINBRICK)
 			{
-				CoinBrickBlock* coinbrick = new CoinBrickBlock();
-				coinbrick->Init(pixelPos, texBrick, texHard);
-				overworld1_1Blocks.push_back(coinbrick);
+				BrickBlock* coinBrick = new BrickBlock();
+				coinBrick->Init(pixelPos, texBrick, texHard, BrickBlockItem::COIN, 9);
+				overworld1_1Blocks.push_back(coinBrick);
+			}
+			else if (world1_1data[i].type == BlockType::STARBRICK)
+			{
+				BrickBlock* starBrick = new BrickBlock();
+				starBrick->Init(pixelPos, texBrick, texHard, BrickBlockItem::STAR, 1);
+				CreateSuperStar(pixelPos.x, pixelPos.y);
+				overworld1_1Blocks.push_back(starBrick);
 			}
 			else if (world1_1data[i].type == BlockType::QUESTION)
 			{
@@ -365,8 +384,10 @@ void StageManager::Init(Stage stageNumber)
 			}
 			else if (world1_1data[i].type == BlockType::HIDDEN)
 			{
-				HiddenBlock* hiddenBlk = new HiddenBlock(pixelPos, texHard);
-				overworld1_1Blocks.push_back(hiddenBlk);
+				HiddenBlock* hiddenBlock = new HiddenBlock();
+				hiddenBlock->Init(pixelPos, texHard, HiddenItemType::MUSHROOM_1UP);
+
+				overworld1_1Blocks.push_back(hiddenBlock);
 			}
 			else if (world1_1data[i].type == BlockType::HARD)
 			{
@@ -462,13 +483,24 @@ void StageManager::Init(Stage stageNumber)
 		CreateFireFlower(6, 10);
 		CreateSuperStar(7, 10);
 
+		// ゴールポールを X=12700 の位置に設置
+		// ※ Y座標(192.0f)は仮です。goal_pole.pngの画像の高さに合わせて、
+		// 床(Y=832)にぴったりくっつくように微調整してください。
+		GoalPole* pole = new GoalPole();
+		pole->Init(12670.0f, 160.0f);
+		goalPoles.push_back(pole);
+
+		// お城を設置
+		Castle* myCastle = new Castle();
+		myCastle->Init(12928.0f, 512.0f);
+		castles.push_back(myCastle);
 	}
 	else if (stageNumber == Stage::WORLD_1_4)
 	{
-		//Reset mario (マリオをリセット）
+		//Reset mario 
 		MainMario.position.Set(2 * BLOCK_SIZE, 5 * BLOCK_SIZE);
 
-		//Reset Camera (カメラをリセット）
+		//Reset Camera
 		MainCamera.pos.Set(0.0f, 0.0f);
 		MainCamera.cameraPosXLimit = 10240 - SCREEN_W;
 		
@@ -477,11 +509,40 @@ void StageManager::Init(Stage stageNumber)
 		background.InitialImageAndSize(LoadGraph("data/image/1-4_background.png"));
 		SetBackgroundColor(0, 0, 0);
 
-		//Reset Stqage (ステージをリセット）
+		//Reset Stqage
 		int groundHandle = LoadGraph("data/image/ground_castle.png");
 		int tmpHandle = LoadGraph("data/image/tmp.png");
 		int bridgeHandle = LoadGraph("data/image/bridge.png");
 
+		int fireSpriteHandle = LoadGraph("data/image/firebarAnimation.png");
+		int blockSpriteHandle = LoadGraph("data/image/firebarblock.png");
+
+		int totalOverworldBlocks = sizeof(world1_4data) / sizeof(BlockSpawnData);
+		for (int i = 0; i < totalOverworldBlocks; i++)
+		{
+			Float2 pixelPos;
+			pixelPos.x = world1_4data[i].gridX * 64.0f;
+			pixelPos.y = world1_4data[i].gridY * 64.0f;
+			if (world1_4data[i].type == BlockType::FIREBAR)
+			{
+				FireBar* fireBar = new FireBar();
+				fireBar->Init(pixelPos, blockSpriteHandle, fireSpriteHandle, CLOCKWISE, 6);
+				overworld1_4Blocks.push_back(fireBar);
+			}
+			else if (world1_4data[i].type == BlockType::HARD)
+			{
+				HardBlock* hblock = new HardBlock();
+				hblock->Init(pixelPos, blockSpriteHandle);
+				overworld1_4Blocks.push_back(hblock);
+			}
+			else if (world1_4data[i].type == BlockType::HIDDEN)
+			{
+				HiddenBlock* hiddenBlock = new HiddenBlock();
+				hiddenBlock->Init(pixelPos, blockSpriteHandle, HiddenItemType::COIN);
+
+				overworld1_4Blocks.push_back(hiddenBlock);
+			}
+		}
 		//BOTTOM
 		CreateGrounds(0, 7, 2, 14, groundHandle);
 		CreateGrounds(3, 8, 3, 14, groundHandle);
@@ -492,7 +553,7 @@ void StageManager::Init(Stage stageNumber)
 
 		CreateGrounds(29, 10, 29, 14, groundHandle);
 		CreateGrounds(30, 11, 30, 14, groundHandle);
-		CreateGrounds(30, 10, 30, 10, tmpHandle); //Temporary block
+		//CreateGrounds(30, 10, 30, 10, tmpHandle); //Temporary block
 		CreateGrounds(31, 10, 31, 14, groundHandle);
 
 		CreateGrounds(35, 9, 71, 14, groundHandle);
@@ -542,6 +603,7 @@ void StageManager::Update(Camera& camera)
 
 	if (currentzone == WorldZone::OVERWORLD) {
 		for (IBlock* b : overworld1_1Blocks) { b->Update(); }
+		for (IBlock* b : overworld1_4Blocks) { b->Update(); }
 		for (Pipe* pipe : globalPipes)
 		{
 			pipe->Update();
@@ -670,34 +732,13 @@ void StageManager::Update(Camera& camera)
 		}
 	}
 
-
+	// ゴールポール
+	for (GoalPole* pole : goalPoles) { pole->Update(); }
 }
 
 void StageManager::Render(Camera& camera)
 {
-	if (currentzone == WorldZone::OVERWORLD)
-	{
-		for (size_t i = 0; i < ground.size(); i++) ground[i].RenderGlobal(camera);
-		for (IBlock* b : overworld1_1Blocks) b->Render(camera);
-		for (Pipe* pipe : globalPipes)
-		{
-			pipe->Render(camera);
-		}
-	}
-	else // RENDER UNDERWORLD ZONE
-	{
-		// Paint screen pitch black instead of light blue sky
-		
 
-		for (size_t i = 0; i < underworld_ground.size(); i++) underworld_ground[i].RenderGlobal(camera);
-		for (IBlock* b : underworldBlocks) b->Render(camera);
-
-		for (UnderWorldPipe* pipe : underWorldPipe)
-		{
-			pipe->Render(camera);
-			camera.GlobalRenderBox(pipe->collider.x, pipe->collider.y, pipe->collider.x + pipe->collider.width, pipe->collider.y + pipe->collider.height, GetColor(255, 0, 0), FALSE);
-		}
-	}
 
 	//ENEMIES
 	//Goomba
@@ -743,6 +784,33 @@ void StageManager::Render(Camera& camera)
 		}
 	}
 
+	if (currentzone == WorldZone::OVERWORLD)
+	{
+		for (size_t i = 0; i < ground.size(); i++) ground[i].RenderGlobal(camera);
+		for (IBlock* b : overworld1_1Blocks) b->Render(camera);
+		for (IBlock* b : overworld1_4Blocks) b->Render(camera);
+		for (Pipe* pipe : globalPipes)
+		{
+			pipe->Render(camera);
+		}
+	}
+	else // RENDER UNDERWORLD ZONE
+	{
+		// Paint screen pitch black instead of light blue sky
+
+
+		for (size_t i = 0; i < underworld_ground.size(); i++) underworld_ground[i].RenderGlobal(camera);
+		for (IBlock* b : underworldBlocks) b->Render(camera);
+
+		for (UnderWorldPipe* pipe : underWorldPipe)
+		{
+			pipe->Render(camera);
+			camera.GlobalRenderBox(pipe->collider.x, pipe->collider.y, pipe->collider.x + pipe->collider.width, pipe->collider.y + pipe->collider.height, GetColor(255, 0, 0), FALSE);
+		}
+	}
+	// ゴールポール
+	for (GoalPole* pole : goalPoles) { pole->RenderGlobal(camera); }
+
 }
 
 //Clear all objects in stage
@@ -761,6 +829,8 @@ void StageManager::ClearStage()
 	for (auto* m : superMushroom) delete m;
 	for (auto* f : fireFlower) delete f;
 	for (auto* s : superStar) delete s;
+	for (auto* p : goalPoles) delete p;
+	for (auto* c : castles) delete c;
 
 	// then clear the vectors
 	ground.clear();
@@ -776,6 +846,7 @@ void StageManager::ClearStage()
 	superMushroom.clear();
 	fireFlower.clear();
 	superStar.clear();
+	goalPoles.clear();
 
 	// clear collidables in RigidBody too!
 	RigidBody::collidables.clear();

@@ -2,176 +2,155 @@
 #include "Dxlib.h"
 #include "Mario.h"
 #include "Sound.h"
+#include <cmath>
+#include "StageManager.h"
 
-// Constructor
 BrickBlock::BrickBlock()
 {
     pos.Set(0.0f, 0.0f);
     originalPos.Set(0.0f, 0.0f);
     active = false;
-
     isBouncing = false;
+    isAvailable = true;
     bounceTimer = 0.0f;
+    hit_count = 0;
+    max_hits_allowed = 1;
+    itemType = BrickBlockItem::NONE;
+    itemCoinAnim.InitialAnimation(LoadGraph("data/image/item_coin.png"), 4, 10);
 }
 
+// Initialization for regular breakable bricks
 void BrickBlock::Init(Float2 startPos, int graphHandle)
 {
     pos = startPos;
     originalPos = startPos;
     active = true;
+    isAvailable = true;
+    hit_count = 0;
+    max_hits_allowed = 0; // 0 hits means it is breakable instead of turning brown
+    itemType = BrickBlockItem::NONE;
+    texActive = graphHandle;
+    texEmpty = graphHandle;
 
     image.InitialImageAndSize(graphHandle);
     image.pos = pos;
     collider = Collider(pos.x, pos.y, (float)image.sizeX, (float)image.sizeY);
 }
 
-void BrickBlock::OnHitBottom(RigidBody& player)
-{
-    // 引数の player を Mario クラスに安全にキャスト
-    //ignore object other than mario
-    Mario* mario = dynamic_cast<Mario*>(&player);
-    if (!mario) return;
-
-    if (mario != nullptr)
-    {
-        // スモールマリオの時はブロックを壊さない！
-        if (mario->GetForm() == MarioForm::SMALL)
-        {
-            // まだ跳ねていない時だけ跳ね返りアニメーションを開始
-            if (!isBouncing)
-            {
-                isBouncing = true;
-                bounceTimer = 0.0f;
-                // ここでブロックを叩いた時（壊れない方）のSEを鳴らすとさらに最高です！
-                SoundManager::GetInstance().PlaySE("Bump");
-            }
-            return; // 破壊処理にいかせず、ここで終了する
-        }
-    }
-
-    // スーパーマリオ以上の場合は、従来通りブロックを破壊（消滅）させる
-    active = false;
-
-    collider.x = -9999.0f;
-    collider.y = -9999.0f;
-    collider.width = 0;
-    collider.height = 0;
-}
-void BrickBlock::Update()
-{
-    if (!active) return;
-
-    // 叩かれた時の「ポコッ」という跳ね返りアニメーション処理
-    if (isBouncing)
-    {
-        bounceTimer += 1.0f; // 毎フレーム 1.0 ずつ進める
-
-        // 前半6フレーム：高速で上に移動（1フレームにつき3px、計18px上昇）
-        if (bounceTimer <= 6.0f)
-        {
-            pos.y -= 3.0f;
-        }
-        // 後半6フレーム：同じ速度で下に移動して戻る
-        else if (bounceTimer <= 12.0f)
-        {
-            pos.y += 3.0f;
-        }
-        // 12フレームを超えたらアニメーション終了
-        else
-        {
-            pos.y = originalPos.y; // ズレを防ぐために元の位置にピッタリ固定
-            isBouncing = false;
-        }
-    }
-
-    // 画像とコライダーの位置を現在の pos に同期（これで浮いている間も判定がズレません）
-    image.pos = pos;
-    collider.x = pos.x;
-    collider.y = pos.y;
-
-    /*if (!active) return;*/
-
-
-
-    // マリオはスーパーマリオとかファイアマリオになったら…
-}
-
-void BrickBlock::Render(Camera camera)
-{
-    if (!active) return;
-
-    camera.GlobalRenderImage(image);
-}
-
-CoinBrickBlock::CoinBrickBlock()
-{
-    pos.Set(0.0f, 0.0f);
-    originalPos.Set(0.0f, 0.0f);
-    active = false;
-
-    isBouncing = false;
-    isAvailable = true;
-    bounceTimer = 0.0f;
-}
-
-void CoinBrickBlock::Init(Float2 startPos, int active_graph, int next_graph)
+// Initialization for item bricks
+void BrickBlock::Init(Float2 startPos, int active_graph, int empty_graph, BrickBlockItem item, int max_hits)
 {
     pos = startPos;
     originalPos = startPos;
-    texActive = active_graph;
-    texNext = next_graph;
     active = true;
+    isAvailable = true;
     hit_count = 0;
+    max_hits_allowed = max_hits;
+    itemType = item;
+    texActive = active_graph;
+    texEmpty = empty_graph;
 
     image.InitialImageAndSize(texActive);
     image.pos = pos;
     collider = Collider(pos.x, pos.y, (float)image.sizeX, (float)image.sizeY);
 
-    itemType = CoinBrickBlockItem::COIN; // Default item type (can be set to other types as needed)
-
-    if (itemType == CoinBrickBlockItem::COIN)
+    if (itemType == BrickBlockItem::COIN)
     {
-        itemCoinAnim.InitialAnimation(LoadGraph("data/image/item_coin.png"), 4, 10);
+        //itemCoinAnim.InitialAnimation(LoadGraph("data/image/item_coin.png"), 4, 10);
         itemCoinAnim.x = pos.x + image.sizeX / 2.0f - itemCoinAnim.sprite.sizeX / 2.0f;
         itemCoinAnim.y = pos.y + image.sizeY / 2.0f - itemCoinAnim.sprite.sizeY / 2.0f;
     }
 }
 
-void CoinBrickBlock::OnHitBottom(RigidBody& player)
+
+void BrickBlock::OnHitBottom(RigidBody& player)
 {
-    if (!isAvailable || isBouncing) return;
+    if (!isAvailable) return;
 
-    hit_count++;
-
+    // Start block bounce sequence
     isBouncing = true;
     bounceTimer = 0.0f;
 
-    itemCoinAnimationTimer.ResetTimer();
+    Mario* mario = dynamic_cast<Mario*>(&player);
+
+    if (itemType == BrickBlockItem::NONE)
+    {
+        // Check Mario form using Mario.h state tracking rules
+        if (mario && mario->GetForm() != MarioForm::SMALL)
+        {
+            // Big or Fire Mario breaks the block entirely
+            active = false;
+            isAvailable = false;
+            // TODO: Play brick shatter sound effect
+        }
+        else
+        {
+            // Small Mario makes the block bounce, but it remains unbroken
+        }
+    }
+    else
+    {
+        // Item handling behavior
+        hit_count++;
+
+        if (itemType == BrickBlockItem::COIN)
+        {
+            itemCoinAnimationTimer.ResetTimer();
+            if (mario)
+            {
+                mario->coin++; // Increment Mario's coin total safely
+            }
+        }
+        else if (itemType == BrickBlockItem::STAR)
+        {
+            // 1. Create a new instance of SuperStar
+            SuperStar* newStar = new SuperStar();
+
+            // 2. Initialize it just slightly above or matching the block's layout position
+            newStar->Init(pos.x, pos.y);
+
+            // 3. Trigger its rising spawning state sequence
+            newStar->SpawnItem();
+
+            // 4. Push it into StageManager's star tracker vector so it updates and renders globally
+            StageManager::GetInstance().superStar.push_back(newStar);
+            RigidBody::collidables.push_back(newStar);
+        }
+
+        // Lock item production once hit maximum is reached
+        if (hit_count >= max_hits_allowed)
+        {
+            isAvailable = false;
+            image.InitialImageAndSize(texEmpty); // Swaps texture permanently to empty brown block
+        }
+    }
 }
-void CoinBrickBlock::Update()
+
+void BrickBlock::Update()
 {
-    if (!itemCoinAnimationTimer.TimerHit())
+    if (itemCoinAnimationTimer.GetCurrentTimer() > 0.0f)
     {
         itemCoinAnimationTimer.Update();
         itemCoinAnim.AnimationUpdateLoop();
-
+    
         float totalTime = itemCoinAnimationTimer.MAX_TIMER;
         float elapsed = totalTime - itemCoinAnimationTimer.GetCurrentTimer();
         float t = elapsed / totalTime;
-
+    
         float offset = -16.0f;
         float length = 64.0f * 3.5f;
-
+    
         itemCoinAnim.x = pos.x + image.sizeX / 2.0f - itemCoinAnim.sprite.sizeX / 2.0f;
         itemCoinAnim.y = pos.y + offset - sinf(t * 3.14159f) * length;
     }
+
     if (!active) return;
 
+    // Fast arcade block bounce calculation
     if (isBouncing)
     {
         bounceTimer += 1.0f;
 
-        // Up for 6 frames, down for 6 frames
         if (bounceTimer <= 6.0f)
         {
             pos.y -= 3.0f;
@@ -182,31 +161,22 @@ void CoinBrickBlock::Update()
         }
         else
         {
-            pos.y = originalPos.y; // Snap back to original position
+            pos.y = originalPos.y;
             isBouncing = false;
-
-            // Only disable the block if it has reached max hits
-            if (hit_count >= 9)
-            {
-                isAvailable = false;
-                image.InitialImageAndSize(texNext); // Change texture immediately when it empties
-            }
         }
     }
-
-    image.pos = pos;
-    collider.y = pos.y;
-    collider.x = pos.x;
 }
 
-
-void CoinBrickBlock::Render(Camera camera)
+void BrickBlock::Render(Camera camera)
 {
-    if (!itemCoinAnimationTimer.TimerHit())
+    // Draw item coin burst layer if active
+    if (itemCoinAnimationTimer.GetCurrentTimer() > 0.0f)
     {
         camera.GlobalRenderAnimation(itemCoinAnim);
     }
-
     if (!active) return;
+
+    // Render using standard non-rotated method
+    image.pos = pos;
     camera.GlobalRenderImage(image);
 }

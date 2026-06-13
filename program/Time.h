@@ -1,3 +1,8 @@
+#pragma once
+
+// タイムストップ用のグローバル変数宣言
+extern bool g_IsTimerStopped;
+
 class GameTime
 {
 private:
