@@ -126,17 +126,17 @@ void GameRender()
 	}
 
 	// 3 & 4. 状態による描画順（手前・奥）の切り替え
-	if (MainMario.GetState() == MarioState::DEAD)
+	if (MainMario.GetState() == MarioState::WARPING)
 	{
-		// 死亡時：ステージを先に（奥）、マリオを後に（手前）描画する
-		StageManager::GetInstance().Render(MainCamera);
+		// ワープ時：土管の後ろに隠すため、マリオを先に（奥）、ステージを後に（手前）描画する
 		MainMario.Render();
+		StageManager::GetInstance().Render(MainCamera);
 	}
 	else
 	{
-		// 通常時・ワープ時：マリオを先に（奥）、ステージを後に（手前）描画する）
-		MainMario.Render();
+		// 通常時・死亡時：マリオが隠れないよう、ステージを先に（奥）、マリオを後に（手前）描画する
 		StageManager::GetInstance().Render(MainCamera);
+		MainMario.Render();
 	}
 	
 	// 5. UI（文字や情報）の描画（すべての上に重ねるため一番最後に持ってくる）
