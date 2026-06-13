@@ -67,6 +67,7 @@ public:
 
 	//for all blocks
 	vector<IBlock*> overworld1_1Blocks;
+	vector<IBlock*> overworld1_4Blocks;
 	vector<IBlock*> underworldBlocks;
 	vector<IBlock*> globalBlocks;
 

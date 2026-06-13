@@ -1,12 +1,29 @@
 #include "Hidden_Block.h"
 #include "Mario.h"
+#include "Super_Mushroom.h"
+#include "StageManager.h"
 
-HiddenBlock::HiddenBlock(Float2 startPos, int emptyBlockTextureHandle)
+HiddenBlock::HiddenBlock()
+{
+    pos.Set(0.0f, 0.0f);
+    isRevealed = false;
+    active = false;
+    itemSpawned = false;
+    itemType = HiddenItemType::MUSHROOM_1UP;
+    itemCoinAnim.InitialAnimation(LoadGraph("data/image/item_coin.png"), 4, 10);
+}
+
+void HiddenBlock::Init(Float2 startPos, int activeBlockTextureHandle, HiddenItemType type)
 {
     pos = startPos;
-    texEmpty = emptyBlockTextureHandle;
+    texActive = activeBlockTextureHandle;
     isRevealed = false;
+    itemSpawned = false;
     active = true;
+    itemType = type;
+
+    image.InitialImageAndSize(texActive);
+    image.pos = pos;
 
     // HIDE THE COLLIDER
     collider = Collider(pos.x, -9999.0f, (float)BLOCK_SIZE, (float)BLOCK_SIZE);
@@ -14,6 +31,21 @@ HiddenBlock::HiddenBlock(Float2 startPos, int emptyBlockTextureHandle)
 
 void HiddenBlock::Update()
 {
+    if (itemCoinAnimationTimer.GetCurrentTimer() > 0.0f)
+    {
+        itemCoinAnimationTimer.Update();
+        itemCoinAnim.AnimationUpdateLoop();
+
+        float totalTime = itemCoinAnimationTimer.MAX_TIMER;
+        float elapsed = totalTime - itemCoinAnimationTimer.GetCurrentTimer();
+        float t = elapsed / totalTime;
+
+        float offset = -16.0f;
+        float length = 64.0f * 3.5f;
+
+        itemCoinAnim.x = pos.x + image.sizeX / 2.0f - itemCoinAnim.sprite.sizeX / 2.0f;
+        itemCoinAnim.y = pos.y + offset - sinf(t * 3.14159f) * length;
+    }
     if (!isRevealed)
     {
         extern Mario MainMario;
@@ -35,6 +67,8 @@ void HiddenBlock::Update()
                 MainMario.now_speed_y = 0.0f;
 
                 collider.y = pos.y;
+
+                OnHitBottom(MainMario);
             }
         }
     }
@@ -42,17 +76,60 @@ void HiddenBlock::Update()
 
 void HiddenBlock::OnHitTop(RigidBody& player) { PushPlayerOut(player); }
 //void HiddenBlock::OnHitSide(RigidBody& player) { PushPlayerOut(player); }
-void HiddenBlock::OnHitBottom(RigidBody& player) { PushPlayerOut(player); }
+void HiddenBlock::OnHitBottom(RigidBody& player)
+{
+    /*if (!itemSpawned)
+    {
+        itemSpawned = true;
+
+        SuperMushroom* newMushroom = new SuperMushroom();
+
+        newMushroom->Init(pos.x, pos.y);
+
+        newMushroom->image.InitialImageAndSize(LoadGraph("data/image/HpUpMushroom.png"));
+
+        newMushroom->SpawnItem();
+
+
+        StageManager::GetInstance().superMushroom.push_back(newMushroom);
+
+        RigidBody::collidables.push_back(newMushroom);
+    }*/
+    if (!itemSpawned)
+    {
+        itemSpawned = true;
+        if (itemType == HiddenItemType::MUSHROOM_1UP)
+        {
+            // Spawn the 1up HP Up Mushroom
+            SuperMushroom* newMushroom = new SuperMushroom();
+            newMushroom->Init(pos.x, pos.y);
+            newMushroom->image.InitialImageAndSize(LoadGraph("data/image/HpUpMushroom.png"));
+            newMushroom->SpawnItem();
+
+            StageManager::GetInstance().superMushroom.push_back(newMushroom);
+            RigidBody::collidables.push_back(newMushroom);
+        }
+        else if (itemType == HiddenItemType::COIN)
+        {
+            itemCoinAnimationTimer.SetTimer(0.4f);
+        }
+    }
+}
 
 void HiddenBlock::Render(Camera camera)
 {
+    if (itemCoinAnimationTimer.GetCurrentTimer() > 0.0f)
+    {
+        camera.GlobalRenderAnimation(itemCoinAnim);
+    }
     if (!active) return;
 
     if (isRevealed)
     {
-        float screenX = pos.x - camera.pos.x;
+        /*float screenX = pos.x - camera.pos.x;
         float screenY = pos.y - camera.pos.y;
-        DrawGraphF(screenX, screenY, texEmpty, TRUE);
+        DrawGraphF(screenX, screenY, texEmpty, TRUE);*/
+        camera.GlobalRenderImage(image);
     }
 }
 void HiddenBlock::PushPlayerOut(RigidBody& player)
