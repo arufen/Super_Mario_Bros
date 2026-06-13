@@ -48,6 +48,18 @@ void Mario::ResolveCollision(Collidable& block)
 			coin->active = false; // Mark the coin as collected
 		}
 
+		//Collect item
+		CollectableItem* item = dynamic_cast<CollectableItem*>(&block);
+		if (item != nullptr)
+		{
+			if (item->canCollect)
+			{
+				item->CollectItem(*this);
+			}
+		}
+	
+		
+
 		block.OnHitSide(*this);  // just calls callback, no pushing
 		return;
 	}
@@ -135,12 +147,22 @@ void Mario::ResolveCollision(Collidable& block)
 						break;
 					}
 				}
-				CoinBrickBlock* coinBrickBlock = dynamic_cast<CoinBrickBlock*>(&block);
-				if (coinBrickBlock != nullptr && coinBrickBlock->IsAvailable())
+				BrickBlock* brickBlock = dynamic_cast<BrickBlock*>(&block);
+				if (brickBlock != nullptr && brickBlock->IsAvailable())
 				{
-					switch (coinBrickBlock->itemType)
+					switch (brickBlock->itemType)
 					{
-					case CoinBrickBlockItem::COIN:
+					case BrickBlockItem::COIN:
+						AddCoin();
+						break;
+					}
+				}
+				HiddenBlock* hiddenBlock = dynamic_cast<HiddenBlock*>(&block);
+				if (hiddenBlock != nullptr && hiddenBlock->IsRevealed())
+				{
+					switch (hiddenBlock->itemType)
+					{
+					case HiddenItemType::COIN:
 						AddCoin();
 						break;
 					}
@@ -186,6 +208,7 @@ void Mario::Warping(float targetX, float targetY, WarpDir dir)
 void Mario::ToDeadState(bool isFall)
 {
 	if (currentState == MarioState::DEAD) return;
+	if (isStarMode) return;
 
 	if (currentForm == MarioForm::SMALL)
 	{
@@ -649,4 +672,9 @@ void Mario::Star()
 {
 	isStarMode = true;
 	starTimer = 600.0f; // 例: 60fps環境で10秒間 (60 * 10)
+}
+
+void Mario::ChangeToSuper()
+{
+	currentForm = MarioForm::SUPER;
 }
