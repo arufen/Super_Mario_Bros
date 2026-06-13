@@ -526,7 +526,8 @@ void StageManager::Init(Stage stageNumber)
 			if (world1_4data[i].type == BlockType::FIREBAR)
 			{
 				FireBar* fireBar = new FireBar();
-				fireBar->Init(pixelPos, blockSpriteHandle, fireSpriteHandle, CLOCKWISE, 6);
+
+				fireBar->Init(pixelPos, blockSpriteHandle, fireSpriteHandle, world1_4data[i].rotationDir, 6, world1_4data[i].startAngle);
 				overworld1_4Blocks.push_back(fireBar);
 			}
 			else if (world1_4data[i].type == BlockType::HARD)

@@ -12,6 +12,8 @@ enum class BlockType {BRICK, COINBRICK, STARBRICK, QUESTION, HARD, PIPE, UNDERWO
 
 enum class WorldZone { OVERWORLD, UNDERWORLD};
 
+enum class RotationDir { CLOCKWISE, COUNTERCLOCKWISE };
+
 struct BlockSpawnData {
     int gridX;
     int gridY;
@@ -19,6 +21,9 @@ struct BlockSpawnData {
 
     int pipeHeight = 0;
     bool isWarpPipe = false;
+
+    RotationDir rotationDir = RotationDir::CLOCKWISE;
+    float startAngle = 0.0f;
 };
 
 const BlockSpawnData world1_1data[] = {
@@ -99,13 +104,13 @@ const BlockSpawnData world1_4data[] =
     { 80, 4 , BlockType::HARD},
     { 92, 9 , BlockType::HARD},
 
-    { 30, 10 , BlockType::FIREBAR},
-    { 49, 6 , BlockType::FIREBAR},
-    { 60, 6 , BlockType::FIREBAR},
-    { 67, 6 , BlockType::FIREBAR},
-    { 76, 9 , BlockType::FIREBAR},
-    { 84, 9 , BlockType::FIREBAR},
-    { 88, 4 , BlockType::FIREBAR},
+    { 30, 10, BlockType::FIREBAR, 0, false, RotationDir::COUNTERCLOCKWISE, 0.0f   },
+    { 49, 6 , BlockType::FIREBAR, 0, false, RotationDir::COUNTERCLOCKWISE, 180.0f  },
+    { 60, 6 , BlockType::FIREBAR, 0, false, RotationDir::COUNTERCLOCKWISE, 90.0f },
+    { 67, 6 , BlockType::FIREBAR, 0, false, RotationDir::COUNTERCLOCKWISE, 270.0f },
+    { 76, 9 , BlockType::FIREBAR, 0, false, RotationDir::COUNTERCLOCKWISE, 0.0f   },
+    { 84, 9 , BlockType::FIREBAR, 0, false, RotationDir::COUNTERCLOCKWISE, 180.0f },
+    { 88, 4 , BlockType::FIREBAR, 0, false, RotationDir::CLOCKWISE,        90.0f  },
 
     { 106, 9 , BlockType::HIDDEN},
     { 107, 5 , BlockType::HIDDEN},
