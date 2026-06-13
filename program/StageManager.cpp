@@ -526,7 +526,8 @@ void StageManager::Init(Stage stageNumber)
 			if (world1_4data[i].type == BlockType::FIREBAR)
 			{
 				FireBar* fireBar = new FireBar();
-				fireBar->Init(pixelPos, blockSpriteHandle, fireSpriteHandle, CLOCKWISE, 6);
+
+				fireBar->Init(pixelPos, blockSpriteHandle, fireSpriteHandle, world1_4data[i].rotationDir, 6, world1_4data[i].startAngle);
 				overworld1_4Blocks.push_back(fireBar);
 			}
 			else if (world1_4data[i].type == BlockType::HARD)
@@ -598,6 +599,9 @@ void StageManager::Init(Stage stageNumber)
 
 void StageManager::Update(Camera& camera)
 {
+
+	
+
 	if (currentzone == WorldZone::OVERWORLD) {
 		for (IBlock* b : overworld1_1Blocks) { b->Update(); }
 		for (IBlock* b : overworld1_4Blocks) { b->Update(); }
@@ -608,6 +612,14 @@ void StageManager::Update(Camera& camera)
 		for (int i = 0; i < goomba.size(); i++)
 		{
 			goomba[i]->Update(camera);
+			if (MainMario.isStarMode)
+			{
+				goomba[i]->isTrigger = true;
+			}
+			else
+			{
+				goomba[i]->isTrigger = false;
+			}
 
 			if (goomba[i]->state == EnemyState::DEAD)
 			{
@@ -623,6 +635,16 @@ void StageManager::Update(Camera& camera)
 		for (int i = 0; i < koopaTroopa.size(); i++)
 		{
 			koopaTroopa[i]->Update(camera, MainMario);
+
+
+			if (MainMario.isStarMode)
+			{
+				koopaTroopa[i]->isTrigger = true;
+			}
+			else
+			{
+				koopaTroopa[i]->isTrigger = false;
+			}
 
 			if (koopaTroopa[i]->state == EnemyState::DEAD)
 			{
@@ -761,6 +783,11 @@ void StageManager::Render(Camera& camera)
 		{
 			superS->RenderGlobal(camera);
 		}
+	}
+
+	for (Castle* c : castles)
+	{
+		c->RenderGlobal(camera);
 	}
 
 	if (currentzone == WorldZone::OVERWORLD)

@@ -13,6 +13,7 @@ void Goomba::Init(float x, float y, int handle)
 	this->now_speed_x = 1.0f;
 	this->direction = -1.0f;
 	this->layer = PhysicsLayer::ENEMY;
+	//this->isTrigger = true;
 }
 
 
@@ -94,7 +95,15 @@ void Goomba::OnHitSide(RigidBody& player)
 	if (mario != nullptr)
 	{
 		// ƒ}ƒŠƒI‚ðŽ€–Só‘Ô‚É‚·‚é
-		mario->ToDeadState();
+		if (mario->isStarMode)
+		{
+			TakeDamage(player);
+		}
+		else
+		{
+			mario->ToDeadState();
+		}
+	
 	}
 }
 

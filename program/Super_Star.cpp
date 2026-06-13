@@ -1,9 +1,9 @@
 #include "Super_Star.h"
-
+#include "Mario.h"
 
 void SuperStar::CollectItem(Mario& mario)
 {
-	//TODO change mario state to big
+	mario.Star();
 	active = false;
 }
 

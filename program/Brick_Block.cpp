@@ -114,6 +114,7 @@ void BrickBlock::OnHitBottom(RigidBody& player)
 
             // 4. Push it into StageManager's star tracker vector so it updates and renders globally
             StageManager::GetInstance().superStar.push_back(newStar);
+            RigidBody::collidables.push_back(newStar);
         }
 
         // Lock item production once hit maximum is reached
