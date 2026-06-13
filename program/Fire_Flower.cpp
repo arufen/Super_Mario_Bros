@@ -1,10 +1,10 @@
 #include "Fire_Flower.h"
-
+#include "Mario.h"
 
 
 void FireFlower::CollectItem(Mario& mario)
 {
-	//TODO change mario state to big
+	mario.ChangeToFire();
 	active = false;
 }
 
@@ -59,6 +59,12 @@ void FireFlower::MovingUp()
 	if (position.y > targetY)
 	{
 		position.y -= CollectableItem::SPAWN_SPEED;
+	}
+	else
+	{
+		//Physics update
+		isSpawning = false;
+		canCollect = true;
 	}
 
 }

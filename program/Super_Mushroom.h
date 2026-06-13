@@ -5,6 +5,7 @@
 #include "HelpfulFunc.h"
 #include "Camera.h"
 #include "Enemy.h"
+class Mario;
 class SuperMushroom : public CollectableItem, public RigidBody
 {
 public:
@@ -14,7 +15,7 @@ public:
 	//variables
 	Image image;
 	float direction;
-	bool canMove;
+	bool isSpawning;
 	bool active; //if false, remove from the vector
 
 	//CollectableItem function
