@@ -637,6 +637,9 @@ void Mario::Jump()
 void Mario::AddCoin()
 {
 	coin++;
+
+	// コイン獲得のSEを再生する処理を追加
+	SoundManager::GetInstance().PlaySE("Coin");
 }
 
 void Mario::Star()

@@ -18,7 +18,7 @@ void SoundManager::Init()
 
 	// SEiŒø‰Ê‰¹j‚Ì“Ç‚İ‚İ
 	seList["Jump_Small"] = LoadSoundMem("data/sound/small_mario_jump.wav");
-	// seList["Coin"]  = LoadSoundMem("data/sound/se_coin.wav");
+	seList["Coin"]  = LoadSoundMem("data/sound/se_coin.wav");
 	seList["Warp"] = LoadSoundMem("data/sound/se_warp.wav");
 	seList["Bump"] = LoadSoundMem("data/sound/se_brick_block_bump.wav");
 }
