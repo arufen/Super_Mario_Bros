@@ -690,6 +690,22 @@ void StageManager::Update(Camera& camera)
 		}
 	}
 
+	//Deactive all blocks
+	for (int i = 0; i < overworld1_1Blocks.size(); i++)
+	{
+		if (!overworld1_1Blocks[i]->IsActive())
+		{
+			// remove from collidables list too!
+			RigidBody::collidables.erase(
+				remove(RigidBody::collidables.begin(), RigidBody::collidables.end(),
+					dynamic_cast<Collidable*>(overworld1_1Blocks[i])),  //cast here
+				RigidBody::collidables.end()
+			);
+			//remove coins from stage manager
+			overworld1_1Blocks.erase(overworld1_1Blocks.begin() + i);
+		}
+	}
+
 	//Super Mushroom
 	for (int i = 0; i < superMushroom.size(); i++)
 	{
@@ -799,6 +815,11 @@ void StageManager::Render(Camera& camera)
 		{
 			part->Render(camera); // .Render() から ->Render() に変更
 		}
+	}
+
+	for (Castle* c : castles)
+	{
+		c->RenderGlobal(camera);
 	}
 
 	if (currentzone == WorldZone::OVERWORLD)
