@@ -24,6 +24,30 @@ extern int small_mario_debug_y2;
 enum class MarioState { NORMAL, WARPING, DEAD };
 enum class MarioForm { SMALL, SUPER, FIRE }; // マリオの形態
 
+//==========================================================================================================
+// スター状態の管理クラス(Marioクラスでもスター状態を使用したいのでここに追記させてもらいます。)※firemarioの実装も同様に行う予定です。
+// スター状態のアニメーションやタイマーを管理するクラスを作成して、Mario クラスから切り離すこともできます。
+//==========================================================================================================
+class StarEffect
+{
+public:
+	bool isActive;
+	float timer;
+
+	// 状態ごとの点滅アニメーションを個別に持つ
+	Animation waitAnim;
+	Animation walkAnim;
+	Animation jumpAnim;
+
+	void Init();
+	void Start(); // スター状態開始 (starTimer = 600.0f など)
+	// 歩き状態、ジャンプ状態、歩きの速度(FPS)を受け取って更新する
+	void Update(bool isWalking, bool isJumping, int walkFPS);
+	// 状態を受け取って適切なアニメーションを描画する
+	void Render(int screenX, int screenY, bool isLeft, bool isJumping, bool isWalking);
+};
+//==========================================================================================================
+
 // プレイヤーキャラクター（マリオ）の挙動や描画を管理するクラス
 class Mario : public RigidBody
 {
@@ -80,10 +104,8 @@ public:
 	int score = 0;
 	int coin = 0;
 
-	//star power-up variables(スター状態の取得)
-	Animation starmarioAnim; 
-	bool isStarMode;         
-	float starTimer;       
+	//スター状態の管理オブジェクト
+	StarEffect starEffect;
 
 	void ResolveCollision(Collidable& block) override;
 
@@ -105,9 +127,8 @@ public:
 	//mechanics function
 	void AddCoin();
 	void Jump();
+	
 
-
-	void Star();
 	void ChangeToSuper();
 	void ChangeToFire();
 	

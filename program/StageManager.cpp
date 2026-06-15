@@ -612,7 +612,7 @@ void StageManager::Update(Camera& camera)
 		for (int i = 0; i < goomba.size(); i++)
 		{
 			goomba[i]->Update(camera);
-			if (MainMario.isStarMode)
+			if (MainMario.starEffect.isActive)
 			{
 				goomba[i]->isTrigger = true;
 			}
@@ -637,7 +637,7 @@ void StageManager::Update(Camera& camera)
 			koopaTroopa[i]->Update(camera, MainMario);
 
 
-			if (MainMario.isStarMode)
+			if (MainMario.starEffect.isActive)
 			{
 				koopaTroopa[i]->isTrigger = true;
 			}

@@ -205,7 +205,7 @@ void Mario::Warping(float targetX, float targetY, WarpDir dir)
 void Mario::ToDeadState(bool isFall)
 {
 	if (currentState == MarioState::DEAD) return;
-	if (isStarMode) return;
+	if (starEffect.isActive) return;
 
 	if (currentForm == MarioForm::SMALL)
 	{
@@ -263,10 +263,7 @@ void Mario::Init()
 	coin = 0;
 
 	//マリオのstar状態のアニメーションの初期化
-	int handle = LoadGraph("data/image/starmario_Animation_02.png");
-	starmarioAnim.InitialAnimation(handle, 3, 10); // スター画像は3フレームなので 3 を指定
-	isStarMode = false;
-	starTimer = 0.0f;
+	starEffect.Init();
 
 }
 
@@ -399,7 +396,8 @@ void Mario::Update()
 	{
 		if (CheckHitKey(KEY_INPUT_P))
 		{
-			Star();
+			// スター状態開始
+			starEffect.Start();
 		}
 	}
 	// 奈落への落下死亡チェック
@@ -530,10 +528,13 @@ void Mario::Update()
 	prevKeySpace = currKeySpace;
 
 	// 歩きアニメーションのループ更新処理 (ID#a0004から復活)
+	int currentWalkFPS = isDashing ? 15 : 9;
 	if (moveKeyPressed && !isJumping)
 	{
 		isWalking = true;
-		small_mario_walkAnim.FPS = isDashing ? 15 : 9;
+		//スター状態のときは歩行アニメーションのFPSを上げるので、変数かしてwalkAnimに渡すようにするのでコメントアウト化させていただきます。
+		//small_mario_walkAnim.FPS = isDashing ? 15 : 9;
+		small_mario_walkAnim.FPS = currentWalkFPS;
 		small_mario_walkAnim.AnimationUpdateLoop();
 	}
 	else
@@ -570,20 +571,8 @@ void Mario::Update()
 	// 画面中央線や中心線の描画に使うマリオの中心X座標も、実際の当たり判定の中心にする
 	mario_centerX = scrX1 + ((int)RigidBody_collider.width / 2);
 
-	// スター状態の更新処理
-	if (isStarMode)
-	{
-		starTimer -= 1.0f;
-		if (starTimer <= 0.0f)
-		{
-			isStarMode = false; // 時間切れで通常状態に戻る
-		}
-
-		// アニメーションの更新
-		starmarioAnim.AnimationUpdateLoop();
-	}
+	starEffect.Update(isWalking, isJumping, currentWalkFPS);
 }
-
 void Mario::Render()
 {
 	// カメラの座標に合わせてマリオの描画位置（スクリーン座標）を計算
@@ -608,32 +597,30 @@ void Mario::Render()
 
 	if (currentForm == MarioForm::SMALL)
 	{
-		if (isStarMode)
+	if (starEffect.isActive)
+	{
+		// スター状態の描画はお任せ
+		starEffect.Render(screenX, screenY, isLeft, isJumping, isWalking);
+	}
+	else
+	{
+		if (isJumping)
 		{
-			// スター状態なら専用のアニメーションを優先して描画する
-			starmarioAnim.x = (float)screenX;
-			starmarioAnim.y = (float)screenY;
-			starmarioAnim.AnimationRenderCenter(isLeft);
+			if (isLeft)	DrawRotaGraph2(screenX, screenY, 0, 0, 1.0f, 0.0, small_mario_jumpImage.image, TRUE, TRUE);
+			else		DrawRotaGraph2(screenX, screenY, 0, 0, 1.0f, 0.0, small_mario_jumpImage.image, TRUE, FALSE);
+		}
+		else if (isWalking)
+		{
+			small_mario_walkAnim.x = (float)screenX;
+			small_mario_walkAnim.y = (float)screenY;
+			small_mario_walkAnim.AnimationRenderCenter(isLeft);
 		}
 		else
 		{
-			if (isJumping)
-			{
-				if (isLeft)	DrawRotaGraph2(screenX, screenY, 0, 0, 1.0f, 0.0, small_mario_jumpImage.image, TRUE, TRUE);
-				else		DrawRotaGraph2(screenX, screenY, 0, 0, 1.0f, 0.0, small_mario_jumpImage.image, TRUE, FALSE);
-			}
-			else if (isWalking)
-			{
-				small_mario_walkAnim.x = (float)screenX;
-				small_mario_walkAnim.y = (float)screenY;
-				small_mario_walkAnim.AnimationRenderCenter(isLeft);
-			}
-			else
-			{
-				if (isLeft)	DrawRotaGraph2(screenX, screenY, 0, 0, 1.0f, 0.0, small_mario_waitImage.image, TRUE, TRUE);
-				else		DrawRotaGraph2(screenX, screenY, 0, 0, 1.0f, 0.0, small_mario_waitImage.image, TRUE, FALSE);
-			}
+			if (isLeft)	DrawRotaGraph2(screenX, screenY, 0, 0, 1.0f, 0.0, small_mario_waitImage.image, TRUE, TRUE);
+			else		DrawRotaGraph2(screenX, screenY, 0, 0, 1.0f, 0.0, small_mario_waitImage.image, TRUE, FALSE);
 		}
+	}
 	}
 	else if (currentForm == MarioForm::SUPER)
 	{
@@ -645,8 +632,7 @@ void Mario::Render()
 		if (isLeft)	DrawRotaGraph2(screenX, screenY, 0, 0, 1.0f, 0.0, big_mario_fire_waitImage.image, TRUE, TRUE);
 		else		DrawRotaGraph2(screenX, screenY, 0, 0, 1.0f, 0.0, big_mario_fire_waitImage.image, TRUE, FALSE);
 	}
-	
-	
+
 
 	// DEBUG MODE
 	if (map_mode == MODE_DEBUG)
@@ -655,8 +641,8 @@ void Mario::Render()
 		DrawFormatString(0, 60, GetColor(255, 255, 255), "now_speed X : %f", now_speed_x);
 
 		//スター状態の残り時間を表示
-		if (isStarMode) {
-			DrawFormatString(0, 80, GetColor(255, 255, 0), "STAR MODE: %.0f", starTimer);
+		if (starEffect.isActive) {
+			DrawFormatString(0, 80, GetColor(255, 255, 0), "STAR MODE: %.0f", starEffect.timer);
 		}
 		else {
 			DrawFormatString(0, 80, GetColor(100, 100, 100), "STAR MODE: OFF");
@@ -681,10 +667,86 @@ void Mario::AddCoin()
 	SoundManager::GetInstance().PlaySE("Coin");
 }
 
-void Mario::Star()
+//starclass(ファイヤマリオも同じように)
+//==============================================================
+// スター状態の初期化処理(画像とフラグや時間)
+//==============================================================
+void StarEffect::Init()
 {
-	isStarMode = true;
-	starTimer = 600.0f; // 例: 60fps環境で10秒間 (60 * 10)
+	isActive = false;
+	timer = 0.0f;
+
+	// スター状態は常に色が点滅するため、待機・歩き・ジャンプすべてアニメーションとして読み込む
+	// ※画像のファイル名やコマ数などは実際のデータに合わせて修正してください
+	waitAnim.InitialAnimation(LoadGraph("data/image/star_mario/starmario_wait.png"), 3, 10);
+	walkAnim.InitialAnimation(LoadGraph("data/image/star_mario/starmario_walk.png"), 9, 10);
+	jumpAnim.InitialAnimation(LoadGraph("data/image/star_mario/starmario_jump.png"), 3, 10);
+}
+//==============================================================
+// スターを取ったときにスター状態を開始する処理
+//==============================================================
+void StarEffect::Start()
+{
+	isActive = true;
+	timer = 600.0f; // 例: 60fps環境で10秒間 (60 * 10)
+}
+//==============================================================
+// スター状態の更新処理
+// スター状態の残り時間を減らし、アニメーションを更新する
+//==============================================================
+void StarEffect::Update(bool isWalking, bool isJumping, int walkFPS)
+{
+	if (isActive)
+	{
+		timer -= 1.0f;
+		if (timer <= 0.0f)
+		{
+			isActive = false;
+		}
+
+		// マリオの現在の状態に合わせて、再生するアニメーションを更新する
+		if (isJumping)
+		{
+			jumpAnim.AnimationUpdateLoop();
+		}
+		else if (isWalking)
+		{
+			walkAnim.FPS = walkFPS; // 通常マリオのダッシュ/歩きの速度に合わせる
+			walkAnim.AnimationUpdateLoop();
+		}
+		else
+		{
+			waitAnim.AnimationUpdateLoop();
+		}
+	}
+}
+//==============================================================
+// スター状態の描画処理
+// マリオの画面座標と向きに合わせてスター状態のアニメーションを描画する
+//==============================================================
+void StarEffect::Render(int screenX, int screenY, bool isLeft, bool isJumping, bool isWalking)
+{
+	if (!isActive) return;
+
+	// マリオの現在の状態に合わせて描画するアニメーションを切り替える
+	if (isJumping)
+	{
+		jumpAnim.x = (float)screenX;
+		jumpAnim.y = (float)screenY;
+		jumpAnim.AnimationRenderCenter(isLeft);
+	}
+	else if (isWalking)
+	{
+		walkAnim.x = (float)screenX;
+		walkAnim.y = (float)screenY;
+		walkAnim.AnimationRenderCenter(isLeft);
+	}
+	else
+	{
+		waitAnim.x = (float)screenX;
+		waitAnim.y = (float)screenY;
+		waitAnim.AnimationRenderCenter(isLeft);
+	}
 }
 
 void Mario::ChangeToSuper()
