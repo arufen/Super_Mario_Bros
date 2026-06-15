@@ -99,6 +99,8 @@
     <ClCompile Include="program\Ground.cpp">
       <Filter>program</Filter>
     </ClCompile>
+    <ClCompile Include="program\Castle.cpp" />
+    <ClCompile Include="program\Firebar.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="program\Game.h" />
@@ -201,6 +203,12 @@
     </ClInclude>
     <ClInclude Include="program\Ground.h">
       <Filter>program</Filter>
+    </ClInclude>
+    <ClInclude Include="program\Castle.h" />
+    <ClInclude Include="program\CollectableItem.h" />
+    <ClInclude Include="program\Firebar.h" />
+    <ClInclude Include="program\Brick_BlockParts.h">
+      <Filter>game</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

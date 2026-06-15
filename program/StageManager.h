@@ -63,6 +63,8 @@ public:
 	vector<UnderWorldPipe*> underWorldPipe;
 	vector<IBlock*> hardPipe;
 
+	vector<BrickBlockParts*> brickParts;
+
 	WorldZone currentzone;
 
 	//for all blocks
@@ -91,6 +93,9 @@ public:
 	void TransferWorldZone(WorldZone newZone); // handle world zone transitions (ワールドゾーンの切り替えを処理)
 	bool GetIsUnderworld() const { return currentzone == WorldZone::UNDERWORLD; }
 
+	//void addBrickParts(const BrickBlockParts& piece) { brickParts.push_back(piece); }
+	int GetBrickPartsHandle() const {return tex_brickParts;}
+
 	// 現在のワールドゾーン（地上/地下）を返す関数
 	WorldZone GetWorldZone() const { return currentzone; }
 
@@ -98,4 +103,5 @@ private:
 	//singleton pattern(シングルトンパターン）
 	StageManager() : currentzone(WorldZone::OVERWORLD){}
 	~StageManager() {};
+	int tex_brickParts;
 };

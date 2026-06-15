@@ -290,6 +290,8 @@ vector<Collidable*> StageManager::GetCollidables()
 
 void StageManager::Init(Stage stageNumber)
 {
+	tex_brickParts = LoadGraph("data/image/brickpart.png");
+
 	if (stageNumber == Stage::WORLD_1_1)
 	{
 		//Stage (ground1)
@@ -664,7 +666,13 @@ void StageManager::Update(Camera& camera)
 			pipe->Update();
 		}
 	}
-
+	for (auto* part : brickParts) // ここを auto* に
+	{
+		if (part != nullptr)
+		{
+			part->Update(); // .Update() から ->Update() に変更
+		}
+	}
 	//Coin
 	for (int i = 0; i < coins.size(); i++)
 	{
@@ -784,6 +792,14 @@ void StageManager::Render(Camera& camera)
 			superS->RenderGlobal(camera);
 		}
 	}
+	for (auto* part : brickParts) // ここを auto* に
+	{
+		// 念のためアクティブな場合のみ描画
+		if (part != nullptr && part->IsActive())
+		{
+			part->Render(camera); // .Render() から ->Render() に変更
+		}
+	}
 
 	if (currentzone == WorldZone::OVERWORLD)
 	{
@@ -848,6 +864,12 @@ void StageManager::ClearStage()
 	fireFlower.clear();
 	superStar.clear();
 	goalPoles.clear();
+	// --- ここを追加して破片のメモリを解放する ---
+	for (auto* part : brickParts)
+	{
+		delete part; // 動的生成したメモリを解放
+	}
+	brickParts.clear(); // ベクターを空にする
 
 	// clear collidables in RigidBody too!
 	RigidBody::collidables.clear();

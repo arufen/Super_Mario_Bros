@@ -191,6 +191,7 @@
   <ItemGroup>
     <ClInclude Include="program\1-Up_Mushroom.h" />
     <ClInclude Include="program\Brick_Block.h" />
+    <ClInclude Include="program\Brick_BlockParts.h" />
     <ClInclude Include="program\Camera.h" />
     <ClInclude Include="program\Castle.h" />
     <ClInclude Include="program\Coin.h" />
