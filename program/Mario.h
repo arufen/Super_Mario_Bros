@@ -107,6 +107,9 @@ public:
 	//スター状態の管理オブジェクト
 	StarEffect starEffect;
 
+
+	Timer invincibleTimer{ 0.0f };
+
 	void ResolveCollision(Collidable& block) override;
 
 	// 現在のマリオの形態を取得・変更する関数

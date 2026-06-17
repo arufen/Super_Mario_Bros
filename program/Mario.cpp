@@ -93,16 +93,6 @@ void Mario::ResolveCollision(Collidable& block)
 			jumpHoldTimer = 0.0f;
 			hitVertical = true;  // mark it
 
-			//jump if hit enemy on top (like raycast)
-			Enemy* enemy = dynamic_cast<Enemy*>(&block);
-
-			if (enemy != nullptr)
-			{
-				Jump();
-				/*enemy->TakeDamage(*this);*/
-			}
-			
-
 			block.OnHitTop(*this);
 		}
 		else
@@ -205,6 +195,7 @@ void Mario::Warping(float targetX, float targetY, WarpDir dir)
 void Mario::ToDeadState(bool isFall)
 {
 	if (currentState == MarioState::DEAD) return;
+	if (invincibleTimer.GetCurrentTimer() > 0.0f) return;
 	if (starEffect.isActive) return;
 
 	if (currentForm == MarioForm::SMALL)
@@ -269,6 +260,7 @@ void Mario::Init()
 
 void Mario::Update()
 {
+	invincibleTimer.Update();
 	// ----------------------------------------------------
 	// 死亡状態（DEAD）の更新処理
 	// ----------------------------------------------------

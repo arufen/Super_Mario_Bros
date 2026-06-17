@@ -81,7 +81,12 @@ void Goomba::WaitForCamera(Camera& camera)
 
 void Goomba::OnHitTop(RigidBody& player)
 {
-	TakeDamage(player);
+	Mario* mario = dynamic_cast<Mario*>(&player);
+	if (mario != nullptr)
+	{
+		mario->Jump();
+		TakeDamage(player);
+	}
 }
 
 // ‰¡‚©‚çƒ}ƒŠƒI‚ª‚Ô‚Â‚©‚Á‚½‚Ìˆ—
