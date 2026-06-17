@@ -150,6 +150,8 @@ public:
 	// Update the function signature
 	void Warping(float targetX, float targetY, WarpDir dir);
 
+	//For debug (DEBUG用)
+	bool debug_is_inivincible;
 private:
 	int texWarp;
 	MarioForm currentForm = MarioForm::SMALL; // デフォルトはスモールマリオ

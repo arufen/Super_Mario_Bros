@@ -27,6 +27,7 @@ public:
 
 	void Jump();
 	void ShootProjectile();
+	void Kill();
 
 	//Main thread
 	void Init(float x, float y);

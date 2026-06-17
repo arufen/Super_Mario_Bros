@@ -256,11 +256,19 @@ void Mario::Init()
 	//マリオのstar状態のアニメーションの初期化
 	starEffect.Init();
 
+	//For debug (Debug用)
+	debug_is_inivincible = false;
 }
 
 void Mario::Update()
 {
-	invincibleTimer.SetTimer(99.0f);
+	//For debug(DEBUG用）
+	if (map_mode == MODE_DEBUG && CheckHitKey(KEY_INPUT_LCONTROL) && PushHitKey(KEY_INPUT_I))
+	{
+		debug_is_inivincible = !debug_is_inivincible ? true  : false;
+	}
+	if(debug_is_inivincible) invincibleTimer.SetTimer(1.0f);
+	
 
 	invincibleTimer.Update();
 	// ----------------------------------------------------
@@ -321,6 +329,7 @@ void Mario::Update()
 	// ----------------------------------------------------
 	if (currentState == MarioState::CUTSCENE)
 	{
+		if (!StageManager::GetInstance().isBossDefeat) return;
 		// StartCutsceneWalk() set the target once, now walk toward it every frame
 		WalkTo(cutsceneTargetX, cutsceneSpeed);
 
@@ -335,7 +344,8 @@ void Mario::Update()
 		small_mario_debug_y2 = scrY1 + (int)RigidBody_collider.height;
 		mario_centerX = scrX1 + ((int)RigidBody_collider.width / 2);
 
-		PhysicsUpdate();
+		//Not moving when bridge is clearing
+		/*if(!StageManager::GetInstance().isBridgeClearing)*/ PhysicsUpdate();
 
 		// Dキーの押し下げに関係なく、マリオが画面中央を越えたらカメラを動かすように外に出しました
 		if (MainCamera.pos.y < 960)
@@ -572,7 +582,8 @@ void Mario::Update()
 	}
 
 	//RigidBody update
-	PhysicsUpdate();
+	if (!StageManager::GetInstance().isBridgeClearing) PhysicsUpdate();
+	
 
 	// 物理演算（PhysicsUpdate）が終わった直後に右端のストッパー処理を入れる
 
@@ -675,6 +686,8 @@ void Mario::Render()
 		else {
 			DrawFormatString(0, 80, GetColor(100, 100, 100), "STAR MODE: OFF");
 		}
+
+		DrawFormatString(0, 120, GetColor(255, 255, 255), "CTRL + I = マリオが無敵 : %d", debug_is_inivincible);
 	}
 }
 
@@ -775,6 +788,8 @@ void StarEffect::Render(int screenX, int screenY, bool isLeft, bool isJumping, b
 		waitAnim.y = (float)screenY;
 		waitAnim.AnimationRenderCenter(isLeft);
 	}
+
+
 }
 
 void Mario::ChangeToSuper()

@@ -852,7 +852,8 @@ void StageManager::Update(Camera& camera)
 		if (MainMario.GetState() != MarioState::CUTSCENE) camera.cameraPosXLimit = 126.5 * BLOCK_SIZE;
 		else
 		{
-			if(camera.cameraPosXLimit < 10240 - SCREEN_W) camera.cameraPosXLimit += 3.0f;
+
+			if(camera.cameraPosXLimit < 10240 - SCREEN_W && isBossDefeat) camera.cameraPosXLimit += 3.0f;
 		}
 	}
 }
