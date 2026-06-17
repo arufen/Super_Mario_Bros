@@ -115,9 +115,10 @@ void KoopaTroopa::OnHitSide(RigidBody& player)
 
 void KoopaTroopa::RenderGlobal(Camera& camera)
 {
+	bool lookRight = direction < 0.0f ? false : true;
 	if (!isInShell)
 	{
-		camera.GlobalRenderAnimation(spriteAnimation);
+		camera.GlobalRenderAnimation(spriteAnimation, lookRight);
 	}
 	else
 	{
