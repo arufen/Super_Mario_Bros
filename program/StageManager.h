@@ -21,6 +21,7 @@
 //Enemies
 #include "Goomba.h"
 #include "Koopa_Troopa.h"
+#include "Bowser.h"
 
 #include "Goal_Pole.h"
 #include "Castle.h"
@@ -55,6 +56,7 @@ public:
 	//Enemy ÅiìGÅj
 	vector<Goomba*> goomba;
 	vector<KoopaTroopa*> koopaTroopa;
+	vector<Bowser*> bowser;
 
 	// returns all collidable blocks for mario to register
 	vector<Collidable*> GetCollidables();
@@ -77,6 +79,7 @@ public:
 	vector<FireFlower*> fireFlower;
 	vector<SuperStar*> superStar;
 
+	Stage currentStage{ Stage::WORLD_1_1 };
 
 	Image background;
 
