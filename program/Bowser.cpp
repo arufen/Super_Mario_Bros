@@ -35,7 +35,16 @@ void Bowser::Update(Camera& camera)
 	WaitForCamera(camera);
 
 	if (state == EnemyState::ACTIVE)
-	{	//RigidBody update
+	{
+		//Jump every 2s
+		jumpTimer.Update();
+
+		if (jumpTimer.HitAndReset())
+		{
+			Jump();
+		}
+
+		//RigidBody update
 		PhysicsUpdate();
 	}
 
@@ -98,24 +107,37 @@ void Bowser::OnHitSide(RigidBody& player)
 	}
 }
 
-// 下からマリオがぶつかった時の処理（ジャンプ中に頭をぶつけるなど）
-//void Bowser::OnHitBottom(RigidBody& player)
-//{
-//	if (state == EnemyState::DEAD) return;
-//
-//	Mario* mario = dynamic_cast<Mario*>(&player);
-//	if (mario != nullptr)
-//	{
-//		mario->ToDeadState();
-//	}
-//}
-
-void Bowser::RenderGlobal(Camera& camera)
+void Bowser::OnHitTop(RigidBody& player)
 {
-	camera.GlobalRenderAnimation(spriteAnimation);
+	//
+	Mario* mario = dynamic_cast<Mario*>(&player);
+	if (mario != nullptr)
+	{
+		mario->ToDeadState();
+	}
+}
+
+void Bowser::RenderGlobal(Camera& camera, const Mario& mario)
+{
+	//Check isLookingRight based on mario position
+	if (mario.position.x + BLOCK_SIZE / 2.0f < position.x + this->spriteAnimation.sprite.sizeX / 2.0f)
+	{
+		isLookRight = false;
+	}
+	else
+	{
+		isLookRight = true;
+	}
+	camera.GlobalRenderAnimation(spriteAnimation, isLookRight);
+	
 }
 
 void Bowser::TakeDamage(RigidBody& attacker)
 {
 	state = EnemyState::DEAD;
+}
+
+void Bowser::Jump()
+{
+	now_speed_y += 20.0f;
 }

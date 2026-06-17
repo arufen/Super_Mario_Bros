@@ -830,7 +830,7 @@ void StageManager::Render(Camera& camera)
 
 	for (Bowser* b : bowser)
 	{
-		b->RenderGlobal(camera);
+		b->RenderGlobal(camera, MainMario);
 	}
 
 	if (currentzone == WorldZone::OVERWORLD)
@@ -880,6 +880,7 @@ void StageManager::ClearStage()
 	for (auto* s : superStar) delete s;
 	for (auto* p : goalPoles) delete p;
 	for (auto* c : castles) delete c;
+	for (auto* b : bowser) delete b;
 
 	// then clear the vectors
 	ground.clear();

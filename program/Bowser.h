@@ -3,7 +3,7 @@
 #include "RigidBody.h"
 #include "Enemy.h"
 #include "HelpfulFunc.h"
-
+class Mario;
 class Bowser : public RigidBody, public Enemy, public Collidable
 {
 public:
@@ -12,16 +12,20 @@ public:
 	int HP; //when get hit by fire
 	Animation spriteAnimation;
 	float direction;
-	//Timer jumpTimer;
+	Timer jumpTimer{ 2.0f };
+	bool isLookRight;
 
 	//Update
 	virtual void WaitForCamera(Camera& camera) override;
 	virtual void TakeDamage(RigidBody& attacker) override;
 	virtual  void OnHitSide(RigidBody& player) override;
+	virtual  void OnHitTop(RigidBody& player) override;
+
+	void Jump();
 
 	//Main thread
 	void Init(float x, float y);
 	void Update(Camera& camera);
-	void RenderGlobal(Camera& camera);
+	void RenderGlobal(Camera& camera, const Mario& mario);
 
 };
