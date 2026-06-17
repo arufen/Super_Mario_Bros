@@ -50,8 +50,6 @@ void Bowser::Update(Camera& camera)
 			Jump();
 		}
 
-
-
 		//RigidBody update
 		PhysicsUpdate();
 	}
@@ -139,9 +137,6 @@ void Bowser::RenderGlobal(Camera& camera, const Mario& mario)
 		isLookRight = true;
 	}
 	camera.GlobalRenderAnimation(spriteAnimation, isLookRight);
-	
-	//Debug
-	DrawFormatString(200, 200, GetColor(255, 255, 255), "timer: %f", timerShoot.GetCurrentTimer());
 }
 
 void Bowser::TakeDamage(RigidBody& attacker)

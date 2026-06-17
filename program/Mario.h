@@ -21,7 +21,7 @@ extern int small_mario_debug_x1;
 extern int small_mario_debug_y1;
 extern int small_mario_debug_x2;
 extern int small_mario_debug_y2;
-enum class MarioState { NORMAL, WARPING, DEAD };
+enum class MarioState { NORMAL, WARPING, CUTSCENE, DEAD };
 enum class MarioForm { SMALL, SUPER, FIRE }; // マリオの形態
 
 //==========================================================================================================
@@ -121,6 +121,8 @@ public:
 	// エネミーに横・下から接触したときに死亡状態へ移行させる関数
 	void ToDeadState(bool isFall = false);
 
+
+
 	//for main thread
 	void Init();
 	void Update();
@@ -134,7 +136,11 @@ public:
 	void ChangeToSuper();
 	void ChangeToFire();
 	
-
+	//For cutscene
+	void StartCutsceneWalk(float targetX, float speed);
+	void WalkTo(float targetX, float speed);
+	float cutsceneTargetX = 0.0f;
+	float cutsceneSpeed = 2.0f;
 
 	//void Warping(float pipeY);
 
