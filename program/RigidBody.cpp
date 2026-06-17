@@ -97,7 +97,7 @@ void RigidBody::PhysicsUpdate()
 
 	for (int i = 0; i < steps; i++)
 	{
-		now_speed_y += GRAVITY / steps;
+		now_speed_y += gravity / steps;
 		position.y += now_speed_y / steps;
 		RigidBody_collider.y = position.y;
 

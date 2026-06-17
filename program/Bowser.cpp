@@ -1,11 +1,13 @@
 #include "Bowser.h"
 #include "Mario.h"
+#include "StageManager.h"
+#include "Bowser_Fire.h"
 
 void Bowser::Init(float x, float y)
 {
 	int handle = LoadGraph("data/image/bowser.png");
 	this->position.Set(x, y);
-	this->spriteAnimation.InitialAnimation(handle, 4, 6);
+	this->spriteAnimation.InitialAnimation(handle, 4, 3);
 	this->spriteAnimation.x = position.x;
 	this->spriteAnimation.y = position.y;
 	this->RigidBody_collider = Collider(x, y, (float)this->spriteAnimation.sprite.sizeX, (float)this->spriteAnimation.sprite.sizeY);
@@ -13,6 +15,10 @@ void Bowser::Init(float x, float y)
 	this->now_speed_x = 1.0f;
 	this->direction = -1.0f;
 	this->layer = PhysicsLayer::ENEMY;
+	this->HP = MAX_HP;
+	this->direction = -1.0f;
+	this->isLookRight = false;
+	this->gravity = 0.1f; //overide gravity
 	//this->isTrigger = true;
 }
 
@@ -37,22 +43,26 @@ void Bowser::Update(Camera& camera)
 	if (state == EnemyState::ACTIVE)
 	{
 		//Jump every 2s
-		jumpTimer.Update();
+		timerJump.Update();
 
-		if (jumpTimer.HitAndReset())
+		if (timerJump.HitAndReset())
 		{
 			Jump();
 		}
+
+
 
 		//RigidBody update
 		PhysicsUpdate();
 	}
 
-	//// shoot ray in front of goomba
-	//float checkX = (direction > 0)
-	//	? RigidBody_collider.x + RigidBody_collider.width + 1
-	//	: RigidBody_collider.x - 1;
-	//float checkY = RigidBody_collider.y + RigidBody_collider.height * 0.5f;
+	//Shoot fire every 3-5s
+	timerShoot.Update();
+	if (timerShoot.TimerHit())
+	{
+		timerShoot.SetTimer(GetRandomF(3.0f, timerShoot.MAX_TIMER));
+		ShootProjectile();
+	}
 
 	//flip direction when out of bounds
 	bool isOutOfBound = false;
@@ -130,6 +140,8 @@ void Bowser::RenderGlobal(Camera& camera, const Mario& mario)
 	}
 	camera.GlobalRenderAnimation(spriteAnimation, isLookRight);
 	
+	//Debug
+	DrawFormatString(200, 200, GetColor(255, 255, 255), "timer: %f", timerShoot.GetCurrentTimer());
 }
 
 void Bowser::TakeDamage(RigidBody& attacker)
@@ -139,5 +151,13 @@ void Bowser::TakeDamage(RigidBody& attacker)
 
 void Bowser::Jump()
 {
-	now_speed_y += 20.0f;
+	now_speed_y -= 5.0f;
+}
+
+void Bowser::ShootProjectile()
+{
+	BowserFire* newBowserFire = new BowserFire();
+	newBowserFire->Init(position.x, position.y + spriteAnimation.sprite.sizeY / 2.0f);
+	StageManager::GetInstance().bowserFire.push_back(newBowserFire);
+	RigidBody::collidables.push_back(newBowserFire);
 }

@@ -8,6 +8,8 @@ class Fireball : public Collidable {
 public:
     float x, y;
     Fireball() {
+        x = 0;
+        y = 0;
         isTrigger = true;            // Allow Mario to overlap cleanly without getting physically blocked
         layer = PhysicsLayer::ENEMY; // Tag it properly for your physics layers
     }

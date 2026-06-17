@@ -687,6 +687,22 @@ void StageManager::Update(Camera& camera)
 		}
 	}
 
+	//Bowser fire's projectile
+	for (int i = 0; i < bowserFire.size(); i++)
+	{
+		bowserFire[i]->Update();
+
+		if (!bowserFire[i]->isActive)
+		{
+			// remove from collidables list too!
+			RigidBody::collidables.erase(
+				remove(RigidBody::collidables.begin(), RigidBody::collidables.end(), bowserFire[i]),
+				RigidBody::collidables.end()
+			);
+			bowserFire.erase(bowserFire.begin() + i);
+		}
+	}
+
 	//Coin
 	for (int i = 0; i < coins.size(); i++)
 	{
@@ -828,9 +844,13 @@ void StageManager::Render(Camera& camera)
 		c->RenderGlobal(camera);
 	}
 
-	for (Bowser* b : bowser)
+	for (auto* b : bowser)
 	{
 		b->RenderGlobal(camera, MainMario);
+	}
+	for (auto* bf : bowserFire)
+	{
+		bf->RenderGlobal(camera);
 	}
 
 	if (currentzone == WorldZone::OVERWORLD)
@@ -881,6 +901,7 @@ void StageManager::ClearStage()
 	for (auto* p : goalPoles) delete p;
 	for (auto* c : castles) delete c;
 	for (auto* b : bowser) delete b;
+	for (auto* bf : bowserFire) delete bf;
 
 	// then clear the vectors
 	ground.clear();
@@ -897,6 +918,11 @@ void StageManager::ClearStage()
 	fireFlower.clear();
 	superStar.clear();
 	goalPoles.clear();
+	castles.clear();
+	bowser.clear();
+	bowserFire.clear();
+
+
 
 	// clear collidables in RigidBody too!
 	RigidBody::collidables.clear();

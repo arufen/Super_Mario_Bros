@@ -22,6 +22,7 @@
 #include "Goomba.h"
 #include "Koopa_Troopa.h"
 #include "Bowser.h"
+#include "Bowser_Fire.h"
 
 #include "Goal_Pole.h"
 #include "Castle.h"
@@ -57,6 +58,7 @@ public:
 	vector<Goomba*> goomba;
 	vector<KoopaTroopa*> koopaTroopa;
 	vector<Bowser*> bowser;
+	vector<BowserFire*> bowserFire;
 
 	// returns all collidable blocks for mario to register
 	vector<Collidable*> GetCollidables();

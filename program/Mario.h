@@ -54,7 +54,6 @@ class Mario : public RigidBody
 public:
 
 	//const
-	static constexpr float GRAVITY = 1.0f;	// gravity (重力)
 	static constexpr float JUMP_FORCE = 1.0f;	// jump force (ジャンプの初速)
 	static constexpr float MARIO_ACCEL = 0.4f;		// 1フレームごとの加速度（増やすとキレが良くなる）
 	static constexpr float MARIO_WALK_MAX_SPEED = 4.5f;	// 歩き状態の最高速度（これ以上速くならない）

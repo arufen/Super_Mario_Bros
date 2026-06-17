@@ -107,6 +107,9 @@
     <ClCompile Include="program\Bridge.cpp">
       <Filter>game</Filter>
     </ClCompile>
+    <ClCompile Include="program\Bowser_Fire.cpp">
+      <Filter>game</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="program\Game.h" />
@@ -217,6 +220,9 @@
       <Filter>game</Filter>
     </ClInclude>
     <ClInclude Include="program\Bridge.h">
+      <Filter>game</Filter>
+    </ClInclude>
+    <ClInclude Include="program\Bowser_Fire.h">
       <Filter>game</Filter>
     </ClInclude>
   </ItemGroup>
