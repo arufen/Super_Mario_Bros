@@ -14,7 +14,7 @@ public:
 	Animation spriteAnimation;
 
 	float direction;
-	Timer timerJump{ 2.0f };
+	Timer timerJump{ 4.0f };
 	Timer timerShoot{ 5.0f };
 	Timer timerisShooting{ 1.0f };
 	bool isLookRight;
@@ -27,6 +27,7 @@ public:
 
 	void Jump();
 	void ShootProjectile();
+	void Kill();
 
 	//Main thread
 	void Init(float x, float y);

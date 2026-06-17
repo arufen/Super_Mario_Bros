@@ -69,6 +69,7 @@ void GameInit()
 //---------------------------------------------------------------------------------
 void GameUpdate()
 {
+	//tmp
 	if (StageManager::GetInstance().currentzone == WorldZone::UNDERWORLD)
 	{
 		MainCamera.pos.x = 56 * BLOCK_SIZE;

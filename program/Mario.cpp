@@ -57,8 +57,8 @@ void Mario::ResolveCollision(Collidable& block)
 				item->CollectItem(*this);
 			}
 		}
-	
-		
+
+
 
 		block.OnHitSide(*this);  // just calls callback, no pushing
 		return;
@@ -75,7 +75,7 @@ void Mario::ResolveCollision(Collidable& block)
 	float bias = 0.5f;
 	if (dynamic_cast<Enemy*>(&block) != nullptr)
 	{
- 		bias = 14.0f; // 10.0f〜15.0f 程度にすると「理不尽な横死」がなくなります
+		bias = 14.0f; // 10.0f〜15.0f 程度にすると「理不尽な横死」がなくなります
 	}
 
 	if (minY < minX + bias)
@@ -256,10 +256,20 @@ void Mario::Init()
 	//マリオのstar状態のアニメーションの初期化
 	starEffect.Init();
 
+	//For debug (Debug用)
+	debug_is_inivincible = false;
 }
 
 void Mario::Update()
 {
+	//For debug(DEBUG用）
+	if (map_mode == MODE_DEBUG && CheckHitKey(KEY_INPUT_LCONTROL) && PushHitKey(KEY_INPUT_I))
+	{
+		debug_is_inivincible = !debug_is_inivincible ? true  : false;
+	}
+	if(debug_is_inivincible) invincibleTimer.SetTimer(1.0f);
+	
+
 	invincibleTimer.Update();
 	// ----------------------------------------------------
 	// 死亡状態（DEAD）の更新処理
@@ -315,12 +325,48 @@ void Mario::Update()
 	}
 
 	// ----------------------------------------------------
+	// カットシーン状態（CUTSCENE）の更新処理
+	// ----------------------------------------------------
+	if (currentState == MarioState::CUTSCENE)
+	{
+		if (!StageManager::GetInstance().isBossDefeat) return;
+		// StartCutsceneWalk() set the target once, now walk toward it every frame
+		WalkTo(cutsceneTargetX, cutsceneSpeed);
+
+		RigidBody_collider.x = position.x + COLLIDER_OFFSET / 2;
+		RigidBody_collider.y = position.y;
+
+		int scrX1 = (int)(RigidBody_collider.x - MainCamera.pos.x);
+		int scrY1 = (int)(RigidBody_collider.y - MainCamera.pos.y);
+		small_mario_debug_x1 = scrX1;
+		small_mario_debug_y1 = scrY1;
+		small_mario_debug_x2 = scrX1 + (int)RigidBody_collider.width;
+		small_mario_debug_y2 = scrY1 + (int)RigidBody_collider.height;
+		mario_centerX = scrX1 + ((int)RigidBody_collider.width / 2);
+
+		//Not moving when bridge is clearing
+		/*if(!StageManager::GetInstance().isBridgeClearing)*/ PhysicsUpdate();
+
+		// Dキーの押し下げに関係なく、マリオが画面中央を越えたらカメラを動かすように外に出しました
+		if (MainCamera.pos.y < 960)
+		{
+			float marioWorldCenterX = position.x + (small_mario_waitImage.sizeX / 2.0f);
+			if (marioWorldCenterX >= MainCamera.pos.x + (SCREEN_W / 2))
+			{
+				MainCamera.pos.x = marioWorldCenterX - (SCREEN_W / 2);
+			}
+		}
+
+		return;
+	}
+
+	// ----------------------------------------------------
 	// 土管ワープ状態（WARPING）の更新処理
 	// ----------------------------------------------------
 	if (currentState == MarioState::WARPING)
 	{
-		warpTimer += 0.016f; 
-		
+		warpTimer += 0.016f;
+
 		if (warpTimer < WARP_DURATION)
 		{
 			if (currentWarpDir == WarpDir::DOWN)
@@ -412,7 +458,7 @@ void Mario::Update()
 	RigidBody_collider.y = position.y;
 	//collider.x = position.x + 20.0f / 2;
 	//collider.y = position.y;
-	
+
 	bool currKeyA = CheckHitKey(KEY_INPUT_A);
 	bool currKeyD = CheckHitKey(KEY_INPUT_D);
 	bool isDashing = CheckHitKey(KEY_INPUT_LSHIFT);
@@ -536,7 +582,8 @@ void Mario::Update()
 	}
 
 	//RigidBody update
-	PhysicsUpdate();
+	if (!StageManager::GetInstance().isBridgeClearing) PhysicsUpdate();
+	
 
 	// 物理演算（PhysicsUpdate）が終わった直後に右端のストッパー処理を入れる
 
@@ -570,7 +617,7 @@ void Mario::Render()
 	// カメラの座標に合わせてマリオの描画位置（スクリーン座標）を計算
 	int screenX = (int)(position.x - MainCamera.pos.x);
 	int screenY = (int)(position.y - MainCamera.pos.y);
-	
+
 	// 死亡時は最優先でデッド画像を描画
 	if (currentState == MarioState::DEAD)
 	{
@@ -589,30 +636,30 @@ void Mario::Render()
 
 	if (currentForm == MarioForm::SMALL)
 	{
-	if (starEffect.isActive)
-	{
-		// スター状態の描画はお任せ
-		starEffect.Render(screenX, screenY, isLeft, isJumping, isWalking);
-	}
-	else
-	{
-		if (isJumping)
+		if (starEffect.isActive)
 		{
-			if (isLeft)	DrawRotaGraph2(screenX, screenY, 0, 0, 1.0f, 0.0, small_mario_jumpImage.image, TRUE, TRUE);
-			else		DrawRotaGraph2(screenX, screenY, 0, 0, 1.0f, 0.0, small_mario_jumpImage.image, TRUE, FALSE);
-		}
-		else if (isWalking)
-		{
-			small_mario_walkAnim.x = (float)screenX;
-			small_mario_walkAnim.y = (float)screenY;
-			small_mario_walkAnim.AnimationRenderCenter(isLeft);
+			// スター状態の描画はお任せ
+			starEffect.Render(screenX, screenY, isLeft, isJumping, isWalking);
 		}
 		else
 		{
-			if (isLeft)	DrawRotaGraph2(screenX, screenY, 0, 0, 1.0f, 0.0, small_mario_waitImage.image, TRUE, TRUE);
-			else		DrawRotaGraph2(screenX, screenY, 0, 0, 1.0f, 0.0, small_mario_waitImage.image, TRUE, FALSE);
+			if (isJumping)
+			{
+				if (isLeft)	DrawRotaGraph2(screenX, screenY, 0, 0, 1.0f, 0.0, small_mario_jumpImage.image, TRUE, TRUE);
+				else		DrawRotaGraph2(screenX, screenY, 0, 0, 1.0f, 0.0, small_mario_jumpImage.image, TRUE, FALSE);
+			}
+			else if (isWalking)
+			{
+				small_mario_walkAnim.x = (float)screenX;
+				small_mario_walkAnim.y = (float)screenY;
+				small_mario_walkAnim.AnimationRenderCenter(isLeft);
+			}
+			else
+			{
+				if (isLeft)	DrawRotaGraph2(screenX, screenY, 0, 0, 1.0f, 0.0, small_mario_waitImage.image, TRUE, TRUE);
+				else		DrawRotaGraph2(screenX, screenY, 0, 0, 1.0f, 0.0, small_mario_waitImage.image, TRUE, FALSE);
+			}
 		}
-	}
 	}
 	else if (currentForm == MarioForm::SUPER)
 	{
@@ -639,6 +686,8 @@ void Mario::Render()
 		else {
 			DrawFormatString(0, 80, GetColor(100, 100, 100), "STAR MODE: OFF");
 		}
+
+		DrawFormatString(0, 120, GetColor(255, 255, 255), "CTRL + I = マリオが無敵 : %d", debug_is_inivincible);
 	}
 }
 
@@ -739,6 +788,8 @@ void StarEffect::Render(int screenX, int screenY, bool isLeft, bool isJumping, b
 		waitAnim.y = (float)screenY;
 		waitAnim.AnimationRenderCenter(isLeft);
 	}
+
+
 }
 
 void Mario::ChangeToSuper()
@@ -761,4 +812,39 @@ void Mario::ChangeToFire()
 	/*position.y -= (float)(big_mario_waitImage.sizeY / 2.0f);*/
 
 	currentForm = MarioForm::FIRE;
+}
+
+void Mario::StartCutsceneWalk(float targetX, float speed)
+{
+	currentState = MarioState::CUTSCENE;
+	cutsceneTargetX = targetX;
+	cutsceneSpeed = speed;
+}
+
+void Mario::WalkTo(float targetX, float speed)
+{
+	if (position.x < targetX)
+	{
+		isLeft = false;
+		position.x += speed;
+		if (position.x > targetX) position.x = targetX; // don't overshoot
+	}
+	else if (position.x > targetX)
+	{
+		isLeft = true;
+		position.x -= speed;
+		if (position.x < targetX) position.x = targetX;
+	}
+
+	isWalking = (position.x != targetX);
+
+	if (isWalking)
+	{
+		small_mario_walkAnim.FPS = 9;
+		small_mario_walkAnim.AnimationUpdateLoop();
+	}
+	else
+	{
+		small_mario_walkAnim.currentFrame = 0;
+	}
 }

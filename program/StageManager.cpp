@@ -81,7 +81,7 @@ void CreateGrounds(int fromTileX, int fromTileY, int toTileX, int toTileY)
 		{
 			Ground newGround;
 			newGround.Init(x * BLOCK_SIZE, y * BLOCK_SIZE, LoadGraph("data/image/ground.png"));
-			StageManager::GetInstance(). ground.push_back(newGround);
+			StageManager::GetInstance().ground.push_back(newGround);
 		}
 	}
 }
@@ -101,7 +101,19 @@ void CreateGrounds(int fromTileX, int fromTileY, int toTileX, int toTileY, int h
 	}
 }
 
-
+//Create bridge in 1-4
+void CreateBridge(int fromTileX, int fromTileY, int toTileX, int toTileY, int handle)
+{
+	for (int x = fromTileX; x <= toTileX; x++)
+	{
+		for (int y = fromTileY; y <= toTileY; y++)
+		{
+			Ground* newBridge = new Ground();
+			newBridge->Init(x * BLOCK_SIZE, y * BLOCK_SIZE, handle);
+			StageManager::GetInstance().bridge.push_back(newBridge);
+		}
+	}
+}
 
 //Stair looking ground
 void CreateStairs(int fromTileX, int fromTileY, int toTileX, int toTileY, bool flipFlag)
@@ -118,7 +130,7 @@ void CreateStairs(int fromTileX, int fromTileY, int toTileX, int toTileY, bool f
 
 	int handle = LoadGraph("data/image/ground2.png");
 
-	
+
 
 	if (!flipFlag)
 	{
@@ -174,7 +186,7 @@ void CreateCoin(int fromTileX, int fromTileY, int toTileX, int toTileY)
 }
 
 //ITEMS
-void CreateSuperMushroom(float x, float y) 
+void CreateSuperMushroom(float x, float y)
 {
 	SuperMushroom* newSuperMushroom = new SuperMushroom();
 	newSuperMushroom->Init(x * BLOCK_SIZE, y * BLOCK_SIZE);
@@ -195,16 +207,24 @@ void CreateSuperStar(float x, float y)
 	StageManager::GetInstance().superStar.push_back(newSuperStar);
 }
 
+//Axe button to clear the bridge
+void CreateAxe(float x, float y)
+{
+	Axe* newAxe = new Axe();
+	newAxe->Init(x * BLOCK_SIZE, y * BLOCK_SIZE);
+	StageManager::GetInstance().axe.push_back(newAxe);
+}
+
 
 vector<Collidable*> StageManager::GetCollidables()
 {
 	// returns all collidable blocks for mario to register
-	
+
 	vector<Collidable*> result;
 
-	
+	//ALL BLOCKS
 	for (auto& g : ground)
-	result.push_back(&g);
+		result.push_back(&g);
 	for (auto* block : overworld1_1Blocks) {
 		if (block->IsActive()) {
 			Collidable* physicsObject = dynamic_cast<Collidable*>(block);
@@ -233,7 +253,7 @@ vector<Collidable*> StageManager::GetCollidables()
 			}
 		}
 	}
-	
+
 	for (auto& g : underworld_ground)
 		result.push_back(&g);
 	for (auto* block : underworldBlocks) {
@@ -244,11 +264,21 @@ vector<Collidable*> StageManager::GetCollidables()
 			}
 		}
 	}
-	
+
 	for (auto* pipe : underWorldPipe) {
 		if (pipe->IsActive()) {
 			result.push_back(pipe); // Makes the pipe solid to Mario!
 		}
+	}
+
+	for (auto* a : axe)
+	{
+		result.push_back(a);
+	}
+
+	for (auto* b : bridge)
+	{
+		result.push_back(b);
 	}
 
 	//ENEMIES
@@ -278,7 +308,7 @@ vector<Collidable*> StageManager::GetCollidables()
 	{
 		result.push_back(superM);
 	}
-	for (auto* fireF: fireFlower)
+	for (auto* fireF : fireFlower)
 	{
 		result.push_back(fireF);
 	}
@@ -302,6 +332,8 @@ vector<Collidable*> StageManager::GetCollidables()
 
 void StageManager::Init(Stage stageNumber)
 {
+	isBridgeClearing = false;
+	isBossDefeat = false;
 	if (stageNumber == Stage::WORLD_1_1)
 	{
 		//Stage (ground1)
@@ -350,7 +382,7 @@ void StageManager::Init(Stage stageNumber)
 			pixelPos.x = world1_1data[i].gridX * 64.0f;
 			pixelPos.y = world1_1data[i].gridY * 64.0f;
 
-			
+
 			if (world1_1data[i].type == BlockType::BRICK)
 			{
 				BrickBlock* regularBrick = new BrickBlock();
@@ -497,7 +529,7 @@ void StageManager::Init(Stage stageNumber)
 		//Reset Camera
 		MainCamera.pos.Set(0.0f, 0.0f);
 		MainCamera.cameraPosXLimit = 10240 - SCREEN_W;
-		
+
 
 		//Set background
 		background.InitialImageAndSize(LoadGraph("data/image/1-4_background.png"));
@@ -563,7 +595,9 @@ void StageManager::Init(Stage stageNumber)
 		CreateGrounds(123, 10, 127, 14, groundHandle);
 
 		//bridge
-		CreateGrounds(128, 10, 140, 10, bridgeHandle);
+		CreateBridge(128, 10, 140, 10, bridgeHandle);
+		//axe
+		CreateAxe(141, 8);
 
 		//block
 		CreateGrounds(141, 9, 143, 14, groundHandle);
@@ -597,7 +631,7 @@ void StageManager::Init(Stage stageNumber)
 void StageManager::Update(Camera& camera)
 {
 
-	
+
 
 	if (currentzone == WorldZone::OVERWORLD) {
 		for (IBlock* b : overworld1_1Blocks) { b->Update(); }
@@ -736,6 +770,22 @@ void StageManager::Update(Camera& camera)
 		}
 	}
 
+	//deactivate axe
+	for (int i = 0; i < axe.size(); i++)
+	{
+		if (!axe[i]->isActive)
+		{
+			// remove from collidables list too!
+			RigidBody::collidables.erase(
+				remove(RigidBody::collidables.begin(), RigidBody::collidables.end(),
+					dynamic_cast<Collidable*>(axe[i])),  //cast here
+				RigidBody::collidables.end()
+			);
+			//remove coins from stage manager
+			axe.erase(axe.begin() + i);
+		}
+	}
+
 	//Super Mushroom
 	for (int i = 0; i < superMushroom.size(); i++)
 	{
@@ -789,12 +839,27 @@ void StageManager::Update(Camera& camera)
 
 	// ゴールポール
 	for (GoalPole* pole : goalPoles) { pole->Update(); }
+
+	//Clear bridge in 1-4
+	if (isBridgeClearing)
+	{
+		ClearBridge();
+	}
+
+	//camera limit in 1-4 until cutscene
+	if (currentStage == Stage::WORLD_1_4)
+	{
+		if (MainMario.GetState() != MarioState::CUTSCENE) camera.cameraPosXLimit = 126.5 * BLOCK_SIZE;
+		else
+		{
+
+			if(camera.cameraPosXLimit < 10240 - SCREEN_W && isBossDefeat) camera.cameraPosXLimit += 3.0f;
+		}
+	}
 }
 
 void StageManager::Render(Camera& camera)
 {
-
-
 	//ENEMIES
 	//Goomba
 	for (int i = 0; i < goomba.size(); i++)
@@ -808,7 +873,7 @@ void StageManager::Render(Camera& camera)
 	}
 
 	//ITEMS
-	for (Coin* coin: coins)
+	for (Coin* coin : coins)
 	{
 		if (coin->active)
 		{
@@ -851,6 +916,16 @@ void StageManager::Render(Camera& camera)
 	for (auto* bf : bowserFire)
 	{
 		bf->RenderGlobal(camera);
+	}
+
+	for (auto* a : axe)
+	{
+		a->RenderGlobal(camera);
+	}
+
+	for (auto* b : bridge)
+	{
+		b->RenderGlobal(camera);
 	}
 
 	if (currentzone == WorldZone::OVERWORLD)
@@ -902,6 +977,8 @@ void StageManager::ClearStage()
 	for (auto* c : castles) delete c;
 	for (auto* b : bowser) delete b;
 	for (auto* bf : bowserFire) delete bf;
+	for (auto* a : axe) delete a;
+	for (auto* b : bridge) delete b;
 
 	// then clear the vectors
 	ground.clear();
@@ -921,9 +998,39 @@ void StageManager::ClearStage()
 	castles.clear();
 	bowser.clear();
 	bowserFire.clear();
+	axe.clear();
+	bridge.clear();
 
 
 
 	// clear collidables in RigidBody too!
 	RigidBody::collidables.clear();
+}
+
+void StageManager::ClearBridge()
+{
+	if (isBridgeClearing && !bridge.empty())
+	{
+		timerClearingBridgeInterval.Update();
+
+		if (timerClearingBridgeInterval.HitAndReset())
+		{
+			// remove from collidables list too!
+			RigidBody::collidables.erase(
+				remove(RigidBody::collidables.begin(), RigidBody::collidables.end(), bridge.back()),
+				RigidBody::collidables.end()
+			);
+
+			delete bridge.back();
+			bridge.pop_back();
+		}
+
+		if (bridge.empty())
+		{
+			isBridgeClearing = false; // done collapsing
+
+			float toadTargetX = 152 * BLOCK_SIZE;
+			MainMario.StartCutsceneWalk(toadTargetX, 3.0f);
+		}
+	}
 }

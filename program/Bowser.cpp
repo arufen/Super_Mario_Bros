@@ -50,8 +50,6 @@ void Bowser::Update(Camera& camera)
 			Jump();
 		}
 
-
-
 		//RigidBody update
 		PhysicsUpdate();
 	}
@@ -78,6 +76,12 @@ void Bowser::Update(Camera& camera)
 	}
 
 	now_speed_x = direction;
+
+	//Kill if fell under the world
+	if (position.y > 14 * BLOCK_SIZE)
+	{
+		Kill();
+	}
 }
 
 void Bowser::WaitForCamera(Camera& camera)
@@ -139,15 +143,20 @@ void Bowser::RenderGlobal(Camera& camera, const Mario& mario)
 		isLookRight = true;
 	}
 	camera.GlobalRenderAnimation(spriteAnimation, isLookRight);
-	
-	//Debug
-	DrawFormatString(200, 200, GetColor(255, 255, 255), "timer: %f", timerShoot.GetCurrentTimer());
 }
 
 void Bowser::TakeDamage(RigidBody& attacker)
 {
-	state = EnemyState::DEAD;
+	if (HP > 0)HP--;
+	else Kill();
 }
+
+void Bowser::Kill()
+{
+	state = EnemyState::DEAD;
+	StageManager::GetInstance().isBossDefeat = true;
+}
+
 
 void Bowser::Jump()
 {

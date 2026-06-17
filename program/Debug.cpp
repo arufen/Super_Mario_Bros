@@ -39,7 +39,7 @@ void Debug::Update()
 	// 各モードに応じた追加の更新処理をここに記述（必要に応じて）
 	if (map_mode == MODE_USUALLY)
 	{
-
+		
 	}
 
 	if (map_mode == MODE_DEBUG)
