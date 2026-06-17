@@ -62,6 +62,14 @@ void CreateKoopaTroopa(T1 x, T2 y)
 	StageManager::GetInstance().koopaTroopa.push_back(newKoopaTroopa);
 }
 
+template <typename T1, typename T2>
+void CreateBowser(T1 x, T2 y)
+{
+	Bowser* newBowser = new Bowser();
+	newBowser->Init(x * BLOCK_SIZE, y * BLOCK_SIZE);
+	StageManager::GetInstance().bowser.push_back(newBowser);
+}
+
 
 
 //Create ground tiles from (fromTileX, fromTileY) to (toTileX, toTileY) (max Y: 14)
@@ -253,6 +261,10 @@ vector<Collidable*> StageManager::GetCollidables()
 	{
 		result.push_back(k);
 	}
+	for (auto* b : bowser)
+	{
+		result.push_back(b);
+	}
 
 	//ITEMS
 	//coin
@@ -331,24 +343,6 @@ void StageManager::Init(Stage stageNumber)
 
 		//Stairs
 		CreateStairs(134, 9, 137, 12, false);
-
-
-
-		//// 2. Create the fire bar block
-		//FireBar* testFireBar = new FireBar();
-		//testFireBar->Init(Float2(448.0f, 640.0f), blockSpriteHandle, fireSpriteHandle, CLOCKWISE, 6);
-
-		//// FIX: Change 'blockList' to 'overworld1_1Blocks'
-		//// This seamlessly registers it into StageManager's active tracking loop!
-		//overworld1_1Blocks.push_back(testFireBar);
-
-		//// 2. Create the fire bar block
-		//FireBar* testFireBar2 = new FireBar();
-		//testFireBar2->Init(Float2(640.0f, 640.0f), blockSpriteHandle, fireSpriteHandle, COUNTERCLOCKWISE, 6);
-
-		//// FIX: Change 'blockList' to 'overworld1_1Blocks'
-		//// This seamlessly registers it into StageManager's active tracking loop!
-		//overworld1_1Blocks.push_back(testFireBar2);
 
 		for (int i = 0; i < totalOverworldBlocks; i++)
 		{
@@ -509,7 +503,7 @@ void StageManager::Init(Stage stageNumber)
 		background.InitialImageAndSize(LoadGraph("data/image/1-4_background.png"));
 		SetBackgroundColor(0, 0, 0);
 
-		//Reset Stqage
+		//Reset Stage
 		int groundHandle = LoadGraph("data/image/ground_castle.png");
 		int tmpHandle = LoadGraph("data/image/tmp.png");
 		int bridgeHandle = LoadGraph("data/image/bridge.png");
@@ -593,6 +587,9 @@ void StageManager::Init(Stage stageNumber)
 
 		//after the bridge
 		CreateGrounds(142, 3, 143, 5, groundHandle);
+
+		//ENEMIES
+		CreateBowser(138, 8);
 	}
 
 }
@@ -662,6 +659,47 @@ void StageManager::Update(Camera& camera)
 		for (UnderWorldPipe* pipe : underWorldPipe)
 		{
 			pipe->Update();
+		}
+	}
+
+	for (int i = 0; i < bowser.size(); i++)
+	{
+		bowser[i]->Update(camera);
+
+		//disable collision when mario in star mode
+		if (MainMario.starEffect.isActive)
+		{
+			bowser[i]->isTrigger = true;
+		}
+		else
+		{
+			bowser[i]->isTrigger = false;
+		}
+
+		if (bowser[i]->state == EnemyState::DEAD)
+		{
+			// remove from collidables list too!
+			RigidBody::collidables.erase(
+				remove(RigidBody::collidables.begin(), RigidBody::collidables.end(), bowser[i]),
+				RigidBody::collidables.end()
+			);
+			bowser.erase(bowser.begin() + i);
+		}
+	}
+
+	//Bowser fire's projectile
+	for (int i = 0; i < bowserFire.size(); i++)
+	{
+		bowserFire[i]->Update();
+
+		if (!bowserFire[i]->isActive)
+		{
+			// remove from collidables list too!
+			RigidBody::collidables.erase(
+				remove(RigidBody::collidables.begin(), RigidBody::collidables.end(), bowserFire[i]),
+				RigidBody::collidables.end()
+			);
+			bowserFire.erase(bowserFire.begin() + i);
 		}
 	}
 
@@ -806,6 +844,15 @@ void StageManager::Render(Camera& camera)
 		c->RenderGlobal(camera);
 	}
 
+	for (auto* b : bowser)
+	{
+		b->RenderGlobal(camera, MainMario);
+	}
+	for (auto* bf : bowserFire)
+	{
+		bf->RenderGlobal(camera);
+	}
+
 	if (currentzone == WorldZone::OVERWORLD)
 	{
 		for (size_t i = 0; i < ground.size(); i++) ground[i].RenderGlobal(camera);
@@ -853,6 +900,8 @@ void StageManager::ClearStage()
 	for (auto* s : superStar) delete s;
 	for (auto* p : goalPoles) delete p;
 	for (auto* c : castles) delete c;
+	for (auto* b : bowser) delete b;
+	for (auto* bf : bowserFire) delete bf;
 
 	// then clear the vectors
 	ground.clear();
@@ -869,6 +918,11 @@ void StageManager::ClearStage()
 	fireFlower.clear();
 	superStar.clear();
 	goalPoles.clear();
+	castles.clear();
+	bowser.clear();
+	bowserFire.clear();
+
+
 
 	// clear collidables in RigidBody too!
 	RigidBody::collidables.clear();

@@ -152,7 +152,10 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="program\1-Up_Mushroom.cpp" />
+    <ClCompile Include="program\Bowser.cpp" />
+    <ClCompile Include="program\Bowser_Fire.cpp" />
     <ClCompile Include="program\Brick_Block.cpp" />
+    <ClCompile Include="program\Bridge.cpp" />
     <ClCompile Include="program\Camera.cpp" />
     <ClCompile Include="program\Castle.cpp" />
     <ClCompile Include="program\Coin.cpp" />
@@ -190,7 +193,10 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="program\1-Up_Mushroom.h" />
+    <ClInclude Include="program\Bowser.h" />
+    <ClInclude Include="program\Bowser_Fire.h" />
     <ClInclude Include="program\Brick_Block.h" />
+    <ClInclude Include="program\Bridge.h" />
     <ClInclude Include="program\Camera.h" />
     <ClInclude Include="program\Castle.h" />
     <ClInclude Include="program\Coin.h" />

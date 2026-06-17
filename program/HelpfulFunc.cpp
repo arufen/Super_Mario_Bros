@@ -110,13 +110,13 @@ void Animation::PlayAnimation()
 	currentFrame = 0;
 }
 
-void Animation::AnimationRender(const float x, const float y)
+void Animation::AnimationRender(const float x, const float y, bool reverseFlag)
 {
 	int currentImage = currentFrame * (sprite.sizeX);
 	float sizeX = (float)sprite.sizeX;
 	float sizeY = (float)sprite.sizeY;
 	int image = sprite.image;
-	DrawRectGraphF(x, y, currentImage, 0, sizeX, sizeY, image, true);
+	DrawRectGraphF(x, y, currentImage, 0, sizeX, sizeY, image, true, reverseFlag);
 }
 
 void Animation::AnimationRenderCenter(bool reverseFlag)

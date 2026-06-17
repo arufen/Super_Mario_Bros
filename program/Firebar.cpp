@@ -1,5 +1,6 @@
 #include "FireBar.h"
 #include "Dxlib.h"
+#include "Mario.h"
 #include <cmath>
 
 #define PI 3.141592653589793
@@ -93,4 +94,14 @@ void FireBar::Render(Camera camera)
 
         fireAnimation.currentFrame = backupMasterFrame;
     }
+}
+
+void Fireball::OnHitSide(RigidBody& player)
+{
+    Mario* mario = dynamic_cast<Mario*>(&player);
+    if (mario != nullptr)
+    {
+        mario->ToDeadState();
+    }
+ 
 }
