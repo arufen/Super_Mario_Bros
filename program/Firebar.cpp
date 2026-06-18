@@ -1,5 +1,6 @@
 #include "FireBar.h"
 #include "Dxlib.h"
+#include "Mario.h"
 #include <cmath>
 
 #define PI 3.141592653589793
@@ -13,12 +14,14 @@ FireBar::FireBar()
     fireCount = 0;
 }
 
-void FireBar::Init(Float2 centerPos, int blockHandle, int fireHandle, int dir, int fireballCount)
+void FireBar::Init(Float2 centerPos, int blockHandle, int fireHandle, RotationDir dir, int fireballCount, float startAngle)
 {
     pos = centerPos;
     fireGraphHandle = fireHandle;
     fireCount = fireballCount;
     rotation_dir = dir;
+
+    currentAngle = startAngle;
 
     image.InitialImageAndSize(blockHandle);
     image.pos = pos;
@@ -34,11 +37,11 @@ void FireBar::Update()
 {
     fireAnimation.AnimationUpdateLoop();
 
-    if (rotation_dir == CLOCKWISE)
+    if (rotation_dir == RotationDir::CLOCKWISE)
     {
         currentAngle += rotationSpeed;
     }
-    else if (rotation_dir == COUNTERCLOCKWISE)
+    else if (rotation_dir == RotationDir::COUNTERCLOCKWISE)
     {
         currentAngle -= rotationSpeed;
     }
@@ -91,4 +94,14 @@ void FireBar::Render(Camera camera)
 
         fireAnimation.currentFrame = backupMasterFrame;
     }
+}
+
+void Fireball::OnHitSide(RigidBody& player)
+{
+    Mario* mario = dynamic_cast<Mario*>(&player);
+    if (mario != nullptr)
+    {
+        mario->ToDeadState();
+    }
+ 
 }

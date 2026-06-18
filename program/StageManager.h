@@ -3,6 +3,7 @@
 #include "Mario.h"
 #include "Camera.h"
 #include <vector>
+#include "HelpfulFunc.h"
 
 #include "Collidable.h" //To check collision for every block
 
@@ -10,6 +11,7 @@
 #include "Ground.h"
 #include "IBlock.h"
 #include "Warp_Pipe.h"
+#include "Axe.h"
 
 //ITEMS
 #include "Coin.h"
@@ -21,6 +23,8 @@
 //Enemies
 #include "Goomba.h"
 #include "Koopa_Troopa.h"
+#include "Bowser.h"
+#include "Bowser_Fire.h"
 
 #include "Goal_Pole.h"
 #include "Castle.h"
@@ -42,11 +46,7 @@ public:
 		return instance;
 	}
 
-	//All register blocks
-	//Ground （床）
-	vector<Ground> ground;
 
-	vector<Ground> underworld_ground;
 
 	// ゴールポール
 	vector<GoalPole*> goalPoles;
@@ -55,6 +55,8 @@ public:
 	//Enemy （敵）
 	vector<Goomba*> goomba;
 	vector<KoopaTroopa*> koopaTroopa;
+	vector<Bowser*> bowser;
+	vector<BowserFire*> bowserFire;
 
 	// returns all collidable blocks for mario to register
 	vector<Collidable*> GetCollidables();
@@ -66,10 +68,14 @@ public:
 	WorldZone currentzone;
 
 	//for all blocks
+	vector<Ground> ground;
+	vector<Ground> underworld_ground;
 	vector<IBlock*> overworld1_1Blocks;
 	vector<IBlock*> overworld1_4Blocks;
 	vector<IBlock*> underworldBlocks;
 	vector<IBlock*> globalBlocks;
+	vector<Ground*> bridge;
+	vector<Axe*> axe; //isTrigger true
 
 	//Collectable Item
 	vector<Coin*> coins;
@@ -77,8 +83,16 @@ public:
 	vector<FireFlower*> fireFlower;
 	vector<SuperStar*> superStar;
 
+	Stage currentStage{ Stage::WORLD_1_1 };
 
 	Image background;
+
+	//Bridge
+	Timer timerClearingBridgeInterval{ 0.1f };
+	bool isBridgeClearing; 
+	bool isBossDefeat; //true if boss defeated with fireballs
+	void ClearBridge();
+
 
 	//Cleanup all vectors
 	void ClearStage();

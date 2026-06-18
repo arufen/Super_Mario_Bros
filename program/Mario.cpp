@@ -21,19 +21,14 @@ int small_mario_debug_y2;
 // ==========================================
 // 調整用の物理パラメータ（定数）
 // ==========================================
-const float MARIO_ACCEL_WALK = 0.18f;		// 歩き時の加速度（はじまりはじわっと遅い）
-const float MARIO_ACCEL_DASH = 0.18f;		// ダッシュ時の加速度（じわじわとスピードに乗る）
-const float MARIO_WALK_MAX_SPEED = 4.5f;	// 歩き状態の最高速度
-const float MARIO_DASH_MAX_SPEED = 8.0f;	// ダッシュ状態の最高速度
-const float MARIO_FRICTION = 0.22f;			// キーを離したときの摩擦（ツルッと滑る心地よい慣性）
-const float MARIO_DECEL_TURN = 0.60f;		// 逆キーを入れたときの急ブレーキ（「キキーッ」と滑る独特の挙動）
+// NOTE: 他箇所で同名のシンボルが定義されている可能性があるため
+// 定数名を一意にする（C2377 対策）。
+const float MARIO_ACCEL = 0.4f;		// 1フレームごとの加速度（増やすとキレが良くなる）
+const float MARIO_WALK_MAX_SPEED = 10.5f;	// 歩き状態の最高速度（これ以上速くならない）
+const float MARIO_DASH_MAX_SPEED = 8.0f;   // ダッシュ状態の最高速度（これ以上速くならない）
+const float MARIO_FRICTION = 0.3f;	// キーを離したときの摩擦・ブレーキ（減らすとよく滑る）
+const float MARIO_DECEL_TURN = 0.8f;  // 逆キーを入れたときの急ブレーキの強さ
 
-// ジャンプパラメータ
-const float JUMP_BASE_WALK = -15.0f;		// 通常（静止・歩き）時のジャンプ初速
-const float JUMP_BASE_DASH = -16.0f;		// ダッシュ時のジャンプ初速（より高く飛び出す）
-const float JUMP_HOLD_WALK = -0.4f;			// 通常ジャンプ時の長押し上昇力
-const float JUMP_HOLD_DASH = -0.7f;			// ダッシュジャンプ時の長押し上昇力（空中でもフワッと伸びる）
-const float JUMP_HOLD_MAX = 0.3f;			// 長押しジャンプが効く最大時間（秒）
 
 void Mario::ResolveCollision(Collidable& block)
 {
@@ -62,7 +57,9 @@ void Mario::ResolveCollision(Collidable& block)
 				item->CollectItem(*this);
 			}
 		}
-	
+
+
+
 		block.OnHitSide(*this);  // just calls callback, no pushing
 		return;
 	}
@@ -78,7 +75,7 @@ void Mario::ResolveCollision(Collidable& block)
 	float bias = 0.5f;
 	if (dynamic_cast<Enemy*>(&block) != nullptr)
 	{
- 		bias = 13.0f; // 10.0f〜15.0f 程度にすると「理不尽な横死」がなくなる
+		bias = 14.0f; // 10.0f〜15.0f 程度にすると「理不尽な横死」がなくなります
 	}
 
 	if (minY < minX + bias)
@@ -95,27 +92,6 @@ void Mario::ResolveCollision(Collidable& block)
 			isJumping = false;
 			jumpHoldTimer = 0.0f;
 			hitVertical = true;  // mark it
-
-			//jump if hit enemy on top (like raycast)
-			Enemy* enemy = dynamic_cast<Enemy*>(&block);
-
-			if (enemy != nullptr)
-			{
-				// 敵を踏んだ時の跳ね返り（初代マリオは踏みつけ時、Aボタンを押しっぱなしにしていると大ジャンプになる）
-				if (CheckHitKey(KEY_INPUT_SPACE))
-				{
-					// スペース長押し時はダッシュジャンプ級の跳ね返り
-					now_speed_y = JUMP_BASE_DASH;
-				}
-				else
-				{
-					// ボタンを離していれば通常の跳ね返り
-					now_speed_y = JUMP_BASE_WALK;
-				}
-				isJumping = true;
-				jumpHoldTimer = 0.0f;
-				/*enemy->TakeDamage(*this);*/
-			}
 
 			block.OnHitTop(*this);
 		}
@@ -219,7 +195,8 @@ void Mario::Warping(float targetX, float targetY, WarpDir dir)
 void Mario::ToDeadState(bool isFall)
 {
 	if (currentState == MarioState::DEAD) return;
-	if (isStarMode) return;
+	if (invincibleTimer.GetCurrentTimer() > 0.0f) return;
+	if (starEffect.isActive) return;
 
 	if (currentForm == MarioForm::SMALL)
 	{
@@ -231,6 +208,8 @@ void Mario::ToDeadState(bool isFall)
 		now_speed_y = 0.0f;
 
 		// 当たり判定を完全に無くしてステージや敵をすり抜けさせる
+		//RigidBody_collider.x = -9999.0f;
+		//RigidBody_collider.y = -9999.0f;
 		RigidBody_collider.width = 0;
 		RigidBody_collider.height = 0;
 
@@ -250,9 +229,12 @@ void Mario::Init()
 	small_mario_jumpImage.InitialImageAndSize(LoadGraph("data/image/mario/small_mario_jump.png"));
 	small_mario_deadImage.InitialImageAndSize(LoadGraph("data/image/mario/small_mario_dead.png"));
 	small_mario_walkAnim.InitialAnimation(LoadGraph("data/image/mario/small_mario_walk.png"), 3, 10);
+	big_mario_waitImage.InitialImageAndSize(LoadGraph("data/image/big_mario_wait.png"));
+	big_mario_fire_waitImage.InitialImageAndSize(LoadGraph("data/image/big_mario_fire_wait.png"));
+
 
 	currentForm = MarioForm::SMALL;
-	position.Set(165.0f, 700.0f);
+	position.Set(165.0f, 700.0f); //772
 	isLeft = false; // 最初は右向き
 	isDeadJumped = false;
 	isFellDown = false;
@@ -264,24 +246,31 @@ void Mario::Init()
 
 	//Shrink collider (当たり判定を画像より少し小さくする)
 	RigidBody_collider = Collider(position.x, position.y, small_mario_waitImage.sizeX, small_mario_waitImage.sizeY);
-	float offsetWidth = 20.0f; // how much to shrink total width
-	RigidBody_collider.width -= offsetWidth;
-	RigidBody_collider.x += offsetWidth / 2; // shift right so it's centered
+	RigidBody_collider.width -= COLLIDER_OFFSET;
+	RigidBody_collider.x += COLLIDER_OFFSET / 2; // shift right so it's centered
 
 	//Score and item
 	score = 0;
 	coin = 0;
 
 	//マリオのstar状態のアニメーションの初期化
-	int handle = LoadGraph("data/image/starmario_Animation_02.png");
-	starmarioAnim.InitialAnimation(handle, 3, 10); // スター画像は3フレームなので 3 を指定
-	isStarMode = false;
-	starTimer = 0.0f;
+	starEffect.Init();
 
+	//For debug (Debug用)
+	debug_is_inivincible = false;
 }
 
 void Mario::Update()
 {
+	//For debug(DEBUG用）
+	if (map_mode == MODE_DEBUG && CheckHitKey(KEY_INPUT_LCONTROL) && PushHitKey(KEY_INPUT_I))
+	{
+		debug_is_inivincible = !debug_is_inivincible ? true  : false;
+	}
+	if(debug_is_inivincible) invincibleTimer.SetTimer(1.0f);
+	
+
+	invincibleTimer.Update();
 	// ----------------------------------------------------
 	// 死亡状態（DEAD）の更新処理
 	// ----------------------------------------------------
@@ -336,12 +325,48 @@ void Mario::Update()
 	}
 
 	// ----------------------------------------------------
+	// カットシーン状態（CUTSCENE）の更新処理
+	// ----------------------------------------------------
+	if (currentState == MarioState::CUTSCENE)
+	{
+		if (!StageManager::GetInstance().isBossDefeat) return;
+		// StartCutsceneWalk() set the target once, now walk toward it every frame
+		WalkTo(cutsceneTargetX, cutsceneSpeed);
+
+		RigidBody_collider.x = position.x + COLLIDER_OFFSET / 2;
+		RigidBody_collider.y = position.y;
+
+		int scrX1 = (int)(RigidBody_collider.x - MainCamera.pos.x);
+		int scrY1 = (int)(RigidBody_collider.y - MainCamera.pos.y);
+		small_mario_debug_x1 = scrX1;
+		small_mario_debug_y1 = scrY1;
+		small_mario_debug_x2 = scrX1 + (int)RigidBody_collider.width;
+		small_mario_debug_y2 = scrY1 + (int)RigidBody_collider.height;
+		mario_centerX = scrX1 + ((int)RigidBody_collider.width / 2);
+
+		//Not moving when bridge is clearing
+		/*if(!StageManager::GetInstance().isBridgeClearing)*/ PhysicsUpdate();
+
+		// Dキーの押し下げに関係なく、マリオが画面中央を越えたらカメラを動かすように外に出しました
+		if (MainCamera.pos.y < 960)
+		{
+			float marioWorldCenterX = position.x + (small_mario_waitImage.sizeX / 2.0f);
+			if (marioWorldCenterX >= MainCamera.pos.x + (SCREEN_W / 2))
+			{
+				MainCamera.pos.x = marioWorldCenterX - (SCREEN_W / 2);
+			}
+		}
+
+		return;
+	}
+
+	// ----------------------------------------------------
 	// 土管ワープ状態（WARPING）の更新処理
 	// ----------------------------------------------------
 	if (currentState == MarioState::WARPING)
 	{
-		warpTimer += 0.016f; 
-		
+		warpTimer += 0.016f;
+
 		if (warpTimer < WARP_DURATION)
 		{
 			if (currentWarpDir == WarpDir::DOWN)
@@ -362,8 +387,8 @@ void Mario::Update()
 		now_speed_y = 0.0f;
 
 		small_mario_waitImage.pos = position;
-		RigidBody_collider.x = position.x;
-		RigidBody_collider.y = position.y;
+		//RigidBody_collider.x = position.x;
+		//RigidBody_collider.y = position.y;
 
 		// Frame debug layout configuration parameters
 		int scrX1 = (int)(RigidBody_collider.x - MainCamera.pos.x);
@@ -409,7 +434,8 @@ void Mario::Update()
 	{
 		if (CheckHitKey(KEY_INPUT_P))
 		{
-			Star();
+			// スター状態開始
+			starEffect.Start();
 		}
 	}
 	// 奈落への落下死亡チェック
@@ -428,16 +454,17 @@ void Mario::Update()
 	small_mario_waitImage.pos = position;
 
 	////Collider update
-	float offsetWidth = 20.0f;
-	RigidBody_collider.x = position.x + offsetWidth / 2;
+	RigidBody_collider.x = position.x + COLLIDER_OFFSET / 2;
 	RigidBody_collider.y = position.y;
-	
+	//collider.x = position.x + 20.0f / 2;
+	//collider.y = position.y;
+
 	bool currKeyA = CheckHitKey(KEY_INPUT_A);
 	bool currKeyD = CheckHitKey(KEY_INPUT_D);
 	bool isDashing = CheckHitKey(KEY_INPUT_LSHIFT);
 	bool currKeySpace = CheckHitKey(KEY_INPUT_SPACE);
 
-	// 後入力優先の方向決定ロジック
+	// 後入力優先の方向決定ロジック (ID#a0004から復活)
 	if (currKeyA && !prevKeyA) preferLeftInput = true;
 	if (currKeyD && !prevKeyD) preferLeftInput = false;
 	if (currKeyA && !currKeyD) preferLeftInput = true;
@@ -451,47 +478,35 @@ void Mario::Update()
 	// 外部参照用(Camera.cpp等)の移動速度設定
 	if (moveKeyPressed)
 	{
-		float currentAccel = isDashing ? MARIO_ACCEL_DASH : MARIO_ACCEL_WALK;
 		float currentMax = isDashing ? MARIO_DASH_MAX_SPEED : MARIO_WALK_MAX_SPEED;
+		marioSpeed = preferLeftInput ? -currentMax : currentMax;
+	}
+	else
+	{
+		marioSpeed = MARIO_WALK_MAX_SPEED;
+	}
 
+	// キー入力に応じた速度（now_speed_x）と向きの計算 (後入力優先ベース)
+	if (moveKeyPressed)
+	{
 		if (preferLeftInput)
 		{
 			if (!isJumping) isLeft = true;
 
-			if (now_speed_x > 0.0f) {
-				now_speed_x -= MARIO_DECEL_TURN; // 滑りながら急ブレーキ
-			}
-			else {
-				now_speed_x -= currentAccel;     // 左へ徐々に加速
-
-				// ダッシュから歩きに落とした時、急に減速させず摩擦で滑らかに落とす
-				if (now_speed_x < -currentMax) {
-					now_speed_x += MARIO_FRICTION;
-					if (now_speed_x > -currentMax) now_speed_x = -currentMax;
-				}
-			}
+			if (now_speed_x > 0.0f)	now_speed_x -= MARIO_DECEL_TURN; // 急ブレーキ
+			else					now_speed_x -= MARIO_ACCEL;      // 通常加速
 		}
 		else
 		{
 			if (!isJumping) isLeft = false;
 
-			if (now_speed_x < 0.0f) {
-				now_speed_x += MARIO_DECEL_TURN; // 滑りながら急ブレーキ
-			}
-			else {
-				now_speed_x += currentAccel;     // 右へ徐々に加速
-
-				// ダッシュから歩きに落とした時、急に減速させず摩擦で滑らかに落とす
-				if (now_speed_x > currentMax) {
-					now_speed_x -= MARIO_FRICTION;
-					if (now_speed_x < currentMax) now_speed_x = currentMax;
-				}
-			}
+			if (now_speed_x < 0.0f)	now_speed_x += MARIO_DECEL_TURN; // 急ブレーキ
+			else					now_speed_x += MARIO_ACCEL;      // 通常加速
 		}
 	}
 	else
 	{
-		// 摩擦（自然減速）の処理 - 初代のようにスーッと滑って止まる
+		// 摩擦（自然減速）の処理
 		if (now_speed_x > 0.0f)
 		{
 			now_speed_x -= MARIO_FRICTION;
@@ -509,7 +524,7 @@ void Mario::Update()
 	if (now_speed_x > MarioMoovMaxSpeed)  now_speed_x = MarioMoovMaxSpeed;
 	if (now_speed_x < -MarioMoovMaxSpeed) now_speed_x = -MarioMoovMaxSpeed;
 
-	// マリオが画面中央を越えたらカメラを動かす
+	// Dキーの押し下げに関係なく、マリオが画面中央を越えたらカメラを動かすように外に出しました
 	if (MainCamera.pos.y < 960)
 	{
 		float marioWorldCenterX = position.x + (small_mario_waitImage.sizeX / 2.0f);
@@ -526,45 +541,38 @@ void Mario::Update()
 	}
 
 	// マリオの表示幅を計算
-	float marioWidth = small_mario_waitImage.sizeX;		// マリオの画像の幅を計算
-	float marioHeight = small_mario_waitImage.sizeY;	// マリオの画像の高さを計算
-	float marioRightX = position.x + marioWidth;		// マリオの右端のワールド座標
+	float marioWidth = small_mario_waitImage.sizeX;  // マリオの画像の幅を計算
+	float marioHeight = small_mario_waitImage.sizeY; // マリオの画像の高さを計算
+	// マリオの右端のワールド座標
+	float marioRightX = position.x + marioWidth;
 
 	// ステージの右端を設定 (カメラの最大移動量 + 画面幅)
 	float stageRightLimit = 12480.0f + SCREEN_W;
 
-	// 速度連動ジャンプシステム
-	// 初押し込み（地上にいて、スペースキーが押された瞬間）
+	// first press — initial jump
 	if (currKeySpace && !prevKeySpace && !isJumping)
 	{
 		Jump();
 	}
 
-	// 長押しによる上昇の維持処理（空中＆ボタン押しっぱなし＆規定タイマー内）
+	// hold to go higher
 	if (currKeySpace && isJumping && jumpHoldTimer < JUMP_HOLD_MAX)
 	{
-		// ジャンプした瞬間のダッシュ状態（または現在の速度の絶対値）に合わせて空中上昇力を動的に変化させる
-		// 初代マリオはダッシュしているほど重力を無視して上にググッと伸びる特性がある
-		float currentHoldForce = (abs(now_speed_x) > MARIO_WALK_MAX_SPEED + 0.5f) ? JUMP_HOLD_DASH : JUMP_HOLD_WALK;
-
-		now_speed_y += currentHoldForce;  // 上方向へ追加の押し出し（負の値を加算）
-		jumpHoldTimer += 0.016f;         // 1フレーム分の時間を加算（約60fps想定）
+		now_speed_y += JUMP_HOLD_FORCE;  // extra upward push
+		jumpHoldTimer += 0.016f;         // add time (~1 frame at 60fps)
 	}
 
 	// 次のフレームのために現在の状態を過去の状態として保存
 	prevKeySpace = currKeySpace;
 
 	// 歩きアニメーションのループ更新処理 (ID#a0004から復活)
+	int currentWalkFPS = isDashing ? 15 : 9;
 	if (moveKeyPressed && !isJumping)
 	{
 		isWalking = true;
-
-		// 初代マリオのパタパタしたアニメーション速度を再現
-		// 動き出し（低速）はゆっくり、最高速に向けて滑らかに足の回転が上がります
-		int baseFPS = 5;
-		int speedBonus = (int)(abs(now_speed_x) * 1.2f);
-		small_mario_walkAnim.FPS = baseFPS + speedBonus;
-
+		//スター状態のときは歩行アニメーションのFPSを上げるので、変数かしてwalkAnimに渡すようにするのでコメントアウト化させていただきます。
+		//small_mario_walkAnim.FPS = isDashing ? 15 : 9;
+		small_mario_walkAnim.FPS = currentWalkFPS;
 		small_mario_walkAnim.AnimationUpdateLoop();
 	}
 	else
@@ -574,7 +582,8 @@ void Mario::Update()
 	}
 
 	//RigidBody update
-	PhysicsUpdate();
+	if (!StageManager::GetInstance().isBridgeClearing) PhysicsUpdate();
+	
 
 	// 物理演算（PhysicsUpdate）が終わった直後に右端のストッパー処理を入れる
 
@@ -583,8 +592,7 @@ void Mario::Update()
 		position.x = stageRightLimit - marioWidth; // 座標を右端限界にクランプ
 
 		// 実際の当たり判定（RigidBody_collider）のX座標も即座に再同期させる
-		float offsetWidth = 20.0f;
-		RigidBody_collider.x = position.x + offsetWidth / 2;
+		RigidBody_collider.x = position.x + COLLIDER_OFFSET / 2;
 
 		// 右へ進もうとする慣性速度をゼロにする
 		if (now_speed_x > 0.0f) now_speed_x = 0.0f;
@@ -602,26 +610,14 @@ void Mario::Update()
 	// 画面中央線や中心線の描画に使うマリオの中心X座標も、実際の当たり判定の中心にする
 	mario_centerX = scrX1 + ((int)RigidBody_collider.width / 2);
 
-	// スター状態の更新処理
-	if (isStarMode)
-	{
-		starTimer -= 1.0f;
-		if (starTimer <= 0.0f)
-		{
-			isStarMode = false; // 時間切れで通常状態に戻る
-		}
-
-		// アニメーションの更新
-		starmarioAnim.AnimationUpdateLoop();
-	}
+	starEffect.Update(isWalking, isJumping, currentWalkFPS);
 }
-
 void Mario::Render()
 {
 	// カメラの座標に合わせてマリオの描画位置（スクリーン座標）を計算
 	int screenX = (int)(position.x - MainCamera.pos.x);
 	int screenY = (int)(position.y - MainCamera.pos.y);
-	
+
 	// 死亡時は最優先でデッド画像を描画
 	if (currentState == MarioState::DEAD)
 	{
@@ -638,31 +634,44 @@ void Mario::Render()
 		return; // ワープ中はここで描画処理を終了する（下の歩きやジャンプを通さない）
 	}
 
-	if (isStarMode)
+	if (currentForm == MarioForm::SMALL)
 	{
-		// スター状態なら専用のアニメーションを優先して描画する
-		starmarioAnim.x = (float)screenX;
-		starmarioAnim.y = (float)screenY;
-		starmarioAnim.AnimationRenderCenter(isLeft);
-	}
-	else {
-		if (isJumping)
+		if (starEffect.isActive)
 		{
-			if (isLeft)	DrawRotaGraph2(screenX, screenY, 0, 0, 1.0f, 0.0, small_mario_jumpImage.image, TRUE, TRUE);
-			else		DrawRotaGraph2(screenX, screenY, 0, 0, 1.0f, 0.0, small_mario_jumpImage.image, TRUE, FALSE);
-		}
-		else if (isWalking)
-		{
-			small_mario_walkAnim.x = (float)screenX;
-			small_mario_walkAnim.y = (float)screenY;
-			small_mario_walkAnim.AnimationRenderCenter(isLeft);
+			// スター状態の描画はお任せ
+			starEffect.Render(screenX, screenY, isLeft, isJumping, isWalking);
 		}
 		else
 		{
-			if (isLeft)	DrawRotaGraph2(screenX, screenY, 0, 0, 1.0f, 0.0, small_mario_waitImage.image, TRUE, TRUE);
-			else		DrawRotaGraph2(screenX, screenY, 0, 0, 1.0f, 0.0, small_mario_waitImage.image, TRUE, FALSE);
+			if (isJumping)
+			{
+				if (isLeft)	DrawRotaGraph2(screenX, screenY, 0, 0, 1.0f, 0.0, small_mario_jumpImage.image, TRUE, TRUE);
+				else		DrawRotaGraph2(screenX, screenY, 0, 0, 1.0f, 0.0, small_mario_jumpImage.image, TRUE, FALSE);
+			}
+			else if (isWalking)
+			{
+				small_mario_walkAnim.x = (float)screenX;
+				small_mario_walkAnim.y = (float)screenY;
+				small_mario_walkAnim.AnimationRenderCenter(isLeft);
+			}
+			else
+			{
+				if (isLeft)	DrawRotaGraph2(screenX, screenY, 0, 0, 1.0f, 0.0, small_mario_waitImage.image, TRUE, TRUE);
+				else		DrawRotaGraph2(screenX, screenY, 0, 0, 1.0f, 0.0, small_mario_waitImage.image, TRUE, FALSE);
+			}
 		}
 	}
+	else if (currentForm == MarioForm::SUPER)
+	{
+		if (isLeft)	DrawRotaGraph2(screenX, screenY, 0, 0, 1.0f, 0.0, big_mario_waitImage.image, TRUE, TRUE);
+		else		DrawRotaGraph2(screenX, screenY, 0, 0, 1.0f, 0.0, big_mario_waitImage.image, TRUE, FALSE);
+	}
+	else if (currentForm == MarioForm::FIRE)
+	{
+		if (isLeft)	DrawRotaGraph2(screenX, screenY, 0, 0, 1.0f, 0.0, big_mario_fire_waitImage.image, TRUE, TRUE);
+		else		DrawRotaGraph2(screenX, screenY, 0, 0, 1.0f, 0.0, big_mario_fire_waitImage.image, TRUE, FALSE);
+	}
+
 
 	// DEBUG MODE
 	if (map_mode == MODE_DEBUG)
@@ -671,33 +680,21 @@ void Mario::Render()
 		DrawFormatString(0, 60, GetColor(255, 255, 255), "now_speed X : %f", now_speed_x);
 
 		//スター状態の残り時間を表示
-		if (isStarMode) 
-		{
-			DrawFormatString(0, 80, GetColor(255, 255, 0), "STAR MODE: %.0f", starTimer);
+		if (starEffect.isActive) {
+			DrawFormatString(0, 80, GetColor(255, 255, 0), "STAR MODE: %.0f", starEffect.timer);
 		}
-		else 
-		{
+		else {
 			DrawFormatString(0, 80, GetColor(100, 100, 100), "STAR MODE: OFF");
 		}
+
+		DrawFormatString(0, 120, GetColor(255, 255, 255), "CTRL + I = マリオが無敵 : %d", debug_is_inivincible);
 	}
 }
 
-// ジャンプ処理
+//Jump player
 void Mario::Jump()
 {
-	// 飛び立つ瞬間の水平速度（絶対値）を確認
-	float speedXAbs = abs(now_speed_x);
-
-	// 【変更】歩きの最高速度を明確に超えている場合のみダッシュジャンプにする
-	if (speedXAbs > MARIO_WALK_MAX_SPEED + 0.5f)
-	{
-		now_speed_y = JUMP_BASE_DASH; // ダッシュジャンプの初速 (-16.0f)
-	}
-	else
-	{
-		now_speed_y = JUMP_BASE_WALK; // 通常・歩きジャンプの初速 (-13.0f)
-	}
-
+	now_speed_y = JUMP_INITIAL;  // shoot up
 	isJumping = true;
 	jumpHoldTimer = 0.0f;
 	SoundManager::GetInstance().PlaySE("Jump_Small");
@@ -711,13 +708,143 @@ void Mario::AddCoin()
 	SoundManager::GetInstance().PlaySE("Coin");
 }
 
-void Mario::Star()
+//starclass(ファイヤマリオも同じように)
+//==============================================================
+// スター状態の初期化処理(画像とフラグや時間)
+//==============================================================
+void StarEffect::Init()
 {
-	isStarMode = true;
-	starTimer = 600.0f; // 例: 60fps環境で10秒間 (60 * 10)
+	isActive = false;
+	timer = 0.0f;
+
+	// スター状態は常に色が点滅するため、待機・歩き・ジャンプすべてアニメーションとして読み込む
+	// ※画像のファイル名やコマ数などは実際のデータに合わせて修正してください
+	waitAnim.InitialAnimation(LoadGraph("data/image/star_mario/starmario_wait.png"), 3, 10);
+	walkAnim.InitialAnimation(LoadGraph("data/image/star_mario/starmario_walk.png"), 9, 10);
+	jumpAnim.InitialAnimation(LoadGraph("data/image/star_mario/starmario_jump.png"), 3, 10);
+}
+//==============================================================
+// スターを取ったときにスター状態を開始する処理
+//==============================================================
+void StarEffect::Start()
+{
+	isActive = true;
+	timer = 600.0f; // 例: 60fps環境で10秒間 (60 * 10)
+}
+//==============================================================
+// スター状態の更新処理
+// スター状態の残り時間を減らし、アニメーションを更新する
+//==============================================================
+void StarEffect::Update(bool isWalking, bool isJumping, int walkFPS)
+{
+	if (isActive)
+	{
+		timer -= 1.0f;
+		if (timer <= 0.0f)
+		{
+			isActive = false;
+		}
+
+		// マリオの現在の状態に合わせて、再生するアニメーションを更新する
+		if (isJumping)
+		{
+			jumpAnim.AnimationUpdateLoop();
+		}
+		else if (isWalking)
+		{
+			walkAnim.FPS = walkFPS; // 通常マリオのダッシュ/歩きの速度に合わせる
+			walkAnim.AnimationUpdateLoop();
+		}
+		else
+		{
+			waitAnim.AnimationUpdateLoop();
+		}
+	}
+}
+//==============================================================
+// スター状態の描画処理
+// マリオの画面座標と向きに合わせてスター状態のアニメーションを描画する
+//==============================================================
+void StarEffect::Render(int screenX, int screenY, bool isLeft, bool isJumping, bool isWalking)
+{
+	if (!isActive) return;
+
+	// マリオの現在の状態に合わせて描画するアニメーションを切り替える
+	if (isJumping)
+	{
+		jumpAnim.x = (float)screenX;
+		jumpAnim.y = (float)screenY;
+		jumpAnim.AnimationRenderCenter(isLeft);
+	}
+	else if (isWalking)
+	{
+		walkAnim.x = (float)screenX;
+		walkAnim.y = (float)screenY;
+		walkAnim.AnimationRenderCenter(isLeft);
+	}
+	else
+	{
+		waitAnim.x = (float)screenX;
+		waitAnim.y = (float)screenY;
+		waitAnim.AnimationRenderCenter(isLeft);
+	}
+
+
 }
 
 void Mario::ChangeToSuper()
 {
+	if (currentForm == MarioForm::FIRE) return;
+
+	RigidBody_collider = Collider(position.x, position.y, big_mario_waitImage.sizeX, big_mario_waitImage.sizeY);
+	RigidBody_collider.width -= COLLIDER_OFFSET;
+	RigidBody_collider.x += COLLIDER_OFFSET / 2; // shift right so it's centered
+	position.y -= (float)(big_mario_waitImage.sizeY / 2.0f);
 	currentForm = MarioForm::SUPER;
+}
+
+void Mario::ChangeToFire()
+{
+	//Change Collider
+	RigidBody_collider = Collider(position.x, position.y, big_mario_waitImage.sizeX, big_mario_waitImage.sizeY);
+	RigidBody_collider.width -= COLLIDER_OFFSET;
+	RigidBody_collider.x += COLLIDER_OFFSET / 2; // shift right so it's centered
+	/*position.y -= (float)(big_mario_waitImage.sizeY / 2.0f);*/
+
+	currentForm = MarioForm::FIRE;
+}
+
+void Mario::StartCutsceneWalk(float targetX, float speed)
+{
+	currentState = MarioState::CUTSCENE;
+	cutsceneTargetX = targetX;
+	cutsceneSpeed = speed;
+}
+
+void Mario::WalkTo(float targetX, float speed)
+{
+	if (position.x < targetX)
+	{
+		isLeft = false;
+		position.x += speed;
+		if (position.x > targetX) position.x = targetX; // don't overshoot
+	}
+	else if (position.x > targetX)
+	{
+		isLeft = true;
+		position.x -= speed;
+		if (position.x < targetX) position.x = targetX;
+	}
+
+	isWalking = (position.x != targetX);
+
+	if (isWalking)
+	{
+		small_mario_walkAnim.FPS = 9;
+		small_mario_walkAnim.AnimationUpdateLoop();
+	}
+	else
+	{
+		small_mario_walkAnim.currentFrame = 0;
+	}
 }

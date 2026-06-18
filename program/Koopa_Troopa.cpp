@@ -57,6 +57,10 @@ void KoopaTroopa::Update(Camera& camera, Mario& mario)
 	{
 		spriteAnimationShell.x = position.x;
 		spriteAnimationShell.y = position.y;
+	}
+
+	if (isShellMoving)
+	{
 		spriteAnimationShell.AnimationUpdateLoop();
 	}
 	WaitForCamera(camera);
@@ -102,23 +106,42 @@ void KoopaTroopa::WaitForCamera(Camera& camera)
 
 void KoopaTroopa::OnHitTop(RigidBody& player)
 {
-	TakeDamage(player);
+	Mario* mario = dynamic_cast<Mario*>(&player);
+	if (mario != nullptr)
+	{
+		mario->Jump();
+		TakeDamage(player);
+	}
 }
 
 void KoopaTroopa::OnHitSide(RigidBody& player)
 {
-	if (isInShell && !isShellMoving)
+	Mario* mario = dynamic_cast<Mario*>(&player);
+	if (mario == nullptr) return;
+
+	if (isShellMoving)
 	{
-		TakeDamage(player);
+		mario->ToDeadState();
 	}
+	else if (isInShell && !isShellMoving)
+	{
+		TakeDamage(player); // kicks the shell, doesn't kill mario
+	}
+	else // normal koopa, not in shell
+	{
+		mario->ToDeadState();
+	}
+
+
 	
 }
 
 void KoopaTroopa::RenderGlobal(Camera& camera)
 {
+	bool lookRight = direction < 0.0f ? false : true;
 	if (!isInShell)
 	{
-		camera.GlobalRenderAnimation(spriteAnimation);
+		camera.GlobalRenderAnimation(spriteAnimation, lookRight);
 	}
 	else
 	{
@@ -154,11 +177,16 @@ void KoopaTroopa::TakeDamage(RigidBody& attacker)
 			else
 				direction = -1.0f; // shell goes left
 
+
+			//after kicking shell gives invincible
+			mario->invincibleTimer.SetTimer(0.2f);
 			isShellMoving = true;
 
 			// èRÇ¡ÇΩéûÇÃSEÇçƒê∂
 			SoundManager::GetInstance().PlaySE("Kick");
 		}
+
+
 	}
-	
+
 }
