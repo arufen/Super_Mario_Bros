@@ -23,8 +23,6 @@ public:
 	virtual void OnHitSide(RigidBody& player) override;
 	virtual void OnHitBottom(RigidBody& player) override;
 
-	void Destroy();
-
 	//Main thread
 	void Init(float x, float y, int handle);
 	void Update(Camera& camera);

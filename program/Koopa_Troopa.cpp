@@ -1,4 +1,5 @@
 #include "Koopa_Troopa.h"
+#include "Sound.h"
 
 void KoopaTroopa::Init(float x, float y)
 {
@@ -56,6 +57,10 @@ void KoopaTroopa::Update(Camera& camera, Mario& mario)
 	{
 		spriteAnimationShell.x = position.x;
 		spriteAnimationShell.y = position.y;
+	}
+
+	if (isShellMoving)
+	{
 		spriteAnimationShell.AnimationUpdateLoop();
 	}
 	WaitForCamera(camera);
@@ -101,23 +106,43 @@ void KoopaTroopa::WaitForCamera(Camera& camera)
 
 void KoopaTroopa::OnHitTop(RigidBody& player)
 {
+	Mario* mario = dynamic_cast<Mario*>(&player);
+	if (mario == nullptr) return;
+
+	if (mario->starEffect.isActive) ToDeadState();
+	
+	mario->Jump(false);
 	TakeDamage(player);
+	
 }
 
 void KoopaTroopa::OnHitSide(RigidBody& player)
 {
-	if (isInShell && !isShellMoving)
+	Mario* mario = dynamic_cast<Mario*>(&player);
+	if (mario == nullptr) return;
+
+	if (mario->starEffect.isActive) ToDeadState();
+
+	if (isShellMoving)
 	{
-		TakeDamage(player);
+		mario->TakeDamage();
 	}
-	
+	else if (isInShell && !isShellMoving)
+	{
+		TakeDamage(player); // kicks the shell, doesn't kill mario
+	}
+	else // normal koopa, not in shell
+	{
+		mario->TakeDamage();
+	}
 }
 
 void KoopaTroopa::RenderGlobal(Camera& camera)
 {
+	bool lookRight = direction < 0.0f ? false : true;
 	if (!isInShell)
 	{
-		camera.GlobalRenderAnimation(spriteAnimation);
+		camera.GlobalRenderAnimation(spriteAnimation, lookRight);
 	}
 	else
 	{
@@ -139,6 +164,10 @@ void KoopaTroopa::TakeDamage(RigidBody& attacker)
 
 			//change hitbox to shell sprite
 			RigidBody_collider = Collider(position.x, position.y, (float)this->spriteAnimationShell.sprite.sizeX, (float)this->spriteAnimationShell.sprite.sizeY);
+
+			// ì•Ç‹ÇÍÇΩéûÇÃSEÇçƒê∂
+			SoundManager::GetInstance().PlaySE("Stomp");
+
 			return;
 		}
 		else if (isInShell && !isShellMoving)
@@ -149,8 +178,21 @@ void KoopaTroopa::TakeDamage(RigidBody& attacker)
 			else
 				direction = -1.0f; // shell goes left
 
+
+			//after kicking shell gives invincible
+			mario->invincibleTimer.SetTimer(0.2f);
 			isShellMoving = true;
+
+			// èRÇ¡ÇΩéûÇÃSEÇçƒê∂
+			SoundManager::GetInstance().PlaySE("Kick");
 		}
+
+
 	}
-	
+
+}
+
+void KoopaTroopa::ToDeadState()
+{
+	state = EnemyState::DEAD;
 }

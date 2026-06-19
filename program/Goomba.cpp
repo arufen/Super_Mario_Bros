@@ -1,5 +1,6 @@
 #include "Goomba.h"
 #include "Mario.h"
+#include "Sound.h"
 
 void Goomba::Init(float x, float y, int handle)
 {
@@ -81,7 +82,12 @@ void Goomba::WaitForCamera(Camera& camera)
 
 void Goomba::OnHitTop(RigidBody& player)
 {
-	TakeDamage(player);
+	Mario* mario = dynamic_cast<Mario*>(&player);
+	if (mario != nullptr)
+	{
+		mario->Jump(false);
+		TakeDamage(player);
+	}
 }
 
 // â°Ç©ÇÁÉ}ÉäÉIÇ™Ç‘Ç¬Ç©Ç¡ÇΩéûÇÃèàóù
@@ -101,7 +107,7 @@ void Goomba::OnHitSide(RigidBody& player)
 		}
 		else
 		{
-			mario->ToDeadState();
+			mario->TakeDamage();
 		}
 	
 	}
@@ -115,7 +121,7 @@ void Goomba::OnHitBottom(RigidBody& player)
 	Mario* mario = dynamic_cast<Mario*>(&player);
 	if (mario != nullptr)
 	{
-		mario->ToDeadState();
+		mario->TakeDamage();
 	}
 }
 
@@ -127,4 +133,7 @@ void Goomba::RenderGlobal(Camera& camera)
 void Goomba::TakeDamage(RigidBody& attacker) 
 {
 	state = EnemyState::DEAD;
+
+	// ì•Ç‹ÇÍÇΩéûÇÃSEÇçƒê∂
+	SoundManager::GetInstance().PlaySE("Stomp");
 }

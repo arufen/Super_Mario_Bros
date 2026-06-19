@@ -3,6 +3,19 @@
 #include "Collidable.h"
 #include <vector>
 
+
+class Fireball : public Collidable {
+public:
+    float x, y;
+    Fireball() {
+        x = 0;
+        y = 0;
+        isTrigger = true;            // Allow Mario to overlap cleanly without getting physically blocked
+        layer = PhysicsLayer::ENEMY; // Tag it properly for your physics layers
+    }
+    virtual void OnHitSide(RigidBody& mario) override;
+};
+
 //enum{CLOCKWISE, COUNTERCLOCKWISE};
 class FireBar : public IBlock, public Collidable
 {
@@ -15,18 +28,11 @@ public:
     // Kept as 'Camera camera' (by value) to match your engine's virtual interface layout safely!
     void Render(Camera camera) override;
 
-    void OnHitBottom(RigidBody& player) override {}
-
     Float2 GetPos() const override { return pos; }
     Image GetSprite() const override { return image; }
 
-    struct Fireball : public Collidable {
-        float x, y;
-        Fireball() {
-            isTrigger = true;            // Allow Mario to overlap cleanly without getting physically blocked
-            layer = PhysicsLayer::ENEMY; // Tag it properly for your physics layers
-        }
-    };
+  
+  
     std::vector<Fireball>& GetFireballs() { return fireballs; }
     bool IsActive() const { return active; }
 

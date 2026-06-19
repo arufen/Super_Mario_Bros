@@ -69,6 +69,7 @@ void GameInit()
 //---------------------------------------------------------------------------------
 void GameUpdate()
 {
+	//tmp
 	if (StageManager::GetInstance().currentzone == WorldZone::UNDERWORLD)
 	{
 		MainCamera.pos.x = 56 * BLOCK_SIZE;
@@ -95,8 +96,12 @@ void GameUpdate()
 	// デバッグ機能（モード切り替えなど）の更新
 	MainDebug.Update();
 
-	if (PushHitKey(KEY_INPUT_S) && CheckHitKey(KEY_INPUT_LCONTROL))
+
+	//Change stage to 1-4
+	//ステージ１－４になる
+	if (PushHitKey(KEY_INPUT_S) && CheckHitKey(KEY_INPUT_LCONTROL) && StageManager::GetInstance().currentStage != Stage::WORLD_1_4)
 	{
+		StageManager::GetInstance().currentStage = Stage::WORLD_1_4;
 		//test
 		StageManager::GetInstance().ClearStage();
 		StageManager::GetInstance().Init(Stage::WORLD_1_4);

@@ -4,7 +4,7 @@
 
 void FireFlower::CollectItem(Mario& mario)
 {
-	mario.ChangeToFire();
+	mario.SetForm(MarioForm::FIRE);
 	active = false;
 }
 
@@ -72,10 +72,4 @@ void FireFlower::MovingUp()
 void FireFlower::RenderGlobal(Camera& camera)
 {
 	camera.GlobalRenderAnimation(spriteAnimation);
-}
-
-//tmp
-void FireFlower::OnHitSide(RigidBody& player)
-{
-	SpawnItem();
 }

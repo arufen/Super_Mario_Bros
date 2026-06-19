@@ -14,6 +14,15 @@ enum class WorldZone { OVERWORLD, UNDERWORLD};
 
 enum class RotationDir { CLOCKWISE, COUNTERCLOCKWISE };
 
+enum class QuestionBlockItem
+{
+    COIN,
+    POWER_UP,
+    STARMAN,
+    ONE_UP_MUSHROOM,
+};
+
+
 struct BlockSpawnData {
     int gridX;
     int gridY;
@@ -24,12 +33,13 @@ struct BlockSpawnData {
 
     RotationDir rotationDir = RotationDir::CLOCKWISE;
     float startAngle = 0.0f;
+    QuestionBlockItem itemType = QuestionBlockItem::COIN;
 };
 
 const BlockSpawnData world1_1data[] = {
 
     // 1st Block Cluster (Overworld 1-25)
-    {16, 9, BlockType::QUESTION},{21, 9, BlockType::QUESTION},{22, 5, BlockType::QUESTION},{23, 9, BlockType::QUESTION},
+    {16, 9, BlockType::QUESTION},{21, 9, BlockType::QUESTION, 0, false, RotationDir::CLOCKWISE, 0.0f, QuestionBlockItem::POWER_UP},{22, 5, BlockType::QUESTION},{23, 9, BlockType::QUESTION},
     { 20, 9 , BlockType::BRICK}, { 22, 9 , BlockType::BRICK}, { 24, 9 , BlockType::BRICK},
     { 28, 11, BlockType::PIPE, 2, false},
     { 38, 10, BlockType::PIPE, 3, false},
@@ -38,7 +48,7 @@ const BlockSpawnData world1_1data[] = {
 
     { 64, 8, BlockType::HIDDEN},
     // 2nd Block Cluster (Long structural ceiling row 75-90)
-    { 78, 9, BlockType::QUESTION},
+    { 78, 9, BlockType::QUESTION, 0, false, RotationDir::CLOCKWISE, 0.0f, QuestionBlockItem::POWER_UP},
     { 77, 9 , BlockType::BRICK}, { 79, 9 , BlockType::BRICK}, { 80, 5 , BlockType::BRICK}, { 81, 5 , BlockType::BRICK}, 
     { 82, 5 , BlockType::BRICK}, { 83, 5 , BlockType::BRICK}, { 84, 5 , BlockType::BRICK}, { 85, 5 , BlockType::BRICK},
     { 86, 5 , BlockType::BRICK},{ 87, 5 , BlockType::BRICK},
@@ -47,7 +57,7 @@ const BlockSpawnData world1_1data[] = {
     {94, 5, BlockType::QUESTION},
     { 91, 5 , BlockType::BRICK}, { 92, 5 , BlockType::BRICK}, { 93, 5 , BlockType::BRICK}, { 94, 9 , BlockType::COINBRICK},
     { 100, 9 , BlockType::BRICK},{ 101, 9 , BlockType::STARBRICK},
-    {106, 9, BlockType::QUESTION},{109, 5, BlockType::QUESTION},{109, 9, BlockType::QUESTION},{112, 9, BlockType::QUESTION},
+    {106, 9, BlockType::QUESTION},{109, 5, BlockType::QUESTION, 0, false, RotationDir::CLOCKWISE, 0.0f, QuestionBlockItem::POWER_UP},{109, 9, BlockType::QUESTION},{112, 9, BlockType::QUESTION},
     // 4th Block Cluster (Double row block bridge spanning across columns 118-132)
 
     { 118, 9 , BlockType::BRICK},

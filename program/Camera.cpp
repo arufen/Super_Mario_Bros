@@ -26,11 +26,11 @@ void Camera::GlobalRenderImage(const Image& image, float scale)
 	image.Render(globalPos, scale);
 }
 
-void Camera::GlobalRenderAnimation(Animation& animation, float scale)
+void Camera::GlobalRenderAnimation(Animation& animation, bool reverseFlag, float scale)
 {
 	Float2 globalPos;
 	globalPos.Set(animation.x - MainCamera.pos.x, animation.y - MainCamera.pos.y);
-	animation.AnimationRender(globalPos.x, globalPos.y);
+	animation.AnimationRender(globalPos.x, globalPos.y, reverseFlag);
 }
 
 void Camera::GlobalRenderBox(float x1, float y1, float x2, float y2, int color, int fillFlag) 
