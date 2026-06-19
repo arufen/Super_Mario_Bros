@@ -85,7 +85,7 @@ void Goomba::OnHitTop(RigidBody& player)
 	Mario* mario = dynamic_cast<Mario*>(&player);
 	if (mario != nullptr)
 	{
-		mario->Jump();
+		mario->Jump(false);
 		TakeDamage(player);
 	}
 }
