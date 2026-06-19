@@ -103,9 +103,3 @@ void SuperMushroom::RenderGlobal(Camera& camera)
 {
 	camera.GlobalRenderImage(image);
 }
-
-////tmp
-//void SuperMushroom::OnHitSide(RigidBody& player)
-//{
-//	SpawnItem();
-//}

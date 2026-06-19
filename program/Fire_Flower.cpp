@@ -73,9 +73,3 @@ void FireFlower::RenderGlobal(Camera& camera)
 {
 	camera.GlobalRenderAnimation(spriteAnimation);
 }
-
-//tmp
-void FireFlower::OnHitSide(RigidBody& player)
-{
-	SpawnItem();
-}

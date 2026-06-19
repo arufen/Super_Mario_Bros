@@ -525,11 +525,6 @@ void StageManager::Init(Stage stageNumber)
 		background.InitialImageAndSize(LoadGraph("data/image/1-1_background.png"));
 		background.pos.Set(0.0f, 0.0f);
 
-		//tmp
-		//CreateSuperMushroom(5, 10);
-		//CreateFireFlower(6, 10);
-		//CreateSuperStar(7, 10);
-
 		// ゴールポールを X=12700 の位置に設置
 		// ※ Y座標(192.0f)は仮です。goal_pole.pngの画像の高さに合わせて、
 		// 床(Y=832)にぴったりくっつくように微調整してください。

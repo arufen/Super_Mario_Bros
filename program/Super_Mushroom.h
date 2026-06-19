@@ -27,7 +27,4 @@ public:
 	void Init(float x, float y);
 	void Update();
 	void RenderGlobal(Camera& camera);
-
-	////tmp 
-	//virtual void OnHitSide(RigidBody& player) override;
 };
