@@ -125,7 +125,7 @@ void KoopaTroopa::OnHitSide(RigidBody& player)
 
 	if (isShellMoving)
 	{
-		mario->ToDeadState();
+		mario->TakeDamage();
 	}
 	else if (isInShell && !isShellMoving)
 	{
@@ -133,11 +133,8 @@ void KoopaTroopa::OnHitSide(RigidBody& player)
 	}
 	else // normal koopa, not in shell
 	{
-		mario->ToDeadState();
+		mario->TakeDamage();
 	}
-
-
-	
 }
 
 void KoopaTroopa::RenderGlobal(Camera& camera)

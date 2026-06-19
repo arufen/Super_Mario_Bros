@@ -10,6 +10,11 @@
 #include "Brick_Block.h"
 #include "CollectableItem.h"
 #include "Hidden_Block.h"
+
+//Exclude macro from winspool.h
+#undef GetForm
+#undef SetForm
+
 using namespace std;
 
 // 外部ファイル（Camera.cppなど）からマリオの移動速度や中心座標を
@@ -118,11 +123,13 @@ public:
 
 	// 現在のマリオの形態を取得・変更する関数
 	MarioForm GetForm() const { return currentForm; }
-	void SetForm(MarioForm form) { currentForm = form; }
+	void SetForm(MarioForm form);
 
 	// ゲーム管理クラス（Game.cppなど）からマリオの状態を確認するための関数
 	MarioState GetState() const { return currentState; }
 
+
+	void TakeDamage();
 	// エネミーに横・下から接触したときに死亡状態へ移行させる関数
 	void ToDeadState(bool isFall = false);
 
@@ -138,8 +145,8 @@ public:
 	void Jump(bool playSound = true);
 	
 
-	void ChangeToSuper();
-	void ChangeToFire();
+	//void ChangeToSuper();
+	//void ChangeToFire();
 	
 	//For cutscene
 	void StartCutsceneWalk(float targetX, float speed);

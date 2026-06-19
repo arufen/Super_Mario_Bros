@@ -24,6 +24,7 @@ void SoundManager::Init()
 	seList["Break"] = LoadSoundMem("data/sound/se_brick_block_break.wav");
 	seList["Kick"] = LoadSoundMem("data/sound/se_kick.wav");
 	seList["Stomp"] = LoadSoundMem("data/sound/se_stomp.wav");
+	seList["Power_Up"] = LoadSoundMem("data/sound/se_powerup.wav");
 }
 
 void SoundManager::PlayBGM(const std::string& name)

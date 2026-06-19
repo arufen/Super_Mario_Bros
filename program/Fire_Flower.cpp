@@ -4,7 +4,7 @@
 
 void FireFlower::CollectItem(Mario& mario)
 {
-	mario.ChangeToFire();
+	mario.SetForm(MarioForm::FIRE);
 	active = false;
 }
 

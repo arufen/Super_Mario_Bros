@@ -527,7 +527,7 @@ void StageManager::Init(Stage stageNumber)
 
 		//tmp
 		//CreateSuperMushroom(5, 10);
-		CreateFireFlower(6, 10);
+		//CreateFireFlower(6, 10);
 		//CreateSuperStar(7, 10);
 
 		// ゴールポールを X=12700 の位置に設置

@@ -4,7 +4,7 @@
 
 void SuperMushroom::CollectItem(Mario& mario)
 {
-	mario.ChangeToSuper();
+	mario.SetForm(MarioForm::SUPER);
 	active = false;
 }
 

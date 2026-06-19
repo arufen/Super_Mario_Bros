@@ -56,7 +56,7 @@ void QuestionBlock::OnHitBottom(RigidBody& player)
 		mario->AddCoin();
 		break;
 	case QuestionBlockItem::POWER_UP:
-		if(mario->GetFormA() == MarioForm::SMALL)
+		if(mario->GetForm() == MarioForm::SMALL)
 		StageManager::GetInstance().CreateSuperMushroom(pos.x / BLOCK_SIZE, pos.y / BLOCK_SIZE);
 		else
 		StageManager::GetInstance().CreateFireFlower(pos.x / BLOCK_SIZE, pos.y / BLOCK_SIZE);
