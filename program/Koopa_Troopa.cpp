@@ -1,4 +1,5 @@
 #include "Koopa_Troopa.h"
+#include "Sound.h"
 
 void KoopaTroopa::Init(float x, float y)
 {
@@ -108,7 +109,7 @@ void KoopaTroopa::OnHitTop(RigidBody& player)
 	Mario* mario = dynamic_cast<Mario*>(&player);
 	if (mario != nullptr)
 	{
-		mario->Jump();
+		mario->Jump(false);
 		TakeDamage(player);
 	}
 }
@@ -162,6 +163,10 @@ void KoopaTroopa::TakeDamage(RigidBody& attacker)
 
 			//change hitbox to shell sprite
 			RigidBody_collider = Collider(position.x, position.y, (float)this->spriteAnimationShell.sprite.sizeX, (float)this->spriteAnimationShell.sprite.sizeY);
+
+			// “¥‚Ü‚ê‚½‚ÌSE‚ğÄ¶
+			SoundManager::GetInstance().PlaySE("Stomp");
+
 			return;
 		}
 		else if (isInShell && !isShellMoving)
@@ -176,6 +181,9 @@ void KoopaTroopa::TakeDamage(RigidBody& attacker)
 			//after kicking shell gives invincible
 			mario->invincibleTimer.SetTimer(0.2f);
 			isShellMoving = true;
+
+			// R‚Á‚½‚ÌSE‚ğÄ¶
+			SoundManager::GetInstance().PlaySE("Kick");
 		}
 
 
