@@ -797,20 +797,12 @@ void StarEffect::Update(bool isWalking, bool isJumping, int walkFPS)
 			isActive = false;
 		}
 
-		// マリオの現在の状態に合わせて、再生するアニメーションを更新する
-		if (isJumping)
-		{
-			jumpAnim.AnimationUpdateLoop();
-		}
-		else if (isWalking)
-		{
-			walkAnim.FPS = walkFPS; // 通常マリオのダッシュ/歩きの速度に合わせる
-			walkAnim.AnimationUpdateLoop();
-		}
-		else
-		{
-			waitAnim.AnimationUpdateLoop();
-		}
+		waitAnim.AnimationUpdateLoop();
+
+		walkAnim.FPS = 15; // 初代のような固定の速いスピード（点滅とバタバタ感）
+		walkAnim.AnimationUpdateLoop();
+
+		jumpAnim.AnimationUpdateLoop();
 	}
 }
 //==============================================================
