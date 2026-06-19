@@ -232,66 +232,6 @@ void Mario::TakeDamage()
 	invincibleTimer.SetTimer(2.0f);
 }
 
-//void Mario::SetForm(MarioForm form)
-//{
-//	//Change form
-//	currentForm = form;
-//
-//	//Change collider
-//	if (currentForm == MarioForm::SMALL)
-//	{
-//		position.y += BLOCK_SIZE;
-//		RigidBody_collider.height = small_mario_waitImage.sizeY;
-//		//SoundManager::GetInstance().PlaySE("Warp");
-//	}
-//	else if (currentForm == MarioForm::SUPER || currentForm == MarioForm::FIRE)
-//	{
-//		position.y -= BLOCK_SIZE;
-//		RigidBody_collider.height = big_mario_waitImage.sizeY;
-//		//SoundManager::GetInstance().PlaySE("Power_Up");
-//	}
-//
-//}
-//void Mario::SetForm(MarioForm form)
-//{
-//	MarioForm previousForm = currentForm; // remember what Mario WAS before changing
-//
-//	//Change form
-//	currentForm = form;
-//
-//	//Change collider
-//	if (currentForm == MarioForm::SMALL)
-//	{
-//		position.y += BLOCK_SIZE;
-//		RigidBody_collider.height = small_mario_waitImage.sizeY;
-//	}
-//	else if (currentForm == MarioForm::SUPER || currentForm == MarioForm::FIRE)
-//	{
-//		position.y -= BLOCK_SIZE;
-//		RigidBody_collider.height = big_mario_waitImage.sizeY;
-//	}
-//
-//	//Play sound based on direction of the change
-//	bool wasSmall = (previousForm == MarioForm::SMALL);
-//	bool isSmall = (currentForm == MarioForm::SMALL);
-//
-//	if (wasSmall && !isSmall)
-//	{
-//		// small -> big, leveling up
-//		SoundManager::GetInstance().PlaySE("Power_Up");
-//	}
-//	else if (!wasSmall && isSmall)
-//	{
-//		// big -> small, getting hit and shrinking
-//		SoundManager::GetInstance().PlaySE("Warp");
-//	}
-//	else if (previousForm == MarioForm::FIRE && currentForm == MarioForm::SUPER)
-//	{
-//		// fire -> super, losing fire power but still big
-//		SoundManager::GetInstance().PlaySE("Warp");
-//	}
-//}
-
 void Mario::SetForm(MarioForm form)
 {
 	MarioForm previousForm = currentForm; // remember what Mario WAS before changing
@@ -965,29 +905,6 @@ void StarEffect::Render(int screenX, int screenY, bool isLeft, bool isJumping, b
 
 
 }
-
-//void Mario::ChangeToSuper()
-//{
-//	if (currentForm == MarioForm::FIRE) return;
-//
-//	RigidBody_collider = Collider(position.x, position.y, big_mario_waitImage.sizeX, big_mario_waitImage.sizeY);
-//	RigidBody_collider.width -= COLLIDER_OFFSET;
-//	RigidBody_collider.x += COLLIDER_OFFSET / 2; // shift right so it's centered
-//	position.y -= (float)(big_mario_waitImage.sizeY / 2.0f);
-//	currentForm = MarioForm::SUPER;
-//}
-//
-//void Mario::ChangeToFire()
-//{
-//	//Change Collider
-//	RigidBody_collider = Collider(position.x, position.y, big_mario_waitImage.sizeX, big_mario_waitImage.sizeY);
-//	RigidBody_collider.width -= COLLIDER_OFFSET;
-//	RigidBody_collider.x += COLLIDER_OFFSET / 2; // shift right so it's centered
-//	/*position.y -= (float)(big_mario_waitImage.sizeY / 2.0f);*/
-//
-//	currentForm = MarioForm::FIRE;
-//}
-
 void Mario::StartCutsceneWalk(float targetX, float speed)
 {
 	currentState = MarioState::CUTSCENE;
