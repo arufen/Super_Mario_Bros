@@ -134,7 +134,6 @@ public:
 	void ToDeadState(bool isFall = false);
 
 
-
 	//for main thread
 	void Init();
 	void Update();
@@ -143,10 +142,6 @@ public:
 	//mechanics function
 	void AddCoin();
 	void Jump(bool playSound = true);
-	
-
-	//void ChangeToSuper();
-	//void ChangeToFire();
 	
 	//For cutscene
 	void StartCutsceneWalk(float targetX, float speed);
