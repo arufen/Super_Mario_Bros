@@ -23,6 +23,8 @@ public:
 	bool isInShell = false;
 	bool isShellMoving = false;
 
+	void ToDeadState();
+
 	virtual void WaitForCamera(Camera& camera) override;
 	virtual void TakeDamage(RigidBody& attacker) override;
 	virtual void OnHitTop(RigidBody& player) override;
