@@ -214,10 +214,14 @@ void Mario::Warping(float targetX, float targetY, WarpDir dir)
 void Mario::ToDeadState(bool isFall)
 {
 	if (currentState == MarioState::DEAD) return;
-	if (invincibleTimer.GetCurrentTimer() > 0.0f) return;
-	if (starEffect.isActive) return;
 
-	if (currentForm == MarioForm::SMALL)
+	if (!isFall)
+	{
+		if (invincibleTimer.GetCurrentTimer() > 0.0f) return;
+		if (starEffect.isActive) return;
+	}
+
+	if (isFall || currentForm == MarioForm::SMALL)
 	{
 		currentState = MarioState::DEAD;
 		isFellDown = isFall;
@@ -742,7 +746,10 @@ void Mario::Jump(bool playSound)
 
 	isJumping = true;
 	jumpHoldTimer = 0.001f;
-	SoundManager::GetInstance().PlaySE("Jump_Small");
+	if (playSound)
+	{
+		SoundManager::GetInstance().PlaySE("Jump_Small");
+	}
 }
 
 void Mario::AddCoin()

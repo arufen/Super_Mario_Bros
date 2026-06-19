@@ -81,11 +81,14 @@ void BrickBlock::OnHitBottom(RigidBody& player)
             // Big or Fire Mario breaks the block entirely
             active = false;
             isAvailable = false;
+
+            SoundManager::GetInstance().PlaySE("Break");
             // TODO: Play brick shatter sound effect
         }
         else
         {
             // Small Mario makes the block bounce, but it remains unbroken
+            SoundManager::GetInstance().PlaySE("Bump");
         }
     }
     else
