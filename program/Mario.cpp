@@ -741,16 +741,16 @@ void Mario::Render()
 	}
 
 	bool isActualJumpingPose = isJumping && (jumpHoldTimer > 0.0f || now_speed_y < 0.0f);
-
-	if (currentForm == MarioForm::SMALL)
+	if (starEffect.isActive)
 	{
-		if (starEffect.isActive)
+		// スター状態の描画はお任せ
+		starEffect.Render(screenX, screenY, isLeft, isActualJumpingPose, isWalking, currentForm);
+	}
+	else
+	{
+		if (currentForm == MarioForm::SMALL)
 		{
-			// スター状態の描画はお任せ
-			starEffect.Render(screenX, screenY, isLeft, isActualJumpingPose, isWalking);
-		}
-		else
-		{
+
 			if (isActualJumpingPose)
 			{
 				if (isLeft)	DrawRotaGraph2(screenX, screenY, 0, 0, 1.0f, 0.0, small_mario_jumpImage.image, TRUE, TRUE);
@@ -768,16 +768,16 @@ void Mario::Render()
 				else		DrawRotaGraph2(screenX, screenY, 0, 0, 1.0f, 0.0, small_mario_waitImage.image, TRUE, FALSE);
 			}
 		}
-	}
-	else if (currentForm == MarioForm::SUPER)
-	{
-		if (isLeft)	DrawRotaGraph2(screenX, screenY, 0, 0, 1.0f, 0.0, big_mario_waitImage.image, TRUE, TRUE);
-		else		DrawRotaGraph2(screenX, screenY, 0, 0, 1.0f, 0.0, big_mario_waitImage.image, TRUE, FALSE);
-	}
-	else if (currentForm == MarioForm::FIRE)
-	{
-		if (isLeft)	DrawRotaGraph2(screenX, screenY, 0, 0, 1.0f, 0.0, big_mario_fire_waitImage.image, TRUE, TRUE);
-		else		DrawRotaGraph2(screenX, screenY, 0, 0, 1.0f, 0.0, big_mario_fire_waitImage.image, TRUE, FALSE);
+		else if (currentForm == MarioForm::SUPER)
+		{
+			if (isLeft)	DrawRotaGraph2(screenX, screenY, 0, 0, 1.0f, 0.0, big_mario_waitImage.image, TRUE, TRUE);
+			else		DrawRotaGraph2(screenX, screenY, 0, 0, 1.0f, 0.0, big_mario_waitImage.image, TRUE, FALSE);
+		}
+		else if (currentForm == MarioForm::FIRE)
+		{
+			if (isLeft)	DrawRotaGraph2(screenX, screenY, 0, 0, 1.0f, 0.0, big_mario_fire_waitImage.image, TRUE, TRUE);
+			else		DrawRotaGraph2(screenX, screenY, 0, 0, 1.0f, 0.0, big_mario_fire_waitImage.image, TRUE, FALSE);
+		}
 	}
 
 
@@ -844,6 +844,10 @@ void StarEffect::Init()
 	waitAnim.InitialAnimation(LoadGraph("data/image/star_mario/starmario_wait.png"), 3, 10);
 	walkAnim.InitialAnimation(LoadGraph("data/image/star_mario/starmario_walk.png"), 9, 10);
 	jumpAnim.InitialAnimation(LoadGraph("data/image/star_mario/starmario_jump.png"), 3, 10);
+
+	bigWaitAnim.InitialAnimation(LoadGraph("data/image/star_mario/bigstarmario_wait.png"), 3, 10);
+	bigWalkAnim.InitialAnimation(LoadGraph("data/image/star_mario/bigstarmario_walk.png"), 9, 10);
+	bigJumpAnim.InitialAnimation(LoadGraph("data/image/star_mario/bigstarmario_jump.png"), 3, 10);
 }
 //==============================================================
 // スターを取ったときにスター状態を開始する処理
@@ -873,36 +877,53 @@ void StarEffect::Update(bool isWalking, bool isJumping, int walkFPS)
 		walkAnim.AnimationUpdateLoop();
 
 		jumpAnim.AnimationUpdateLoop();
+
+		bigWaitAnim.AnimationUpdateLoop();
+		bigWalkAnim.FPS = 15;
+		bigWalkAnim.AnimationUpdateLoop();
+		bigJumpAnim.AnimationUpdateLoop();
 	}
 }
 //==============================================================
 // スター状態の描画処理
 // マリオの画面座標と向きに合わせてスター状態のアニメーションを描画する
 //==============================================================
-void StarEffect::Render(int screenX, int screenY, bool isLeft, bool isJumping, bool isWalking)
+void StarEffect::Render(int screenX, int screenY, bool isLeft, bool isJumping, bool isWalking, MarioForm form)
 {
 	if (!isActive) return;
 
+	//デフォルトには小さいマリオのアニメーションをセットしておいて、フォームに応じて切り替える
+	//参照を使っているのは、後でフォームごとに描画処理を分けるときにコードの重複を減らすため
+	Animation* targetWait = &waitAnim;
+	Animation* targetWalk = &walkAnim;
+	Animation* targetJump = &jumpAnim;
+
+	// フォームに応じてアニメーションを切り替える
+	if (form == MarioForm::SUPER || form == MarioForm::FIRE)
+	{
+		targetWait = &bigWaitAnim;
+		targetWalk = &bigWalkAnim;
+		targetJump = &bigJumpAnim;
+	}
 	// マリオの現在の状態に合わせて描画するアニメーションを切り替える
 	if (isJumping)
 	{
-		jumpAnim.x = (float)screenX;
-		jumpAnim.y = (float)screenY;
-		jumpAnim.AnimationRenderCenter(isLeft);
+		targetJump->x = (float)screenX;
+		targetJump->y = (float)screenY;
+		targetJump->AnimationRenderCenter(isLeft);
 	}
 	else if (isWalking)
 	{
-		walkAnim.x = (float)screenX;
-		walkAnim.y = (float)screenY;
-		walkAnim.AnimationRenderCenter(isLeft);
+		targetWalk->x = (float)screenX;
+		targetWalk->y = (float)screenY;
+		targetWalk->AnimationRenderCenter(isLeft);
 	}
 	else
 	{
-		waitAnim.x = (float)screenX;
-		waitAnim.y = (float)screenY;
-		waitAnim.AnimationRenderCenter(isLeft);
-	}
-
+			targetWait->x = (float)screenX;
+			targetWait->y = (float)screenY;
+			targetWait->AnimationRenderCenter(isLeft);
+		}
 
 }
 void Mario::StartCutsceneWalk(float targetX, float speed)
