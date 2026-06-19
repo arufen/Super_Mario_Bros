@@ -12,6 +12,7 @@
 #include "IBlock.h"
 #include "Warp_Pipe.h"
 #include "Axe.h"
+#include "Moving_Platform.h"
 
 //ITEMS
 #include "Coin.h"
@@ -76,12 +77,20 @@ public:
 	vector<IBlock*> globalBlocks;
 	vector<Ground*> bridge;
 	vector<Axe*> axe; //isTrigger true
+	vector<MovingPlatform*> movingPlatform;
+
 
 	//Collectable Item
 	vector<Coin*> coins;
 	vector<SuperMushroom*> superMushroom;
 	vector<FireFlower*> fireFlower;
 	vector<SuperStar*> superStar;
+
+	//Create Item method
+	void CreateSuperMushroom(float x, float y);
+	void CreateFireFlower(float x, float y);
+	void CreateSuperStar(float x, float y);
+
 
 	Stage currentStage{ Stage::WORLD_1_1 };
 

@@ -50,7 +50,13 @@ void Axe::OnHitSide(RigidBody& player)
 
 void Axe::ClearBridge()
 {
+	//Deactivate all platforms
 	StageManager::GetInstance().isBridgeClearing = true;
+	for (int i = 0; i < StageManager::GetInstance().movingPlatform.size(); i++)
+	{
+		StageManager::GetInstance().movingPlatform[i]->Deactivate();
+	}
+
 
 	Deactivate();
 }

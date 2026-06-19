@@ -107,11 +107,13 @@ void KoopaTroopa::WaitForCamera(Camera& camera)
 void KoopaTroopa::OnHitTop(RigidBody& player)
 {
 	Mario* mario = dynamic_cast<Mario*>(&player);
-	if (mario != nullptr)
-	{
-		mario->Jump(false);
-		TakeDamage(player);
-	}
+	if (mario == nullptr) return;
+
+	if (mario->starEffect.isActive) ToDeadState();
+	
+	mario->Jump(false);
+	TakeDamage(player);
+	
 }
 
 void KoopaTroopa::OnHitSide(RigidBody& player)
@@ -119,9 +121,11 @@ void KoopaTroopa::OnHitSide(RigidBody& player)
 	Mario* mario = dynamic_cast<Mario*>(&player);
 	if (mario == nullptr) return;
 
+	if (mario->starEffect.isActive) ToDeadState();
+
 	if (isShellMoving)
 	{
-		mario->ToDeadState();
+		mario->TakeDamage();
 	}
 	else if (isInShell && !isShellMoving)
 	{
@@ -129,11 +133,8 @@ void KoopaTroopa::OnHitSide(RigidBody& player)
 	}
 	else // normal koopa, not in shell
 	{
-		mario->ToDeadState();
+		mario->TakeDamage();
 	}
-
-
-	
 }
 
 void KoopaTroopa::RenderGlobal(Camera& camera)
@@ -189,4 +190,9 @@ void KoopaTroopa::TakeDamage(RigidBody& attacker)
 
 	}
 
+}
+
+void KoopaTroopa::ToDeadState()
+{
+	state = EnemyState::DEAD;
 }

@@ -107,7 +107,7 @@ void Goomba::OnHitSide(RigidBody& player)
 		}
 		else
 		{
-			mario->ToDeadState();
+			mario->TakeDamage();
 		}
 	
 	}
@@ -121,7 +121,7 @@ void Goomba::OnHitBottom(RigidBody& player)
 	Mario* mario = dynamic_cast<Mario*>(&player);
 	if (mario != nullptr)
 	{
-		mario->ToDeadState();
+		mario->TakeDamage();
 	}
 }
 

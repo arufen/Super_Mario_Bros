@@ -3,20 +3,13 @@
 #include "HelpfulFunc.h"
 #include "Mario.h"
 
-enum class QuestionBlockItem 
-{ 
-    COIN, 
-    SUPER_MUSHROOM, 
-    STARMAN,
-	ONE_UP_MUSHROOM,
-};
 
 class QuestionBlock : public IBlock, public Collidable
 {
 public:
     QuestionBlock();
 
-    void Init(Float2 startPos, int active_graph, int empty_graph);
+    void Init(Float2 startPos, int active_graph, int empty_graph, QuestionBlockItem itemType = QuestionBlockItem::COIN);
     void Update() override;
     void Render(Camera camera) override;
 
