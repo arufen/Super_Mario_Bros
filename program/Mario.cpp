@@ -152,10 +152,10 @@ void Mario::ResolveCollision(Collidable& block)
 				QuestionBlock* questionBlock = dynamic_cast<QuestionBlock*>(&block);
 				if (questionBlock != nullptr && questionBlock->IsAvailable())
 				{
-					switch (questionBlock->itemType)
+					/*switch (questionBlock->itemType)
 					{
 					case QuestionBlockItem::COIN: AddCoin(); break;
-					}
+					}*/
 				}
 				BrickBlock* brickBlock = dynamic_cast<BrickBlock*>(&block);
 				if (brickBlock != nullptr && brickBlock->IsAvailable())

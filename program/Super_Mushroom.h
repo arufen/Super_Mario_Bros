@@ -28,6 +28,6 @@ public:
 	void Update();
 	void RenderGlobal(Camera& camera);
 
-	//tmp 
-	virtual void OnHitSide(RigidBody& player) override;
+	////tmp 
+	//virtual void OnHitSide(RigidBody& player) override;
 };

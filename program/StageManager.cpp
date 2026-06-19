@@ -186,25 +186,32 @@ void CreateCoin(int fromTileX, int fromTileY, int toTileX, int toTileY)
 }
 
 //ITEMS
-void CreateSuperMushroom(float x, float y)
+void StageManager::CreateSuperMushroom(float x, float y)
 {
 	SuperMushroom* newSuperMushroom = new SuperMushroom();
 	newSuperMushroom->Init(x * BLOCK_SIZE, y * BLOCK_SIZE);
+	newSuperMushroom->SpawnItem();
 	StageManager::GetInstance().superMushroom.push_back(newSuperMushroom);
+	RigidBody::collidables.push_back(newSuperMushroom);
 }
 
-void CreateFireFlower(float x, float y)
+void StageManager::CreateFireFlower(float x, float y)
 {
 	FireFlower* newFireFlower = new FireFlower();
 	newFireFlower->Init(x * BLOCK_SIZE, y * BLOCK_SIZE);
+	newFireFlower->SpawnItem();
 	StageManager::GetInstance().fireFlower.push_back(newFireFlower);
+	RigidBody::collidables.push_back(newFireFlower);
+
 }
 
-void CreateSuperStar(float x, float y)
+void StageManager::CreateSuperStar(float x, float y)
 {
 	SuperStar* newSuperStar = new SuperStar();
 	newSuperStar->Init(x * BLOCK_SIZE, y * BLOCK_SIZE);
+	newSuperStar->SpawnItem();
 	StageManager::GetInstance().superStar.push_back(newSuperStar);
+	RigidBody::collidables.push_back(newSuperStar);
 }
 
 //Axe button to clear the bridge
@@ -213,6 +220,14 @@ void CreateAxe(float x, float y)
 	Axe* newAxe = new Axe();
 	newAxe->Init(x * BLOCK_SIZE, y * BLOCK_SIZE);
 	StageManager::GetInstance().axe.push_back(newAxe);
+}
+
+//Moving platform (動いてる足場）
+void CreateMovingPlatform(float ax, float ay, float bx, float by)
+{
+	MovingPlatform* newMovingPlatform = new MovingPlatform();
+	newMovingPlatform->Init(ax * BLOCK_SIZE, ay * BLOCK_SIZE, bx * BLOCK_SIZE, by * BLOCK_SIZE);
+	StageManager::GetInstance().movingPlatform.push_back(newMovingPlatform);
 }
 
 
@@ -279,6 +294,11 @@ vector<Collidable*> StageManager::GetCollidables()
 	for (auto* b : bridge)
 	{
 		result.push_back(b);
+	}
+
+	for (auto* m : movingPlatform)
+	{
+		result.push_back(m);
 	}
 
 	//ENEMIES
@@ -404,8 +424,9 @@ void StageManager::Init(Stage stageNumber)
 			}
 			else if (world1_1data[i].type == BlockType::QUESTION)
 			{
+				QuestionBlockItem itemType = world1_1data[i].itemType;
 				QuestionBlock* qblock = new QuestionBlock();
-				qblock->Init(pixelPos, texQuestion, texHard);
+				qblock->Init(pixelPos, texQuestion, texHard, itemType);
 				overworld1_1Blocks.push_back(qblock);
 			}
 			else if (world1_1data[i].type == BlockType::HIDDEN)
@@ -505,9 +526,9 @@ void StageManager::Init(Stage stageNumber)
 		background.pos.Set(0.0f, 0.0f);
 
 		//tmp
-		CreateSuperMushroom(5, 10);
+		//CreateSuperMushroom(5, 10);
 		CreateFireFlower(6, 10);
-		CreateSuperStar(7, 10);
+		//CreateSuperStar(7, 10);
 
 		// ゴールポールを X=12700 の位置に設置
 		// ※ Y座標(192.0f)は仮です。goal_pole.pngの画像の高さに合わせて、
@@ -580,7 +601,6 @@ void StageManager::Init(Stage stageNumber)
 
 		CreateGrounds(29, 10, 29, 14, groundHandle);
 		CreateGrounds(30, 11, 30, 14, groundHandle);
-		//CreateGrounds(30, 10, 30, 10, tmpHandle); //Temporary block
 		CreateGrounds(31, 10, 31, 14, groundHandle);
 
 		CreateGrounds(35, 9, 71, 14, groundHandle);
@@ -598,6 +618,8 @@ void StageManager::Init(Stage stageNumber)
 		CreateBridge(128, 10, 140, 10, bridgeHandle);
 		//axe
 		CreateAxe(141, 8);
+		//Moving Platform
+		CreateMovingPlatform(137, 6, 139, 6);
 
 		//block
 		CreateGrounds(141, 9, 143, 14, groundHandle);
@@ -770,6 +792,24 @@ void StageManager::Update(Camera& camera)
 		}
 	}
 
+	//Moving platform
+	for (int i = 0; i < movingPlatform.size(); i++)
+	{
+		movingPlatform[i]->Update(MainMario);
+
+		if (!movingPlatform[i]->isActive)
+		{
+			// remove from collidables list too!
+			RigidBody::collidables.erase(
+				remove(RigidBody::collidables.begin(), RigidBody::collidables.end(),
+					dynamic_cast<Collidable*>(movingPlatform[i])),  //cast here
+				RigidBody::collidables.end()
+			);
+			//remove coins from stage manager
+			movingPlatform.erase(movingPlatform.begin() + i);
+		}
+	}
+
 	//deactivate axe
 	for (int i = 0; i < axe.size(); i++)
 	{
@@ -928,6 +968,12 @@ void StageManager::Render(Camera& camera)
 		b->RenderGlobal(camera);
 	}
 
+	for (auto* m : movingPlatform)
+	{
+		m->RenderGlobal(camera);
+	}
+
+
 	if (currentzone == WorldZone::OVERWORLD)
 	{
 		for (size_t i = 0; i < ground.size(); i++) ground[i].RenderGlobal(camera);
@@ -979,6 +1025,7 @@ void StageManager::ClearStage()
 	for (auto* bf : bowserFire) delete bf;
 	for (auto* a : axe) delete a;
 	for (auto* b : bridge) delete b;
+	for (auto* m : movingPlatform) delete m;
 
 	// then clear the vectors
 	ground.clear();
@@ -1000,6 +1047,7 @@ void StageManager::ClearStage()
 	bowserFire.clear();
 	axe.clear();
 	bridge.clear();
+	movingPlatform.clear();
 
 
 
