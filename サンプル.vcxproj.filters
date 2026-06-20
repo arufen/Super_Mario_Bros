@@ -112,6 +112,9 @@
     </ClCompile>
     <ClCompile Include="program\Moving_Platform.cpp">
       <Filter>game</Filter>
+	</ClCompile>
+    <ClCompile Include="program\Fonts.cpp">
+      <Filter>system</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -230,6 +233,12 @@
     </ClInclude>
     <ClInclude Include="program\Moving_Platform.h">
       <Filter>game</Filter>
+	</ClInclude>
+    <ClInclude Include="program\Brick_BlockParts.h">
+      <Filter>game</Filter>
+    </ClInclude>
+    <ClInclude Include="program\Fonts.h">
+      <Filter>system</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

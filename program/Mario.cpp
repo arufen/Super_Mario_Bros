@@ -375,7 +375,7 @@ void Mario::Init()
 	small_mario_waitImage.InitialImageAndSize(LoadGraph("data/image/mario/small_mario_wait.png"));
 	small_mario_jumpImage.InitialImageAndSize(LoadGraph("data/image/mario/small_mario_jump.png"));
 	small_mario_deadImage.InitialImageAndSize(LoadGraph("data/image/mario/small_mario_dead.png"));
-	small_mario_goalpoleImage.InitialImageAndSize(LoadGraph("data/image/mario/small_mario_goalpole.png"));
+	small_mario_goalpoleAnim.InitialAnimation(LoadGraph("data/image/mario/small_mario_goalpole.png"), 2, 10);
 	small_mario_walkAnim.InitialAnimation(LoadGraph("data/image/mario/small_mario_walk.png"), 3, 10);
 	big_mario_waitImage.InitialImageAndSize(LoadGraph("data/image/big_mario_wait.png"));
 	big_mario_jumpImage.InitialImageAndSize(LoadGraph("data/image/mario/bigMario/bigmario_jump.png"));
@@ -514,12 +514,15 @@ void Mario::Update()
 			now_speed_x = 0.0f;
 			now_speed_y = 0.0f;
 			isLeft = false;
-			position.y += 3.0f; // 滑り降りる速度
+			position.y += 4.0f; // 滑り降りる速度
 
-			float marioBottom = position.y + small_mario_goalpoleImage.sizeY;
+			// アニメーションを更新
+			small_mario_goalpoleAnim.AnimationUpdateLoop();
+
+			float marioBottom = position.y + small_mario_waitImage.sizeY;
 			if (marioBottom >= goalFloorY)
 			{
-				position.y = goalFloorY - small_mario_goalpoleImage.sizeY;
+				position.y = goalFloorY - small_mario_waitImage.sizeY;
 				goalPhase = 1;
 				warpTimer = 0.0f;
 			}
@@ -548,7 +551,7 @@ void Mario::Update()
 		else if (goalPhase == 2) // 城へ歩くフェーズ
 		{
 			isLeft = false;
-			now_speed_x = 2.0f;
+			now_speed_x = 4.0f;
 
 			PhysicsUpdate();
 
@@ -860,8 +863,20 @@ void Mario::Render()
 	// ゴール演出中の描画
 	if (currentState == MarioState::GOAL)
 	{
-		if (goalPhase == 0)      DrawRotaGraph2(screenX, screenY, 0, 0, 1.0f, 0.0, small_mario_goalpoleImage.image, TRUE, FALSE);
-		else if (goalPhase == 1) DrawRotaGraph2(screenX, screenY, 0, 0, 1.0f, 0.0, small_mario_goalpoleImage.image, TRUE, isLeft);
+		if (goalPhase == 0)
+		{
+			// アニメーション描画に変更
+			small_mario_goalpoleAnim.x = (float)screenX;
+			small_mario_goalpoleAnim.y = (float)screenY;
+			small_mario_goalpoleAnim.AnimationRenderCenter(FALSE);
+		}
+		else if (goalPhase == 1)
+		{
+			// アニメーション描画に変更（更新は止まっているので静止したまま描画される）
+			small_mario_goalpoleAnim.x = (float)screenX;
+			small_mario_goalpoleAnim.y = (float)screenY;
+			small_mario_goalpoleAnim.AnimationRenderCenter(isLeft);
+		}
 		else if (goalPhase == 2)
 		{
 			small_mario_walkAnim.x = (float)screenX;

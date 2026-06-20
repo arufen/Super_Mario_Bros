@@ -18,6 +18,7 @@
 #include "Coin.h"
 #include "Firebar.h"
 #include "Super_Mushroom.h"
+#include "1-Up_Mushroom.h"
 #include "Fire_Flower.h"
 #include "Super_Star.h"
 
@@ -66,6 +67,8 @@ public:
 	vector<UnderWorldPipe*> underWorldPipe;
 	vector<IBlock*> hardPipe;
 
+	vector<BrickBlockParts*> brickParts;
+
 	WorldZone currentzone;
 
 	//for all blocks
@@ -83,6 +86,7 @@ public:
 	//Collectable Item
 	vector<Coin*> coins;
 	vector<SuperMushroom*> superMushroom;
+	vector<UpMushroom*> upMushroom;
 	vector<FireFlower*> fireFlower;
 	vector<SuperStar*> superStar;
 
@@ -118,6 +122,9 @@ public:
 	void TransferWorldZone(WorldZone newZone); // handle world zone transitions (ワールドゾーンの切り替えを処理)
 	bool GetIsUnderworld() const { return currentzone == WorldZone::UNDERWORLD; }
 
+	//void addBrickParts(const BrickBlockParts& piece) { brickParts.push_back(piece); }
+	int GetBrickPartsHandle() const {return tex_brickParts;}
+
 	// 現在のワールドゾーン（地上/地下）を返す関数
 	WorldZone GetWorldZone() const { return currentzone; }
 
@@ -125,4 +132,5 @@ private:
 	//singleton pattern(シングルトンパターン）
 	StageManager() : currentzone(WorldZone::OVERWORLD){}
 	~StageManager() {};
+	int tex_brickParts;
 };

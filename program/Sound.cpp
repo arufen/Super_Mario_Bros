@@ -10,6 +10,10 @@ void SoundManager::Init()
 	bgmList["Stage1-1_Underground"] = LoadSoundMem("data/sound/bgm_stage1-1_underground.mp3");
 	bgmList["Stage1-1_Underground_Hurry"] = LoadSoundMem("data/sound/bgm_stage1-1_underground_hurry.mp3");
 
+	// 1-4 BGMの読み込み
+	bgmList["Stage1-4"] = LoadSoundMem("data/sound/bgm_stage1-4.mp3");
+	bgmList["Stage1-4_Hurry"] = LoadSoundMem("data/sound/bgm_stage1-4_hurry.mp3");
+
 	// 死亡BGMの読み込み
 	bgmList["Mario_Dead"] = LoadSoundMem("data/sound/bgm_mario_dead.mp3");
 
@@ -18,6 +22,9 @@ void SoundManager::Init()
 
 	// 1-1クリアBGMの読み込み
 	bgmList["Stage1-1_Clear"] = LoadSoundMem("data/sound/bgm_stage1-1_clear.mp3");
+
+	// 1-4クリアBGMの読み込み
+	bgmList["Stage1-4_Clear"] = LoadSoundMem("data/sound/bgm_stage1-4_clear.mp3");
 
 	// SE（効果音）の読み込み
 	seList["Jump_Small"] = LoadSoundMem("data/sound/small_mario_jump.wav");
@@ -29,6 +36,9 @@ void SoundManager::Init()
 	seList["Stomp"] = LoadSoundMem("data/sound/se_stomp.wav");
 	seList["Power_Up"] = LoadSoundMem("data/sound/se_powerup.wav");
 	seList["Flag_Pole"] = LoadSoundMem("data/sound/se_flag_pole.wav");
+	seList["BowserFire"] = LoadSoundMem("data/sound/se_bowserfire.wav");
+	seList["Bridge_Break"] = LoadSoundMem("data/sound/se_bridge_break.wav");
+	seList["Bowser_Fall"] = LoadSoundMem("data/sound/se_bowser_fall.wav");
 }
 
 void SoundManager::PlayBGM(const std::string& name)
