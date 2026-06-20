@@ -737,6 +737,15 @@ void StageManager::Update(Camera& camera)
 				RigidBody::collidables.end()
 			);
 			bowser.erase(bowser.begin() + i);
+
+			if(axe.empty()) // すでに斧が取られて無くなっているなら
+			{
+				SoundManager::GetInstance().StopBGM();
+				SoundManager::GetInstance().PlayBGMOnce("Stage1-4_Clear");
+
+				float toadTargetX = 152 * BLOCK_SIZE;
+				MainMario.StartCutsceneWalk(toadTargetX, 3.0f);
+			}
 		}
 	}
 
@@ -1110,14 +1119,22 @@ void StageManager::ClearBridge()
 
 			delete bridge.back();
 			bridge.pop_back();
+
+			SoundManager::GetInstance().PlaySE("Bridge_Break");
 		}
 
 		if (bridge.empty())
 		{
 			isBridgeClearing = false; // done collapsing
 
-			float toadTargetX = 152 * BLOCK_SIZE;
-			MainMario.StartCutsceneWalk(toadTargetX, 3.0f);
+			if (bowser.empty() && !SoundManager::GetInstance().IsPlayingBGM("Stage1-4_Clear"))
+			{
+				SoundManager::GetInstance().StopBGM();
+				SoundManager::GetInstance().PlayBGMOnce("Stage1-4_Clear");
+
+				float toadTargetX = 152 * BLOCK_SIZE;
+				MainMario.StartCutsceneWalk(toadTargetX, 3.0f);
+			}
 		}
 	}
 }

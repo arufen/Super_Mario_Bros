@@ -2,7 +2,6 @@
 #include "Game.h"
 #include "Camera.h"
 #include "Debug.h"
-#include "Map.h"
 #include "Mario.h"
 //#include "Brick_Block.h"
 //#include "Question_Block.h"
@@ -17,9 +16,6 @@
 using namespace std;
 
 extern Camera MainCamera;
-
-// マップ
-Map MainMap;
 
 // デバッグ用機・
 Debug MainDebug;
@@ -40,13 +36,9 @@ void GameInit()
 	SoundManager::GetInstance().Init(); // サウンドの読み込み
 
 	// BGMを鳴らし始める
-	SoundManager::GetInstance().PlayBGM("Stage1");
+	SoundManager::GetInstance().PlayBGM("Stage1-1");
 
 	MarioFont::GetInstance().Init();
-	MainMap.Init();
-
-	// マップの初期化
-	MainMap.Init();
 	
 	// マリオおよびデバッグシステムの初期化
 	MainMario.Init();
@@ -111,6 +103,9 @@ void GameUpdate()
 
 		//Change time 
 		MainTime.SetCount(300);
+
+		//1-4のBGMに切り替える
+		SoundManager::GetInstance().PlayBGM("Stage1-4");
 
 		// register all collidables into for every object that has RigidBody
 		for (auto* block : StageManager::GetInstance().GetCollidables())
