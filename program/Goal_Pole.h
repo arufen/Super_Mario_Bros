@@ -26,6 +26,10 @@ public:
 	bool isReached; // マリオが触れたかどうかのフラグ
 	float maxFlagY; // 旗が下りる限界のY座標
 
+	// クリアBGM制御用の変数
+	bool isBGMPlayed; // すでにクリアBGMを流したか
+	float clearTimer;  // 降りきってからの時間を計るタイマー
+
 	// 土台用の物理判定
 	GoalPoleBase baseCollider;
 
