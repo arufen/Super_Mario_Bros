@@ -160,6 +160,10 @@ public:
 	float goalPoleX = 0.0f;    // ポールのX座標
 	float goalCastleX = 0.0f;  // 城の入り口のX座標
 	float goalFloorY = 0.0f;   // 着地する床（土台）のY座標
+	int GetScore() const { return score; }
+
+	// Add score
+	void AddScore(int amount);
 
 	//void Warping(float pipeY);
 

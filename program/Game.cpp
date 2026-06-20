@@ -2,6 +2,7 @@
 #include "Game.h"
 #include "Camera.h"
 #include "Debug.h"
+#include "Map.h"
 #include "Mario.h"
 //#include "Brick_Block.h"
 //#include "Question_Block.h"
@@ -11,9 +12,14 @@
 #include "StageManager.h"
 #include "Time.h"
 #include "Sound.h"
+#include "Score.h"
+#include "Fonts.h"
 using namespace std;
 
 extern Camera MainCamera;
+
+// マップ
+Map MainMap;
 
 // デバッグ用機・
 Debug MainDebug;
@@ -35,6 +41,12 @@ void GameInit()
 
 	// BGMを鳴らし始める
 	SoundManager::GetInstance().PlayBGM("Stage1");
+
+	MarioFont::GetInstance().Init();
+	MainMap.Init();
+
+	// マップの初期化
+	MainMap.Init();
 	
 	// マリオおよびデバッグシステムの初期化
 	MainMario.Init();
@@ -138,7 +150,22 @@ void GameRender()
 	// 5. UI（文字や情報）の描画（すべての上に重ねるため一番最後に持ってくる）
 	
 	// マリオの手前に残り時間を描画
-	MainTime.Render();
+	//MainTime.Render();
+	MarioFont::GetInstance().DrawMarioLabel(80, 20);
+	MarioFont::GetInstance().DrawNumber(80, 52, MainMario.GetScore(), 6);
+
+	MarioFont::GetInstance().DrawTimeLabel(SCREEN_W - 232, 20);
+	MarioFont::GetInstance().DrawWorldLabel(SCREEN_W - 482, 20);
+
+	if (StageManager::GetInstance().currentStage == Stage::WORLD_1_4)
+	{
+		MarioFont::GetInstance().DrawWorldNumberLabel(SCREEN_W - 482, 52, 4); // Render 1_4.png asset
+	}
+	else
+	{
+		MarioFont::GetInstance().DrawWorldNumberLabel(SCREEN_W - 482, 52, 1); // Render 1_1.png asset
+	}
+	MarioFont::GetInstance().DrawNumber(SCREEN_W - 200, 60, MainTime.count, 3);
 
 	// コイン数の描画
 	DrawFormatString(0, 80, GetColor(255, 255, 255), "Mario coin : %d", MainMario.coin);
@@ -162,4 +189,5 @@ void GameRender()
 //---------------------------------------------------------------------------------
 void GameExit()
 {
+	MarioFont::GetInstance().Exit();
 }
