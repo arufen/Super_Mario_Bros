@@ -5,7 +5,7 @@
 #include "Time.h"
 #include "Sound.h"
 
-GoalPole::GoalPole() : isReached(false), maxFlagY(0.0f) {}
+GoalPole::GoalPole() : isReached(false), maxFlagY(0.0f), isBGMPlayed(false), clearTimer(0.0f) {}
 
 void GoalPole::Init(float x, float y)
 {
@@ -46,14 +46,32 @@ void GoalPole::Update()
 	// マリオがポールに触れたら旗を下ろすアニメーション
 	if (isReached)
 	{
-		if (flagImage.pos.y < maxFlagY)
+		if (flagImage.pos.y < maxFlagY - 10)
 		{
-			flagImage.pos.y += 4.0f; // 1フレームに4ピクセルずつ下ろす（好みに合わせて速度調整してください）
+			flagImage.pos.y += 8.0f;
 
 			// 行き過ぎ防止
-			if (flagImage.pos.y > maxFlagY)
+			if (flagImage.pos.y > maxFlagY - 10)
 			{
-				flagImage.pos.y = maxFlagY;
+				flagImage.pos.y = maxFlagY - 10;
+			}
+		}
+	}
+
+	if (!isBGMPlayed)
+	{
+		// 旗が下まで降りきり、かつ Flag_PoleのSEが鳴り終わったらタイマーを開始
+		if (flagImage.pos.y >= maxFlagY - 10 && !SoundManager::GetInstance().IsPlayingSE("Flag_Pole"))
+		{
+			// 毎フレーム時間を加算
+			clearTimer += 0.016f;
+
+			// 初代マリオを再現した絶妙な間（今回は0.2秒に設定していますが、お好みで0.6fなどに変更してください）
+			if (clearTimer >= 0.2f)
+			{
+				// クリアファンファーレを1回だけ再生
+				SoundManager::GetInstance().PlayBGMOnce("Stage1-1_Clear");
+				isBGMPlayed = true;
 			}
 		}
 	}
@@ -94,10 +112,23 @@ void GoalPole::OnHitSide(RigidBody& player)
 
 		// BGMを止める（クリアファンファーレ音源がある場合はここで鳴らす）
 		SoundManager::GetInstance().StopBGM();
+
+		// ポールを降りるSEを鳴らす
+		SoundManager::GetInstance().PlaySE("Flag_Pole");
+
 		// SoundManager::GetInstance().PlaySE("Clear"); // 用意があればコメントアウトを外す
 
 		// マリオの動きを止める（ポールを降りる演出などに繋ぐため）
 		mario->now_speed_x = 0.0f;
 		mario->now_speed_y = 0.0f;
+
+		// マリオが降り立つ床のY座標（ポールの土台の上面のY座標）
+		float floorY = baseCollider.collider.y;
+
+		// 城の入り口のX座標（ポールの位置から右に350ピクセル進んだ場所と仮定。ステージに合わせて数値を調整してください）
+		float castleX = collider.x + 350.0f;
+
+		// マリオ側のゴール演出カットシーンを開始
+		mario->StartGoalCutscene(collider.x, castleX, floorY);
 	}
 }
