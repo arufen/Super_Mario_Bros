@@ -884,12 +884,9 @@ void StageManager::Update(Camera& camera)
 	//camera limit in 1-4 until cutscene
 	if (currentStage == Stage::WORLD_1_4)
 	{
-		if (MainMario.GetState() != MarioState::CUTSCENE) camera.cameraPosXLimit = 126.5 * BLOCK_SIZE;
-		else
-		{
+		PlayCutscene();
 
-			if(camera.cameraPosXLimit < 10240 - SCREEN_W && isBossDefeat) camera.cameraPosXLimit += 3.0f;
-		}
+		
 	}
 }
 
@@ -1075,5 +1072,15 @@ void StageManager::ClearBridge()
 			float toadTargetX = 152 * BLOCK_SIZE;
 			MainMario.StartCutsceneWalk(toadTargetX, 3.0f);
 		}
+	}
+}
+
+void StageManager::PlayCutscene()
+{
+	if (MainMario.GetState() != MarioState::CUTSCENE) MainCamera.cameraPosXLimit = 126.5 * BLOCK_SIZE;
+	else
+	{
+
+		if (MainCamera.cameraPosXLimit < 10240 - SCREEN_W && isBossDefeat) MainCamera.cameraPosXLimit += 3.0f;
 	}
 }
