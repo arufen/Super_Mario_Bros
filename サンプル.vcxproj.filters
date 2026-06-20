@@ -101,6 +101,9 @@
     </ClCompile>
     <ClCompile Include="program\Castle.cpp" />
     <ClCompile Include="program\Firebar.cpp" />
+    <ClCompile Include="program\Fonts.cpp">
+      <Filter>system</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="program\Game.h" />
@@ -209,6 +212,9 @@
     <ClInclude Include="program\Firebar.h" />
     <ClInclude Include="program\Brick_BlockParts.h">
       <Filter>game</Filter>
+    </ClInclude>
+    <ClInclude Include="program\Fonts.h">
+      <Filter>system</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

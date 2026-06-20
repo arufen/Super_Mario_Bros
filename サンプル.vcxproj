@@ -164,6 +164,7 @@
     <ClCompile Include="program\Fireworks.cpp" />
     <ClCompile Include="program\Fire_Flower.cpp" />
     <ClCompile Include="program\Float2.cpp" />
+    <ClCompile Include="program\Fonts.cpp" />
     <ClCompile Include="program\Game.cpp" />
     <ClCompile Include="program\Game_Over.cpp" />
     <ClCompile Include="program\Goal_Pole.cpp" />
@@ -204,6 +205,7 @@
     <ClInclude Include="program\Fireworks.h" />
     <ClInclude Include="program\Fire_Flower.h" />
     <ClInclude Include="program\Float2.h" />
+    <ClInclude Include="program\Fonts.h" />
     <ClInclude Include="program\Game.h" />
     <ClInclude Include="program\Game_Over.h" />
     <ClInclude Include="program\Goal_Pole.h" />

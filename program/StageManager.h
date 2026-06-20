@@ -15,6 +15,7 @@
 #include "Coin.h"
 #include "Firebar.h"
 #include "Super_Mushroom.h"
+#include "1-Up_Mushroom.h"
 #include "Fire_Flower.h"
 #include "Super_Star.h"
 
@@ -76,6 +77,7 @@ public:
 	//Collectable Item
 	vector<Coin*> coins;
 	vector<SuperMushroom*> superMushroom;
+	vector<UpMushroom*> upMushroom;
 	vector<FireFlower*> fireFlower;
 	vector<SuperStar*> superStar;
 

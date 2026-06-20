@@ -722,6 +722,22 @@ void StageManager::Update(Camera& camera)
 			superMushroom.erase(superMushroom.begin() + i);
 		}
 	}
+	//1up Mushroom
+	for (int i = 0; i < upMushroom.size(); i++)
+	{
+		//Update for moving
+		upMushroom[i]->Update();
+		if (!upMushroom[i]->active)
+		{
+			// remove from collidables list too!
+			RigidBody::collidables.erase(
+				remove(RigidBody::collidables.begin(), RigidBody::collidables.end(), upMushroom[i]),
+				RigidBody::collidables.end()
+			);
+			//remove coins from stage manager
+			upMushroom.erase(upMushroom.begin() + i);
+		}
+	}
 
 	//Fire flower
 	for (int i = 0; i < fireFlower.size(); i++)
@@ -787,6 +803,13 @@ void StageManager::Render(Camera& camera)
 	}
 
 	for (SuperMushroom* superM : superMushroom)
+	{
+		if (superM->active)
+		{
+			superM->RenderGlobal(camera);
+		}
+	}
+	for (UpMushroom* superM : upMushroom)
 	{
 		if (superM->active)
 		{

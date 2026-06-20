@@ -111,7 +111,10 @@ public:
 	void ChangeToSuper();
 	void ChangeToFire();
 	
+	int GetScore() const { return score; }
 
+	// Add score
+	void AddScore(int amount);
 
 	//void Warping(float pipeY);
 

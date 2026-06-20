@@ -80,10 +80,6 @@ void BrickBlock::OnHitBottom(RigidBody& player)
         if (itemType == BrickBlockItem::COIN)
         {
             itemCoinAnimationTimer.ResetTimer();
-            //if (mario)
-            //{
-            //    mario->coin++; // Increment Mario's coin total safely
-            //}
         }
         else if (itemType == BrickBlockItem::STAR)
         {

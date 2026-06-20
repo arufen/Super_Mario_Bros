@@ -1,6 +1,6 @@
 #include "Hidden_Block.h"
 #include "Mario.h"
-#include "Super_Mushroom.h"
+#include "1-Up_Mushroom.h"
 #include "StageManager.h"
 
 HiddenBlock::HiddenBlock()
@@ -101,12 +101,12 @@ void HiddenBlock::OnHitBottom(RigidBody& player)
         if (itemType == HiddenItemType::MUSHROOM_1UP)
         {
             // Spawn the 1up HP Up Mushroom
-            SuperMushroom* newMushroom = new SuperMushroom();
+            UpMushroom* newMushroom = new UpMushroom();
             newMushroom->Init(pos.x, pos.y);
             newMushroom->image.InitialImageAndSize(LoadGraph("data/image/HpUpMushroom.png"));
             newMushroom->SpawnItem();
 
-            StageManager::GetInstance().superMushroom.push_back(newMushroom);
+            StageManager::GetInstance().upMushroom.push_back(newMushroom);
             RigidBody::collidables.push_back(newMushroom);
         }
         else if (itemType == HiddenItemType::COIN)
