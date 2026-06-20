@@ -194,5 +194,6 @@ void KoopaTroopa::TakeDamage(RigidBody& attacker)
 
 void KoopaTroopa::ToDeadState()
 {
+	MainScore.AddScore(100);
 	state = EnemyState::DEAD;
 }

@@ -9,7 +9,7 @@
 
 //Enemis
 #include "Goomba.h"
-
+#include "Fonts.h"
 #include "Sound.h"
 
 using namespace std;
@@ -33,7 +33,8 @@ void StageManager::TransferWorldZone(WorldZone newZone)
 		MainMario.now_speed_y = 0.0f;
 		MainMario.isJumping = false;
 
-		MainMario.Warping(spawnX, spawnY, Mario::WarpDir::UP);
+		//MainMario.Warping(spawnX, spawnY, Mario::WarpDir::UP);
+		MainMario.WarpPosition(spawnX, spawnY);
 		SoundManager::GetInstance().PlaySE("Warp");
 	}
 	else if (currentzone == WorldZone::UNDERWORLD)
@@ -355,6 +356,8 @@ void StageManager::Init(Stage stageNumber)
 	isBridgeClearing = false;
 	isBossDefeat = false;
 
+	world1_1Handle = LoadGraph("data/image/Fonts/1_1.png");
+	world1_4Handle = LoadGraph("data/image/Fonts/1_4.png");
 	tex_brickParts = LoadGraph("data/image/brickpart.png");
 	if (stageNumber == Stage::WORLD_1_1)
 	{
@@ -1043,6 +1046,15 @@ void StageManager::Render(Camera& camera)
 	// ゴールポール
 	for (GoalPole* pole : goalPoles) { pole->RenderGlobal(camera); }
 
+
+	if (StageManager::GetInstance().currentStage == Stage::WORLD_1_4)
+	{
+		MarioFont::GetInstance().DrawWorldNumberLabel(SCREEN_W - 482, 52, world1_4Handle); // Render 1_4.png asset
+	}
+	else
+	{
+		MarioFont::GetInstance().DrawWorldNumberLabel(SCREEN_W - 482, 52, world1_1Handle); // Render 1_1.png asset
+	}
 	if (turnOnText)
 	{
 		timerShowText.Update();

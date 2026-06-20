@@ -47,6 +47,7 @@ void GameInit()
 
 	// ゲーム時間の初期化
 	MainTime.Init();
+	MainScore.Init();
 
 	// カメラの初期位置を設定
 	MainCamera.pos.Set(0.0f, 0.0f);
@@ -102,7 +103,7 @@ void GameUpdate()
 		StageManager::GetInstance().Init(Stage::WORLD_1_4);
 
 		//Change time 
-		MainTime.SetCount(300);
+		MainTime.SetCount(WORLD1_4TIME);
 
 		//1-4のBGMに切り替える
 		SoundManager::GetInstance().PlayBGM("Stage1-4");
@@ -147,23 +148,16 @@ void GameRender()
 	// マリオの手前に残り時間を描画
 	//MainTime.Render();
 	MarioFont::GetInstance().DrawMarioLabel(80, 20);
-	MarioFont::GetInstance().DrawNumber(80, 52, MainMario.GetScore(), 6);
+	MarioFont::GetInstance().DrawNumber(80, 52, MainScore.GetScore(), 6);
 
 	MarioFont::GetInstance().DrawTimeLabel(SCREEN_W - 232, 20);
 	MarioFont::GetInstance().DrawWorldLabel(SCREEN_W - 482, 20);
 
-	if (StageManager::GetInstance().currentStage == Stage::WORLD_1_4)
-	{
-		MarioFont::GetInstance().DrawWorldNumberLabel(SCREEN_W - 482, 52, 4); // Render 1_4.png asset
-	}
-	else
-	{
-		MarioFont::GetInstance().DrawWorldNumberLabel(SCREEN_W - 482, 52, 1); // Render 1_1.png asset
-	}
 	MarioFont::GetInstance().DrawNumber(SCREEN_W - 200, 60, MainTime.count, 3);
 
 	// コイン数の描画
 	DrawFormatString(0, 80, GetColor(255, 255, 255), "Mario coin : %d", MainMario.coin);
+	DrawFormatString(0, 96, GetColor(255, 255, 255), "Mario score : %d", MainScore.GetScore());
 
 	// 一番手前にデバッグ情報を描画
 	MainDebug.Render();

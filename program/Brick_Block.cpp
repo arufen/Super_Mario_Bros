@@ -82,6 +82,7 @@ void BrickBlock::OnHitBottom(RigidBody& player)
         if (itemType == BrickBlockItem::COIN)
         {
             itemCoinAnimationTimer.ResetTimer();
+            MainScore.AddScore(150);
         }
         else if (itemType == BrickBlockItem::STAR)
         {
@@ -105,6 +106,7 @@ void BrickBlock::OnHitBottom(RigidBody& player)
             if (hit_count >= max_hits_allowed)
             {
                 isAvailable = false;
+                itemType = BrickBlockItem::NONE;
                 image.InitialImageAndSize(texEmpty);
             }
         }
@@ -114,7 +116,8 @@ void BrickBlock::OnHitBottom(RigidBody& player)
     // --- 通常のレンガブロック破壊 ＆ 新しい名称での破片生成処理 ---
     //// -------------------------------------------------------------
     SoundManager::GetInstance().PlaySE("Break");
-
+    
+    MainScore.AddScore(50);
     // 64x64ブロックの物理的な中心点を計算
     float centerX = pos.x + 32.0f;
     float centerY = pos.y + 32.0f;

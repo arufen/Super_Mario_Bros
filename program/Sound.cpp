@@ -3,7 +3,7 @@
 void SoundManager::Init()
 {
 	// BGM‚Ì“Ç‚İ‚İ
-	bgmList["Stage1-1"] = LoadSoundMem("data/sound/bgm_stage1-1.mp3");
+	//bgmList["Stage1-1"] = LoadSoundMem("data/sound/bgm_stage1-1.mp3");
 	bgmList["Stage1-1_Hurry"] = LoadSoundMem("data/sound/bgm_stage1-1_hurry.mp3");
 
 	// ’n‰ºBGM‚Ì“Ç‚İ‚İ
