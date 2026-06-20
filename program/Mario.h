@@ -94,8 +94,14 @@ public:
 	Image small_mario_deadImage;		// マリオの死亡画像情報
 	Image small_mario_goalpoleImage;	// ゴールポール用の画像情報
 	Animation small_mario_walkAnim;		// 歩きアニメーション管理オブジェクト
-	Image big_mario_waitImage;
+	Image big_mario_waitImage;	// でかい状態のマリオの待機画像
 	Image big_mario_fire_waitImage;
+	Image big_mario_jumpImage;	// でかい状態のマリオのジャンプ画像
+	Animation bigmario_moveAnim;//でかい状態のマリオの歩きアニメーション
+	Image big_mario_turnImage;	// でかい状態のマリオの方向転換画像
+
+
+
 
 	// 後入力優先のためのキー状態保持
 	bool prevKeyA = false;
@@ -106,6 +112,7 @@ public:
 	bool isLeft;		// 向きフラグ（trueなら左向き、falseなら右向き）
 	bool isWalking = false;     // 現在歩いているかどうか
 	bool isJumping = false;
+	bool isBraking = false;		// ブレーキ（急停止）状態かどうか
 	bool isDeadJumped = false;	// 死亡ジャンプをすでに受け取ったか
 	bool isFellDown = false;	// 落下死したかどうか
 	float jumpHoldTimer = 0.0f;
