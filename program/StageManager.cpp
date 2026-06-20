@@ -290,6 +290,8 @@ vector<Collidable*> StageManager::GetCollidables()
 
 void StageManager::Init(Stage stageNumber)
 {
+	isBridgeClearing = false;
+	isBossDefeat = false;
 	tex_brickParts = LoadGraph("data/image/brickpart.png");
 
 	if (stageNumber == Stage::WORLD_1_1)
