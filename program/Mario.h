@@ -26,7 +26,7 @@ extern int small_mario_debug_x1;
 extern int small_mario_debug_y1;
 extern int small_mario_debug_x2;
 extern int small_mario_debug_y2;
-enum class MarioState { NORMAL, WARPING, CUTSCENE, DEAD };
+enum class MarioState { NORMAL, WARPING, CUTSCENE, DEAD, GOAL};
 enum class MarioForm { SMALL, SUPER, FIRE }; // マリオの形態
 
 //==========================================================================================================
@@ -44,12 +44,16 @@ public:
 	Animation walkAnim;
 	Animation jumpAnim;
 
+	Animation bigWaitAnim;
+	Animation bigWalkAnim;
+	Animation bigJumpAnim;
+
 	void Init();
 	void Start(); // スター状態開始 (starTimer = 600.0f など)
 	// 歩き状態、ジャンプ状態、歩きの速度(FPS)を受け取って更新する
 	void Update(bool isWalking, bool isJumping, int walkFPS);
 	// 状態を受け取って適切なアニメーションを描画する
-	void Render(int screenX, int screenY, bool isLeft, bool isJumping, bool isWalking);
+	void Render(int screenX, int screenY, bool isLeft, bool isJumping, bool isWalking, MarioForm form);
 };
 //==========================================================================================================
 
@@ -85,10 +89,11 @@ public:
 
 
 	//Mario image/animation variables (画像/アニメーション変数)
-	Image small_mario_waitImage;	 // マリオの待機画像情報
-	Image small_mario_jumpImage;   // マリオのジャンプ画像情報
-	Image small_mario_deadImage;   // マリオの死亡画像情報
-	Animation small_mario_walkAnim;		 // 歩きアニメーション管理オブジェクト
+	Image small_mario_waitImage;		// マリオの待機画像情報
+	Image small_mario_jumpImage;		// マリオのジャンプ画像情報
+	Image small_mario_deadImage;		// マリオの死亡画像情報
+	Image small_mario_goalpoleImage;	// ゴールポール用の画像情報
+	Animation small_mario_walkAnim;		// 歩きアニメーション管理オブジェクト
 	Image big_mario_waitImage;
 	Image big_mario_fire_waitImage;
 
@@ -146,8 +151,15 @@ public:
 	//For cutscene
 	void StartCutsceneWalk(float targetX, float speed);
 	void WalkTo(float targetX, float speed);
+	void StartGoalCutscene(float poleX, float castleX, float floorY);
 	float cutsceneTargetX = 0.0f;
 	float cutsceneSpeed = 2.0f;
+
+	// ゴール演出用の管理変数
+	int goalPhase = 0;         // 0:降りる, 1:反転, 2:歩く, 3:消える
+	float goalPoleX = 0.0f;    // ポールのX座標
+	float goalCastleX = 0.0f;  // 城の入り口のX座標
+	float goalFloorY = 0.0f;   // 着地する床（土台）のY座標
 
 	//void Warping(float pipeY);
 
