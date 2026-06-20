@@ -84,36 +84,54 @@ void GameTime::Update()
     // ----------------------------------------------------
     // 現在の状態（ゾーン × 残り時間）に応じたBGM自動切り替え
     // ----------------------------------------------------
-    // 1. 残り時間から「急ぎ（Hurry）」状態かどうかを判定
+    
+    // 1. StageManagerから現在のゾーンを取得
+    // ※もしコンパイルエラーが出る場合は、StageManager.hにある「現在地を返す関数」の名前に差し替えてください
+    WorldZone currentZone = StageManager::GetInstance().GetWorldZone();
+
+    // 現在のステージを取得
+    Stage currentStage = StageManager::GetInstance().currentStage;
+     
+    // 2. 残り時間から「急ぎ（Hurry）」状態かどうかを判定
     bool isHurry = (count <= 100);
 
     if (isHurry && !isHurryBGMPlayed)
     {
         isHurryBGMPlayed = true;
-        SoundManager::GetInstance().StopBGM();
-        SoundManager::GetInstance().PlayBGMOnce("HurryAction");
-    }
 
-    // 2. StageManagerから現在のゾーンを取得
-    // ※もしコンパイルエラーが出る場合は、StageManager.hにある「現在地を返す関数」の名前に差し替えてください
-    WorldZone currentZone = StageManager::GetInstance().GetWorldZone();
+        // 1-4の時はHurryAction（ファンファーレ）を鳴らさない
+        if (currentStage != Stage::WORLD_1_4)
+        {
+            SoundManager::GetInstance().StopBGM();
+            SoundManager::GetInstance().PlayBGMOnce("HurryAction");
+        }
+    }
 
     // 3. 条件に合わせて「次に再生すべきBGM」のキー名を決める
     std::string targetBGM = "";
-    if (currentZone == WorldZone::OVERWORLD)
+    // まず1-4（クッパ城）かどうかを最優先で判定する
+    if (currentStage == Stage::WORLD_1_4)
     {
-        targetBGM = isHurry ? "Stage1-1_Hurry" : "Stage1-1";
+        targetBGM = isHurry ? "Stage1-4_Hurry" : "Stage1-4";
     }
-    else if (currentZone == WorldZone::UNDERWORLD)
+    else // 1-4 以外（1-1など）の場合はこれまでのゾーン別判定を行う
     {
-        targetBGM = isHurry ? "Stage1-1_Underground_Hurry" : "Stage1-1_Underground";
+        if (currentZone == WorldZone::OVERWORLD)
+        {
+            targetBGM = isHurry ? "Stage1-1_Hurry" : "Stage1-1";
+        }
+        else if (currentZone == WorldZone::UNDERWORLD)
+        {
+            targetBGM = isHurry ? "Stage1-1_Underground_Hurry" : "Stage1-1_Underground";
+        }
     }
 
+    // 「HurryAction」のファンファーレが鳴り終わったら、決定したBGMを再生する
     if (!SoundManager::GetInstance().IsPlayingBGM("HurryAction"))
     {
         if (targetBGM != "" && targetBGM != currentPlayingBGMKey)
         {
-            currentPlayingBGMKey = targetBGM; 
+            currentPlayingBGMKey = targetBGM;
             SoundManager::GetInstance().PlayBGM(targetBGM);
         }
     }

@@ -544,6 +544,7 @@ void StageManager::Init(Stage stageNumber)
 	}
 	else if (stageNumber == Stage::WORLD_1_4)
 	{
+		
 		//Reset mario 
 		MainMario.position.Set(2 * BLOCK_SIZE, 5 * BLOCK_SIZE);
 
@@ -563,6 +564,7 @@ void StageManager::Init(Stage stageNumber)
 
 		int fireSpriteHandle = LoadGraph("data/image/firebarAnimation.png");
 		int blockSpriteHandle = LoadGraph("data/image/firebarblock.png");
+		clearHandle = LoadGraph("data/image/clear_text.png");
 
 		int totalOverworldBlocks = sizeof(world1_4data) / sizeof(BlockSpawnData);
 		for (int i = 0; i < totalOverworldBlocks; i++)
@@ -740,6 +742,15 @@ void StageManager::Update(Camera& camera)
 				RigidBody::collidables.end()
 			);
 			bowser.erase(bowser.begin() + i);
+
+			if(axe.empty()) // すでに斧が取られて無くなっているなら
+			{
+				SoundManager::GetInstance().StopBGM();
+				SoundManager::GetInstance().PlayBGMOnce("Stage1-4_Clear");
+
+				float toadTargetX = 152 * BLOCK_SIZE;
+				MainMario.StartCutsceneWalk(toadTargetX, 3.0f);
+			}
 		}
 	}
 
@@ -911,12 +922,9 @@ void StageManager::Update(Camera& camera)
 	//camera limit in 1-4 until cutscene
 	if (currentStage == Stage::WORLD_1_4)
 	{
-		if (MainMario.GetState() != MarioState::CUTSCENE) camera.cameraPosXLimit = 126.5 * BLOCK_SIZE;
-		else
-		{
+		PlayCutscene();
 
-			if(camera.cameraPosXLimit < 10240 - SCREEN_W && isBossDefeat) camera.cameraPosXLimit += 3.0f;
-		}
+		
 	}
 }
 
@@ -1047,6 +1055,16 @@ void StageManager::Render(Camera& camera)
 	{
 		MarioFont::GetInstance().DrawWorldNumberLabel(SCREEN_W - 482, 52, world1_1Handle); // Render 1_1.png asset
 	}
+	if (turnOnText)
+	{
+		timerShowText.Update();
+		bool fullText = timerShowText.TimerHit();
+		int offset = 0;
+		if (fullText) offset = 2000;
+		//set titled
+		DrawRectGraph(0, 200, 0, 0, 1024, 300 + offset, clearHandle, 1);
+	}
+
 }
 
 //Clear all objects in stage
@@ -1122,14 +1140,38 @@ void StageManager::ClearBridge()
 
 			delete bridge.back();
 			bridge.pop_back();
+
+			SoundManager::GetInstance().PlaySE("Bridge_Break");
 		}
 
 		if (bridge.empty())
 		{
 			isBridgeClearing = false; // done collapsing
 
-			float toadTargetX = 152 * BLOCK_SIZE;
-			MainMario.StartCutsceneWalk(toadTargetX, 3.0f);
+			if (bowser.empty() && !SoundManager::GetInstance().IsPlayingBGM("Stage1-4_Clear"))
+			{
+				SoundManager::GetInstance().StopBGM();
+				SoundManager::GetInstance().PlayBGMOnce("Stage1-4_Clear");
+
+				float toadTargetX = 152 * BLOCK_SIZE;
+				MainMario.StartCutsceneWalk(toadTargetX, 3.0f);
+			}
+		}
+	}
+}
+
+void StageManager::PlayCutscene()
+{
+	if (MainMario.GetState() != MarioState::CUTSCENE) MainCamera.cameraPosXLimit = 126.5 * BLOCK_SIZE;
+	else
+	{
+
+		if (MainCamera.cameraPosXLimit < 10240 - SCREEN_W && isBossDefeat) MainCamera.cameraPosXLimit += 5.0f;
+		else if (MainCamera.cameraPosXLimit >= 10240 - SCREEN_W)
+		{
+
+			turnOnText = true;
+			
 		}
 	}
 }

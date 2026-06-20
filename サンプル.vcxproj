@@ -180,7 +180,6 @@
     <ClCompile Include="program\Hit.cpp" />
     <ClCompile Include="program\Koopa_Troopa.cpp" />
     <ClCompile Include="program\Main.cpp" />
-    <ClCompile Include="program\Map.cpp" />
     <ClCompile Include="program\Moving_Platform.cpp" />
     <ClCompile Include="program\RigidBody.cpp" />
     <ClCompile Include="program\Sound.cpp" />
@@ -227,7 +226,6 @@
     <ClInclude Include="program\IBlock.h" />
     <ClInclude Include="program\Koopa_Troopa.h" />
     <ClInclude Include="program\Main.h" />
-    <ClInclude Include="program\Map.h" />
     <ClInclude Include="program\Moving_Platform.h" />
     <ClInclude Include="program\RigidBody.h" />
     <ClInclude Include="program\Sound.h" />

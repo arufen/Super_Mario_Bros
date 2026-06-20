@@ -19,6 +19,8 @@ public:
 	Timer timerisShooting{ 1.0f };
 	bool isLookRight;
 
+	bool isDefeated;
+
 	//Update
 	virtual void WaitForCamera(Camera& camera) override;
 	virtual void TakeDamage(RigidBody& attacker) override;

@@ -1,5 +1,9 @@
 #include "Bowser_Fire.h"
 #include "StageManager.h"
+#include "Sound.h"
+#include "Main.h"
+
+extern Camera MainCamera;
 
 void BowserFire::Init(float x, float y)
 {
@@ -14,6 +18,7 @@ void BowserFire::Init(float x, float y)
 	this->direction = -1.0f;
 	this->isActive = true;
 	this->isTrigger = true;
+	this->hasPlayedSE = false;
 }
 
 
@@ -35,6 +40,19 @@ void BowserFire::Update()
 	if (isActive)
 	{
 		position.x += direction * SPEED;
+	}
+
+	if (!hasPlayedSE && isActive)
+	{
+		Float2 cameraSize{ SCREEN_W, SCREEN_H };
+		Float2 fireSize{ (float)spriteAnimation.sprite.sizeX, (float)spriteAnimation.sprite.sizeY };
+
+		// メインカメラの範囲内と、炎の当たり判定が重なった時（＝画面に映った時）
+		if (CheckBoxHit(MainCamera.pos, cameraSize, position, fireSize))
+		{
+			SoundManager::GetInstance().PlaySE("BowserFire"); // 音を鳴らす
+			hasPlayedSE = true; // 鳴らしたフラグを立てて、2回目以降鳴らないようにする
+		}
 	}
 
 	// shoot ray in front of goomba

@@ -81,9 +81,6 @@
     <ClCompile Include="program\Score.cpp">
       <Filter>system</Filter>
     </ClCompile>
-    <ClCompile Include="program\Map.cpp">
-      <Filter>program</Filter>
-    </ClCompile>
     <ClCompile Include="program\Sound.cpp">
       <Filter>program</Filter>
     </ClCompile>
@@ -203,9 +200,6 @@
     </ClInclude>
     <ClInclude Include="program\Score.h">
       <Filter>system</Filter>
-    </ClInclude>
-    <ClInclude Include="program\Map.h">
-      <Filter>program</Filter>
     </ClInclude>
     <ClInclude Include="program\Sound.h">
       <Filter>program</Filter>

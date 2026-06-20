@@ -2,6 +2,7 @@
 #include "Mario.h"
 #include "StageManager.h"
 #include "Bowser_Fire.h"
+#include "Sound.h"
 
 void Bowser::Init(float x, float y)
 {
@@ -19,12 +20,35 @@ void Bowser::Init(float x, float y)
 	this->direction = -1.0f;
 	this->isLookRight = false;
 	this->gravity = 0.1f; //overide gravity
+	this->isDefeated = false;
 	//this->isTrigger = true;
 }
 
 
 void Bowser::Update(Camera& camera)
 {
+	// ==========================================
+	// 落下中の時の特別な処理
+	// ==========================================
+	if (isDefeated)
+	{
+		// 物理演算（床との当たり判定など）を無視して、ただ下へ落ちる
+		position.y += 6.0f; // 落ちるスピード。お好みで調整してください
+
+		// 画像の座標も更新しておく
+		spriteAnimation.x = position.x;
+		spriteAnimation.y = position.y;
+
+		// 画面外（穴の底）に完全に落ちきったら、本当に消去する
+		if (position.y > 16 * 64.0f) // 16ブロック分下に行ったら
+		{
+			state = EnemyState::DEAD;
+		}
+
+		// 落下中はこれ以降の通常の移動や攻撃の処理を行わない
+		return;
+	}
+
 	now_speed_x = direction; // reset every frame FIRST
 
 	//Collider
@@ -101,14 +125,12 @@ void Bowser::WaitForCamera(Camera& camera)
 // 横からマリオがぶつかった時の処理
 void Bowser::OnHitSide(RigidBody& player)
 {
-	// すでに踏まれて死んでいる（潰れかけの）クリボーなら判定しない
-	if (state == EnemyState::DEAD) return;
+	// 死んでいる、もしくは落下中なら判定しない
+	if (state == EnemyState::DEAD || isDefeated) return;
 
-	// 当たってきたオブジェクトがマリオかどうかをチェック
 	Mario* mario = dynamic_cast<Mario*>(&player);
 	if (mario != nullptr)
 	{
-		// マリオを死亡状態にする
 		if (mario->starEffect.isActive)
 		{
 			TakeDamage(player);
@@ -117,7 +139,6 @@ void Bowser::OnHitSide(RigidBody& player)
 		{
 			mario->ToDeadState();
 		}
-
 	}
 }
 
@@ -153,8 +174,16 @@ void Bowser::TakeDamage(RigidBody& attacker)
 
 void Bowser::Kill()
 {
-	state = EnemyState::DEAD;
+	// すでにやられている場合は重複して実行しない
+	if (isDefeated) return;
+
+	isDefeated = true; // やられたフラグをON（これでUpdateでの落下が始まります）
 	StageManager::GetInstance().isBossDefeat = true;
+
+	// マリオと物理的にぶつからないようにする
+	isTrigger = true;
+
+	SoundManager::GetInstance().PlaySE("Bowser_Fall");
 }
 
 
