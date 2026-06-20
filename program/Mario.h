@@ -38,9 +38,6 @@ class StarEffect
 public:
 	bool isActive;
 	float timer;
-	//ブレーキ中かどうかのフラグ
-	bool isBraking;//現状はスター状態でのブレーキ中の挙動を管理するために使用される予定です。(なのでブレーキフラグがマリオに追加されたら追加する予定です。コメント化)
-
 
 	// 状態ごとの点滅アニメーションを個別に持つ
 	Animation waitAnim;
@@ -50,14 +47,13 @@ public:
 	Animation bigWaitAnim;
 	Animation bigWalkAnim;
 	Animation bigJumpAnim;
-	Animation bigTurnAnim;
 
 	void Init();
 	void Start(); // スター状態開始 (starTimer = 600.0f など)
 	// 歩き状態、ジャンプ状態、歩きの速度(FPS)を受け取って更新する
 	void Update(bool isWalking, bool isJumping, int walkFPS);
 	// 状態を受け取って適切なアニメーションを描画する
-	void Render(int screenX, int screenY, bool isLeft, bool isJumping, bool isBraking, bool isWalking, MarioForm form);
+	void Render(int screenX, int screenY, bool isLeft, bool isJumping, bool isWalking, MarioForm form);
 };
 //==========================================================================================================
 

@@ -984,10 +984,6 @@ void StarEffect::Init()
 	bigWaitAnim.InitialAnimation(LoadGraph("data/image/star_mario/bigstarmario_wait.png"), 3, 10);
 	bigWalkAnim.InitialAnimation(LoadGraph("data/image/star_mario/bigstarmario_walk.png"), 9, 10);
 	bigJumpAnim.InitialAnimation(LoadGraph("data/image/star_mario/bigstarmario_jump.png"), 3, 10);
-	bigTurnAnim.InitialAnimation(LoadGraph("data/image/star_mario/bigstarmario_turn.png"), 3, 10);
-	//フラグの初期化
-
-	isBraking = false;
 }
 
 void StarEffect::Start()
