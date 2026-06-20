@@ -688,6 +688,8 @@ void Mario::Update()
 	// 最高速度の設定（ダッシュキー有無）
 	float maxSpeed = isDashing ? MARIO_DASH_MAX_SPEED : MARIO_WALK_MAX_SPEED;
 
+	isBraking = false;
+
 	// 左右の移動処理
 	if (moveKeyPressed)
 	{
@@ -696,15 +698,25 @@ void Mario::Update()
 			if (!isJumping) isLeft = true;
 
 			// 逆方向に移動中の場合はターン用減速度（ブレーキ）を適用
-			if (now_speed_x > 0.0f)	now_speed_x -= activeTurn;
-			else					now_speed_x -= activeAccel;
+			if (now_speed_x > 0.0f) {
+				now_speed_x -= activeTurn;
+				if (!isJumping) isBraking = true;// ブレーキ中はフラグを立てる(アニメーションで必要なので書かせていただきます。)
+			}
+			else {
+				now_speed_x -= activeAccel;
+			}
 		}
 		else
 		{
 			if (!isJumping) isLeft = false;
 
-			if (now_speed_x < 0.0f)	now_speed_x += activeTurn;
-			else					now_speed_x += activeAccel;
+			if (now_speed_x < 0.0f) {
+				now_speed_x += activeTurn;
+				if (!isJumping) isBraking = true; // 地上で逆方向の速度があればブレーキ
+			}
+			else {
+				now_speed_x += activeAccel;
+			}
 		}
 	}
 	else
@@ -855,10 +867,11 @@ void Mario::Render()
 	}
 
 	bool isActualJumpingPose = isJumping && (jumpHoldTimer > 0.0f || now_speed_y < 0.0f);
+
 	if (starEffect.isActive)
 	{
 		// スター状態の描画はお任せ
-		starEffect.Render(screenX, screenY, isLeft, isActualJumpingPose, isWalking, currentForm);
+		starEffect.Render(screenX, screenY, isLeft, isActualJumpingPose, isBraking, isWalking, currentForm);
 	}
 	else
 	{
@@ -941,6 +954,8 @@ void StarEffect::Init()
 	walkAnim.InitialAnimation(LoadGraph("data/image/star_mario/starmario_walk.png"), 9, 10);
 	jumpAnim.InitialAnimation(LoadGraph("data/image/star_mario/starmario_jump.png"), 3, 10);
 
+	turnAnim.InitialAnimation(LoadGraph("data/image/star_mario/starmario_turn.png"), 3, 10);
+
 
 	bigWaitAnim.InitialAnimation(LoadGraph("data/image/star_mario/bigstarmario_wait.png"), 3, 10);
 	bigWalkAnim.InitialAnimation(LoadGraph("data/image/star_mario/bigstarmario_walk.png"), 9, 10);
@@ -969,7 +984,7 @@ void StarEffect::Update(bool isWalking, bool isJumping, int walkFPS)
 		walkAnim.FPS = 15;
 		walkAnim.AnimationUpdateLoop();
 		jumpAnim.AnimationUpdateLoop();
-
+		turnAnim.AnimationUpdateLoop();
 		
 		bigWaitAnim.AnimationUpdateLoop();
 		bigWalkAnim.FPS = 15;

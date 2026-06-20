@@ -46,6 +46,7 @@ public:
 	Animation waitAnim;
 	Animation walkAnim;
 	Animation jumpAnim;
+	Animation turnAnim;
 
 	Animation bigWaitAnim;
 	Animation bigWalkAnim;
@@ -110,6 +111,7 @@ public:
 	bool isLeft;		// 向きフラグ（trueなら左向き、falseなら右向き）
 	bool isWalking = false;     // 現在歩いているかどうか
 	bool isJumping = false;
+	bool isBraking = false;		//ブレーキのメンバ変数
 	bool isDeadJumped = false;	// 死亡ジャンプをすでに受け取ったか
 	bool isFellDown = false;	// 落下死したかどうか
 	float jumpHoldTimer = 0.0f;
