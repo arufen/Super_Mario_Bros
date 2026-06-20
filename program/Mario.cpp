@@ -378,6 +378,9 @@ void Mario::Init()
 	small_mario_goalpoleImage.InitialImageAndSize(LoadGraph("data/image/mario/small_mario_goalpole.png"));
 	small_mario_walkAnim.InitialAnimation(LoadGraph("data/image/mario/small_mario_walk.png"), 3, 10);
 	big_mario_waitImage.InitialImageAndSize(LoadGraph("data/image/big_mario_wait.png"));
+	big_mario_jumpImage.InitialImageAndSize(LoadGraph("data/image/mario/bigMario/bigmario_jump.png"));
+	big_mario_turnImage.InitialImageAndSize(LoadGraph("data/image/mario/bigMario/bigmario_turn.png"));
+	bigmario_moveAnim.InitialAnimation(LoadGraph("data/image/mario/bigMario/bigmario_move.png"), 3, 10);
 	big_mario_fire_waitImage.InitialImageAndSize(LoadGraph("data/image/big_mario_fire_wait.png"));
 
 	// 初期ステータスのセットアップ
@@ -688,7 +691,7 @@ void Mario::Update()
 	// 最高速度の設定（ダッシュキー有無）
 	float maxSpeed = isDashing ? MARIO_DASH_MAX_SPEED : MARIO_WALK_MAX_SPEED;
 
-	isBraking = false;
+	isBraking = false; // ★追加：毎フレームまずはリセット
 
 	// 左右の移動処理
 	if (moveKeyPressed)
@@ -698,13 +701,11 @@ void Mario::Update()
 			if (!isJumping) isLeft = true;
 
 			// 逆方向に移動中の場合はターン用減速度（ブレーキ）を適用
-			if (now_speed_x > 0.0f) {
-				now_speed_x -= activeTurn;
-				if (!isJumping) isBraking = true;// ブレーキ中はフラグを立てる(アニメーションで必要なので書かせていただきます。)
+			if (now_speed_x > 0.0f) { 
+				now_speed_x -= activeTurn; 
+				if (!isJumping) isBraking = true; //地上で逆方向に滑っているならブレーキ中
 			}
-			else {
-				now_speed_x -= activeAccel;
-			}
+			else					now_speed_x -= activeAccel;
 		}
 		else
 		{
@@ -712,9 +713,9 @@ void Mario::Update()
 
 			if (now_speed_x < 0.0f) {
 				now_speed_x += activeTurn;
-				if (!isJumping) isBraking = true; // 地上で逆方向の速度があればブレーキ
+				if (!isJumping) isBraking = true; //地上で逆方向に滑っているならブレーキ中
 			}
-			else {
+			else{
 				now_speed_x += activeAccel;
 			}
 		}
@@ -795,11 +796,15 @@ void Mario::Update()
 
 		small_mario_walkAnim.FPS = currentWalkFPS;
 		small_mario_walkAnim.AnimationUpdateLoop();
+
+		bigmario_moveAnim.FPS = currentWalkFPS;
+		bigmario_moveAnim.AnimationUpdateLoop();
 	}
 	else
 	{
 		isWalking = false;
 		small_mario_walkAnim.currentFrame = 0; // 静止時はアニメーションリセット
+		bigmario_moveAnim.currentFrame = 0;
 		currentWalkFPS = isDashing ? 15 : 9;
 	}
 
@@ -897,8 +902,31 @@ void Mario::Render()
 		}
 		else if (currentForm == MarioForm::SUPER)
 		{
-			if (isLeft)	DrawRotaGraph2(screenX, screenY, 0, 0, 1.0f, 0.0, big_mario_waitImage.image, TRUE, TRUE);
-			else		DrawRotaGraph2(screenX, screenY, 0, 0, 1.0f, 0.0, big_mario_waitImage.image, TRUE, FALSE);
+			// ★追加：状態に応じた描画の分岐
+			if (isActualJumpingPose)
+			{
+				// ジャンプ中
+				if (isLeft)	DrawRotaGraph2(screenX, screenY, 0, 0, 1.0f, 0.0, big_mario_jumpImage.image, TRUE, TRUE);
+				else		DrawRotaGraph2(screenX, screenY, 0, 0, 1.0f, 0.0, big_mario_jumpImage.image, TRUE, FALSE);
+			}
+			else if (isBraking)
+			{
+				// ターン（ブレーキ）中
+				if (isLeft)	DrawRotaGraph2(screenX, screenY, 0, 0, 1.0f, 0.0, big_mario_turnImage.image, TRUE, TRUE);
+				else		DrawRotaGraph2(screenX, screenY, 0, 0, 1.0f, 0.0, big_mario_turnImage.image, TRUE, FALSE);
+			}
+			else if (isWalking)
+			{
+				// 歩行中
+				bigmario_moveAnim.x = (float)screenX;
+				bigmario_moveAnim.y = (float)screenY;
+				bigmario_moveAnim.AnimationRenderCenter(isLeft);
+			}
+			else
+			{
+				if (isLeft)	DrawRotaGraph2(screenX, screenY, 0, 0, 1.0f, 0.0, big_mario_waitImage.image, TRUE, TRUE);
+				else		DrawRotaGraph2(screenX, screenY, 0, 0, 1.0f, 0.0, big_mario_waitImage.image, TRUE, FALSE);
+			}
 		}
 		else if (currentForm == MarioForm::FIRE)
 		{
@@ -961,9 +989,6 @@ void StarEffect::Init()
 	bigWalkAnim.InitialAnimation(LoadGraph("data/image/star_mario/bigstarmario_walk.png"), 9, 10);
 	bigJumpAnim.InitialAnimation(LoadGraph("data/image/star_mario/bigstarmario_jump.png"), 3, 10);
 	bigTurnAnim.InitialAnimation(LoadGraph("data/image/star_mario/bigstarmario_turn.png"), 3, 10);
-	//フラグの初期化
-
-	isBraking = false;
 }
 
 void StarEffect::Start()
