@@ -539,6 +539,7 @@ void StageManager::Init(Stage stageNumber)
 	}
 	else if (stageNumber == Stage::WORLD_1_4)
 	{
+		
 		//Reset mario 
 		MainMario.position.Set(2 * BLOCK_SIZE, 5 * BLOCK_SIZE);
 
@@ -558,6 +559,7 @@ void StageManager::Init(Stage stageNumber)
 
 		int fireSpriteHandle = LoadGraph("data/image/firebarAnimation.png");
 		int blockSpriteHandle = LoadGraph("data/image/firebarblock.png");
+		clearHandle = LoadGraph("data/image/clear_text.png");
 
 		int totalOverworldBlocks = sizeof(world1_4data) / sizeof(BlockSpawnData);
 		for (int i = 0; i < totalOverworldBlocks; i++)
@@ -993,6 +995,16 @@ void StageManager::Render(Camera& camera)
 	// ゴールポール
 	for (GoalPole* pole : goalPoles) { pole->RenderGlobal(camera); }
 
+	if (turnOnText)
+	{
+		timerShowText.Update();
+		bool fullText = timerShowText.TimerHit();
+		int offset = 0;
+		if (fullText) offset = 2000;
+		//set titled
+		DrawRectGraph(0, 200, 0, 0, 1024, 300 + offset, clearHandle, 1);
+	}
+
 }
 
 //Clear all objects in stage
@@ -1081,6 +1093,12 @@ void StageManager::PlayCutscene()
 	else
 	{
 
-		if (MainCamera.cameraPosXLimit < 10240 - SCREEN_W && isBossDefeat) MainCamera.cameraPosXLimit += 3.0f;
+		if (MainCamera.cameraPosXLimit < 10240 - SCREEN_W && isBossDefeat) MainCamera.cameraPosXLimit += 5.0f;
+		else if (MainCamera.cameraPosXLimit >= 10240 - SCREEN_W)
+		{
+
+			turnOnText = true;
+			
+		}
 	}
 }
