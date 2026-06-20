@@ -105,6 +105,10 @@ public:
 	bool isBridgeClearing; 
 	bool isBossDefeat; //true if boss defeated with fireballs
 	void ClearBridge();
+	void PlayCutscene();
+	Timer timerShowText{ 2.0f };
+	int clearHandle;
+	bool turnOnText;
 
 
 	//Cleanup all vectors
