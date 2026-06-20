@@ -103,6 +103,7 @@ void GameUpdate()
 		//test
 		StageManager::GetInstance().ClearStage();
 		StageManager::GetInstance().Init(Stage::WORLD_1_4);
+		StageManager::GetInstance().currentStage == Stage::WORLD_1_4;
 
 		//Change time 
 		MainTime.SetCount(300);
@@ -152,14 +153,6 @@ void GameRender()
 	MarioFont::GetInstance().DrawTimeLabel(SCREEN_W - 232, 20);
 	MarioFont::GetInstance().DrawWorldLabel(SCREEN_W - 482, 20);
 
-	if (StageManager::GetInstance().currentStage == Stage::WORLD_1_4)
-	{
-		MarioFont::GetInstance().DrawWorldNumberLabel(SCREEN_W - 482, 52, 4); // Render 1_4.png asset
-	}
-	else
-	{
-		MarioFont::GetInstance().DrawWorldNumberLabel(SCREEN_W - 482, 52, 1); // Render 1_1.png asset
-	}
 	MarioFont::GetInstance().DrawNumber(SCREEN_W - 200, 60, MainTime.count, 3);
 
 	// ÉRÉCÉìêîÇÃï`âÊ

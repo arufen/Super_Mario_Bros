@@ -11,15 +11,13 @@ public:
 	void DrawNumber(int x, int y, int number, int digitCount); // 指定桁数で数字を描画
 	void DrawTimeLabel(int x, int y);
 	void DrawWorldLabel(int x, int y);
-	void DrawWorldNumberLabel(int x, int y, int worldNumber);
+	void DrawWorldNumberLabel(int x, int y, int graphHandle);
 	void DrawMarioLabel(int x, int y);
 	void Exit(); // メモリ解放
-
+	
 private:
 	int fontGraphHandles[10]; // 0~9のグラフィックハンドルを保持する配列
 	int timeLabelHandle;
 	int worldLabelHandle;
 	int marioLabelHandle;
-	int world1_1Handle;
-	int world1_4Handle;
 };

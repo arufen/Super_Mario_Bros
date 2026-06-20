@@ -75,7 +75,7 @@ void BrickBlock::OnHitBottom(RigidBody& player)
 
         isBouncing = true;
         bounceTimer = 0.0f;
-        //SoundManager::GetInstance().PlaySE("Bump");
+        SoundManager::GetInstance().PlaySE("Bump");
 
         if (itemType == BrickBlockItem::COIN)
         {
@@ -111,8 +111,7 @@ void BrickBlock::OnHitBottom(RigidBody& player)
     // -------------------------------------------------------------
     // --- 通常のレンガブロック破壊 ＆ 新しい名称での破片生成処理 ---
     //// -------------------------------------------------------------
-    //SoundManager::GetInstance().PlaySE("Break");
-
+    SoundManager::GetInstance().PlaySE("Break");
     // 64x64ブロックの物理的な中心点を計算
     float centerX = pos.x + 32.0f;
     float centerY = pos.y + 32.0f;

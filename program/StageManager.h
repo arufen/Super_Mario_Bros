@@ -109,4 +109,7 @@ private:
 	StageManager() : currentzone(WorldZone::OVERWORLD){}
 	~StageManager() {};
 	int tex_brickParts;
+
+	int world1_1Handle;
+	int world1_4Handle;
 };

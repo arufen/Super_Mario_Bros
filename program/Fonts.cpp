@@ -19,10 +19,12 @@ void MarioFont::Init()
             // This prints a message directly on your game window
             printfDx("Failed to load image: %s\n", path);
         }
-        timeLabelHandle = LoadGraph("data/image/Fonts/TIME.png");
-        worldLabelHandle = LoadGraph("data/image/Fonts/WORLD.png");
-        marioLabelHandle = LoadGraph("data/image/Fonts/MARIO.png");
     }
+
+    timeLabelHandle = LoadGraph("data/image/Fonts/TIME.png");
+    worldLabelHandle = LoadGraph("data/image/Fonts/WORLD.png");
+    marioLabelHandle = LoadGraph("data/image/Fonts/MARIO.png");
+
 }
 void MarioFont::DrawTimeLabel(int x, int y)
 {
@@ -46,16 +48,9 @@ void MarioFont::DrawMarioLabel(int x, int y)
     if (marioLabelHandle != -1) DrawGraph(x, y, marioLabelHandle, TRUE);
 }
 
-void MarioFont::DrawWorldNumberLabel(int x, int y, int worldNumber)
+void MarioFont::DrawWorldNumberLabel(int x, int y, int graphHandle)
 {
-    if (worldNumber == 4)
-    {
-        if (world1_4Handle != -1) DrawGraph(x, y, world1_4Handle, TRUE);
-    }
-    else
-    {
-        if (world1_1Handle != -1) DrawGraph(x, y, world1_1Handle, TRUE);
-    }
+        if (graphHandle != -1) DrawGraph(x, y, graphHandle, TRUE);
 }
 void MarioFont::DrawNumber(int x, int y, int number, int digitCount)
 {

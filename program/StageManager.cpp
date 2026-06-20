@@ -9,7 +9,7 @@
 
 //Enemis
 #include "Goomba.h"
-
+#include "Fonts.h"
 #include "Sound.h"
 
 using namespace std;
@@ -294,6 +294,8 @@ void StageManager::Init(Stage stageNumber)
 	isBossDefeat = false;
 	tex_brickParts = LoadGraph("data/image/brickpart.png");
 
+	world1_1Handle = LoadGraph("data/image/Fonts/1_1.png");
+	world1_4Handle = LoadGraph("data/image/Fonts/1_4.png");
 	if (stageNumber == Stage::WORLD_1_1)
 	{
 		//Stage (ground1)
@@ -874,6 +876,15 @@ void StageManager::Render(Camera& camera)
 	// ゴールポール
 	for (GoalPole* pole : goalPoles) { pole->RenderGlobal(camera); }
 
+
+	if (StageManager::GetInstance().currentStage == Stage::WORLD_1_4)
+	{
+		MarioFont::GetInstance().DrawWorldNumberLabel(SCREEN_W - 482, 52, world1_4Handle); // Render 1_4.png asset
+	}
+	else
+	{
+		MarioFont::GetInstance().DrawWorldNumberLabel(SCREEN_W - 482, 52, world1_1Handle); // Render 1_1.png asset
+	}
 }
 
 //Clear all objects in stage
