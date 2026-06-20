@@ -941,6 +941,7 @@ void StarEffect::Init()
 	walkAnim.InitialAnimation(LoadGraph("data/image/star_mario/starmario_walk.png"), 9, 10);
 	jumpAnim.InitialAnimation(LoadGraph("data/image/star_mario/starmario_jump.png"), 3, 10);
 
+
 	bigWaitAnim.InitialAnimation(LoadGraph("data/image/star_mario/bigstarmario_wait.png"), 3, 10);
 	bigWalkAnim.InitialAnimation(LoadGraph("data/image/star_mario/bigstarmario_walk.png"), 9, 10);
 	bigJumpAnim.InitialAnimation(LoadGraph("data/image/star_mario/bigstarmario_jump.png"), 3, 10);
@@ -969,17 +970,19 @@ void StarEffect::Update(bool isWalking, bool isJumping, int walkFPS)
 		walkAnim.AnimationUpdateLoop();
 		jumpAnim.AnimationUpdateLoop();
 
+		
 		bigWaitAnim.AnimationUpdateLoop();
 		bigWalkAnim.FPS = 15;
 		bigWalkAnim.AnimationUpdateLoop();
 		bigJumpAnim.AnimationUpdateLoop();
+		bigTurnAnim.AnimationUpdateLoop();
 	}
 }
 //==============================================================
 // スター状態の描画処理
 // マリオの画面座標と向きに合わせてスター状態のアニメーションを描画する
 //==============================================================
-void StarEffect::Render(int screenX, int screenY, bool isLeft, bool isJumping, bool isWalking, MarioForm form)
+void StarEffect::Render(int screenX, int screenY, bool isLeft, bool isJumping, bool isBraking, bool isWalking, MarioForm form)
 {
 	if (!isActive) return;
 
@@ -988,6 +991,7 @@ void StarEffect::Render(int screenX, int screenY, bool isLeft, bool isJumping, b
 	Animation* targetWait = &waitAnim;
 	Animation* targetWalk = &walkAnim;
 	Animation* targetJump = &jumpAnim;
+	Animation* targetTurn = &turnAnim;
 
 	// フォームに応じてアニメーションを切り替える
 	if (form == MarioForm::SUPER || form == MarioForm::FIRE)
@@ -995,6 +999,7 @@ void StarEffect::Render(int screenX, int screenY, bool isLeft, bool isJumping, b
 		targetWait = &bigWaitAnim;
 		targetWalk = &bigWalkAnim;
 		targetJump = &bigJumpAnim;
+		targetTurn = &bigTurnAnim;
 	}
 	// マリオの現在の状態に合わせて描画するアニメーションを切り替える
 	if (isJumping)
@@ -1002,6 +1007,12 @@ void StarEffect::Render(int screenX, int screenY, bool isLeft, bool isJumping, b
 		targetJump->x = (float)screenX;
 		targetJump->y = (float)screenY;
 		targetJump->AnimationRenderCenter(isLeft);
+	}
+	else if (isBraking) // ★ 歩き（isWalking）よりも先にブレーキ判定を入れる
+	{
+		targetTurn->x = (float)screenX;
+		targetTurn->y = (float)screenY;
+		targetTurn->AnimationRenderCenter(isLeft);
 	}
 	else if (isWalking)
 	{
@@ -1014,7 +1025,7 @@ void StarEffect::Render(int screenX, int screenY, bool isLeft, bool isJumping, b
 			targetWait->x = (float)screenX;
 			targetWait->y = (float)screenY;
 			targetWait->AnimationRenderCenter(isLeft);
-		}
+	}
 
 }
 void Mario::StartCutsceneWalk(float targetX, float speed)
