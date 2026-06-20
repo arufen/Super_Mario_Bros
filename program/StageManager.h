@@ -81,9 +81,12 @@ public:
 	vector<FireFlower*> fireFlower;
 	vector<SuperStar*> superStar;
 
-
+	Stage currentStage{ Stage::WORLD_1_1 };
 	Image background;
 
+	bool isBridgeClearing;
+	bool isBossDefeat; //true if boss defeated with fireballs
+	void ClearBridge();
 	//Cleanup all vectors
 	void ClearStage();
 
