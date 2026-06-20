@@ -77,26 +77,7 @@ void BrickBlock::OnHitBottom(RigidBody& player)
 
         isBouncing = true;
         bounceTimer = 0.0f;
-        // Check Mario form using Mario.h state tracking rules
-        if (mario && mario->GetForm() != MarioForm::SMALL)
-        {
-            // Big or Fire Mario breaks the block entirely
-            active = false;
-            isAvailable = false;
-
-            SoundManager::GetInstance().PlaySE("Break");
-            // TODO: Play brick shatter sound effect
-        }
-        else
-        {
-            // Small Mario makes the block bounce, but it remains unbroken
-            SoundManager::GetInstance().PlaySE("Bump");
-        }
-    }
-    else
-    {
-        // Item handling behavior
-        hit_count++;
+        SoundManager::GetInstance().PlaySE("Bump");
 
         if (itemType == BrickBlockItem::COIN)
         {
@@ -132,7 +113,7 @@ void BrickBlock::OnHitBottom(RigidBody& player)
     // -------------------------------------------------------------
     // --- 通常のレンガブロック破壊 ＆ 新しい名称での破片生成処理 ---
     //// -------------------------------------------------------------
-    //SoundManager::GetInstance().PlaySE("Break");
+    SoundManager::GetInstance().PlaySE("Break");
 
     // 64x64ブロックの物理的な中心点を計算
     float centerX = pos.x + 32.0f;
@@ -173,6 +154,122 @@ void BrickBlock::OnHitBottom(RigidBody& player)
     collider.width = 0;
     collider.height = 0;
 }
+
+//
+//
+//void BrickBlock::OnHitBottom(RigidBody& player)
+//{
+//   
+//
+//    Mario* mario = dynamic_cast<Mario*>(&player);
+//
+//    if (itemType == BrickBlockItem::NONE)
+//    {
+//        // Check Mario form using Mario.h state tracking rules
+//        if (mario && mario->GetForm() != MarioForm::SMALL)
+//        {
+//            // Big or Fire Mario breaks the block entirely
+//            active = false;
+//            isAvailable = false;
+//
+//            SoundManager::GetInstance().PlaySE("Break");
+//            // TODO: Play brick shatter sound effect
+//        }
+//        else
+//        {
+//            if (!isAvailable) return;
+//
+//            // Start block bounce sequence
+//            isBouncing = true;
+//            bounceTimer = 0.0f;
+//            // Small Mario makes the block bounce, but it remains unbroken
+//            SoundManager::GetInstance().PlaySE("Bump");
+//        }
+//    }
+//    else
+//    {
+//        // Item handling behavior
+//        hit_count++;
+//
+//        if (itemType == BrickBlockItem::COIN)
+//        {
+//            itemCoinAnimationTimer.ResetTimer();
+//            if (mario)
+//            {
+//                mario->coin++; // Increment Mario's coin total safely
+//            }
+//        }
+//        else if (itemType == BrickBlockItem::STAR)
+//        {
+//            // 1. Create a new instance of SuperStar
+//            SuperStar* newStar = new SuperStar();
+//
+//            // 2. Initialize it just slightly above or matching the block's layout position
+//            newStar->Init(pos.x, pos.y);
+//
+//            // 3. Trigger its rising spawning state sequence
+//            newStar->SpawnItem();
+//
+//            // 4. Push it into StageManager's star tracker vector so it updates and renders globally
+//            StageManager::GetInstance().superStar.push_back(newStar);
+//            RigidBody::collidables.push_back(newStar);
+//        }
+//
+//        // Lock item production once hit maximum is reached
+//        if (hit_count >= max_hits_allowed)
+//        {
+//            isAvailable = false;
+//            image.InitialImageAndSize(texEmpty); // Swaps texture permanently to empty brown block
+//        }
+//    }
+//
+//    // -------------------------------------------------------------
+//   // --- 通常のレンガブロック破壊 ＆ 新しい名称での破片生成処理 ---
+//   //// -------------------------------------------------------------
+//   //SoundManager::GetInstance().PlaySE("Break");
+//
+//   // 64x64ブロックの物理的な中心点を計算
+//    float centerX = pos.x + 32.0f;
+//    float centerY = pos.y + 32.0f;
+//
+//    // StageManager から画像ハンドルを取得
+//    int handle = StageManager::GetInstance().GetBrickPartsHandle();
+//
+//    // 4つの破片オブジェクトをポインタとして動的生成 (new)
+//    // ※注: `BrickPiece` の部分は、あなたが `BrickBlockParts` を継承して作った実際の具象クラス名（実体化できるクラス名）に書き換えてください。
+//    BrickBlockParts* p1 = new BrickBlockParts();
+//    BrickBlockParts* p2 = new BrickBlockParts();
+//    BrickBlockParts* p3 = new BrickBlockParts();
+//    BrickBlockParts* p4 = new BrickBlockParts();
+//
+//    // それぞれを初期化・スポーンさせる
+//    // 左上: 左上に高く飛び、反時計回りに回転
+//    p1->Spawn(Float2(centerX - 16.0f, centerY - 16.0f), Float2(-2.5f, -8.5f), -0.12f, handle);
+//
+//    // 右上: 右上に高く飛び、時計回りに回転
+//    p2->Spawn(Float2(centerX + 16.0f, centerY - 16.0f), Float2(2.5f, -8.5f), 0.12f, handle);
+//
+//    // 左下: 左に低めの軌道で飛び、反時計回りに回転
+//    p3->Spawn(Float2(centerX - 16.0f, centerY + 16.0f), Float2(-1.8f, -5.5f), -0.08f, handle);
+//
+//    // 右下: 右に低めの軌道で飛び、時計回りに回転
+//    p4->Spawn(Float2(centerX + 16.0f, centerY + 16.0f), Float2(1.5f, -5.5f), 0.08f, handle);
+//
+//    // StageManager のポインタ配列に追加して管理を委ねる
+//    StageManager::GetInstance().brickParts.push_back(p1);
+//    StageManager::GetInstance().brickParts.push_back(p2);
+//    StageManager::GetInstance().brickParts.push_back(p3);
+//    StageManager::GetInstance().brickParts.push_back(p4);
+//
+//    // ブロック自体を非アクティブ化し、当たり判定を消失させる
+//    active = false;
+//    isAvailable = false;
+//    collider.width = 0;
+//    collider.height = 0;
+//}
+
+
+
 //void BrickBlock::OnHitBottom(RigidBody& player)
 //{
 //    if (!isAvailable) return;
