@@ -4,7 +4,7 @@
 
 void SuperMushroom::CollectItem(Mario& mario)
 {
-	mario.ChangeToSuper();
+	mario.SetForm(MarioForm::SUPER);
 	active = false;
 }
 
@@ -16,7 +16,7 @@ void SuperMushroom::Init(float x, float y)
 	this->image.InitialImageAndSize(handle);
 	this->collider = Collider(x, y, (float)this->image.sizeX, (float)this->image.sizeY);
 	this->RigidBody_collider = collider;
-	this->direction = 1.0f;
+	this->direction = -1.0f;
 	this->canCollect = false;
 	this->originalPosition;
 	this->active = true;
@@ -102,10 +102,4 @@ void SuperMushroom::MovingUp()
 void SuperMushroom::RenderGlobal(Camera& camera)
 {
 	camera.GlobalRenderImage(image);
-}
-
-//tmp
-void SuperMushroom::OnHitSide(RigidBody& player)
-{
-	SpawnItem();
 }

@@ -19,7 +19,7 @@ static std::string currentPlayingBGMKey = "";
 
 void GameTime::Init()
 {
-	count = 400; // サウンド確認のため一旦200スタートにしてます
+	count = WORLD1_1TIME; // サウンド確認のため一旦200スタートにしてます
     frameCounter = 0;
 
     // フラグの初期化
@@ -36,6 +36,22 @@ void GameTime::Init()
 
 void GameTime::Update()
 {
+    if (isConvertingTimeToScore)
+    {
+        if (count > 0)
+        {
+            count--; // Tick down 1 second unit
+            MainScore.AddScore(50); // Formula: 50 points per remaining second
+
+            // Optional: Play a repetitive high-pitched tick sound effect
+            // SoundManager::GetInstance().PlaySE("Tick"); 
+        }
+        else
+        {
+            isConvertingTimeToScore = false; // Countdown complete
+        }
+        return; // Bypass normal gameplay timing logic while converting
+    }
     // マリオがすでに死亡状態なら、時間の進行もBGMの自動切り替えもすべて停止する
     if (MainMario.GetState() == MarioState::DEAD)
     {
@@ -46,14 +62,15 @@ void GameTime::Update()
     if (count <= 0)
     {
         count = 0;
+        if (MainMario.GetState() != MarioState::GOAL) {
+            // タイムアップした瞬間にBGMを停止する
+            if (!isBGMStopped)
+            {
+                isBGMStopped = true;
 
-        // タイムアップした瞬間にBGMを停止する
-        if (!isBGMStopped)
-        {
-            isBGMStopped = true;
-
-            // マリオを死亡状態へ移行させる
-            MainMario.ToDeadState();
+                // マリオを死亡状態へ移行させる
+                MainMario.ToDeadState();
+            }
         }
         return;
     }

@@ -16,11 +16,19 @@ void SoundManager::Init()
 	// 急ぎBGMの読み込み
 	bgmList["HurryAction"] = LoadSoundMem("data/sound/bgm_hurryaction.mp3");
 
+	// 1-1クリアBGMの読み込み
+	bgmList["Stage1-1_Clear"] = LoadSoundMem("data/sound/bgm_stage1-1_clear.mp3");
+
 	// SE（効果音）の読み込み
 	seList["Jump_Small"] = LoadSoundMem("data/sound/small_mario_jump.wav");
 	seList["Coin"]  = LoadSoundMem("data/sound/se_coin.wav");
 	seList["Warp"] = LoadSoundMem("data/sound/se_warp.wav");
 	seList["Bump"] = LoadSoundMem("data/sound/se_brick_block_bump.wav");
+	seList["Break"] = LoadSoundMem("data/sound/se_brick_block_break.wav");
+	seList["Kick"] = LoadSoundMem("data/sound/se_kick.wav");
+	seList["Stomp"] = LoadSoundMem("data/sound/se_stomp.wav");
+	seList["Power_Up"] = LoadSoundMem("data/sound/se_powerup.wav");
+	seList["Flag_Pole"] = LoadSoundMem("data/sound/se_flag_pole.wav");
 }
 
 void SoundManager::PlayBGM(const std::string& name)

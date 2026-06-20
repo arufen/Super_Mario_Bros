@@ -55,6 +55,7 @@ void GameInit()
 
 	// ゲーム時間の初期化
 	MainTime.Init();
+	MainScore.Init();
 
 	// カメラの初期位置を設定
 	MainCamera.pos.Set(0.0f, 0.0f);
@@ -72,6 +73,7 @@ void GameInit()
 //---------------------------------------------------------------------------------
 void GameUpdate()
 {
+	//tmp
 	if (StageManager::GetInstance().currentzone == WorldZone::UNDERWORLD)
 	{
 		MainCamera.pos.x = 56 * BLOCK_SIZE;
@@ -98,15 +100,18 @@ void GameUpdate()
 	// デバッグ機能（モード切り替えなど）の更新
 	MainDebug.Update();
 
-	if (PushHitKey(KEY_INPUT_S) && CheckHitKey(KEY_INPUT_LCONTROL))
+
+	//Change stage to 1-4
+	//ステージ１－４になる
+	if (PushHitKey(KEY_INPUT_S) && CheckHitKey(KEY_INPUT_LCONTROL) && StageManager::GetInstance().currentStage != Stage::WORLD_1_4)
 	{
+		StageManager::GetInstance().currentStage = Stage::WORLD_1_4;
 		//test
 		StageManager::GetInstance().ClearStage();
 		StageManager::GetInstance().Init(Stage::WORLD_1_4);
-		StageManager::GetInstance().currentStage == Stage::WORLD_1_4;
 
 		//Change time 
-		MainTime.SetCount(300);
+		MainTime.SetCount(WORLD1_4TIME);
 
 		// register all collidables into for every object that has RigidBody
 		for (auto* block : StageManager::GetInstance().GetCollidables())
@@ -148,7 +153,7 @@ void GameRender()
 	// マリオの手前に残り時間を描画
 	//MainTime.Render();
 	MarioFont::GetInstance().DrawMarioLabel(80, 20);
-	MarioFont::GetInstance().DrawNumber(80, 52, MainMario.GetScore(), 6);
+	MarioFont::GetInstance().DrawNumber(80, 52, MainScore.GetScore(), 6);
 
 	MarioFont::GetInstance().DrawTimeLabel(SCREEN_W - 232, 20);
 	MarioFont::GetInstance().DrawWorldLabel(SCREEN_W - 482, 20);
@@ -157,6 +162,7 @@ void GameRender()
 
 	// コイン数の描画
 	DrawFormatString(0, 80, GetColor(255, 255, 255), "Mario coin : %d", MainMario.coin);
+	DrawFormatString(0, 96, GetColor(255, 255, 255), "Mario score : %d", MainScore.GetScore());
 
 	// 一番手前にデバッグ情報を描画
 	MainDebug.Render();

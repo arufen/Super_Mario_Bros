@@ -33,7 +33,8 @@ void StageManager::TransferWorldZone(WorldZone newZone)
 		MainMario.now_speed_y = 0.0f;
 		MainMario.isJumping = false;
 
-		MainMario.Warping(spawnX, spawnY, Mario::WarpDir::UP);
+		//MainMario.Warping(spawnX, spawnY, Mario::WarpDir::UP);
+		MainMario.WarpPosition(spawnX, spawnY);
 		SoundManager::GetInstance().PlaySE("Warp");
 	}
 	else if (currentzone == WorldZone::UNDERWORLD)
@@ -62,6 +63,14 @@ void CreateKoopaTroopa(T1 x, T2 y)
 	StageManager::GetInstance().koopaTroopa.push_back(newKoopaTroopa);
 }
 
+template <typename T1, typename T2>
+void CreateBowser(T1 x, T2 y)
+{
+	Bowser* newBowser = new Bowser();
+	newBowser->Init(x * BLOCK_SIZE, y * BLOCK_SIZE);
+	StageManager::GetInstance().bowser.push_back(newBowser);
+}
+
 
 
 //Create ground tiles from (fromTileX, fromTileY) to (toTileX, toTileY) (max Y: 14)
@@ -73,7 +82,7 @@ void CreateGrounds(int fromTileX, int fromTileY, int toTileX, int toTileY)
 		{
 			Ground newGround;
 			newGround.Init(x * BLOCK_SIZE, y * BLOCK_SIZE, LoadGraph("data/image/ground.png"));
-			StageManager::GetInstance(). ground.push_back(newGround);
+			StageManager::GetInstance().ground.push_back(newGround);
 		}
 	}
 }
@@ -93,7 +102,19 @@ void CreateGrounds(int fromTileX, int fromTileY, int toTileX, int toTileY, int h
 	}
 }
 
-
+//Create bridge in 1-4
+void CreateBridge(int fromTileX, int fromTileY, int toTileX, int toTileY, int handle)
+{
+	for (int x = fromTileX; x <= toTileX; x++)
+	{
+		for (int y = fromTileY; y <= toTileY; y++)
+		{
+			Ground* newBridge = new Ground();
+			newBridge->Init(x * BLOCK_SIZE, y * BLOCK_SIZE, handle);
+			StageManager::GetInstance().bridge.push_back(newBridge);
+		}
+	}
+}
 
 //Stair looking ground
 void CreateStairs(int fromTileX, int fromTileY, int toTileX, int toTileY, bool flipFlag)
@@ -110,7 +131,7 @@ void CreateStairs(int fromTileX, int fromTileY, int toTileX, int toTileY, bool f
 
 	int handle = LoadGraph("data/image/ground2.png");
 
-	
+
 
 	if (!flipFlag)
 	{
@@ -166,37 +187,60 @@ void CreateCoin(int fromTileX, int fromTileY, int toTileX, int toTileY)
 }
 
 //ITEMS
-void CreateSuperMushroom(float x, float y) 
+void StageManager::CreateSuperMushroom(float x, float y)
 {
 	SuperMushroom* newSuperMushroom = new SuperMushroom();
 	newSuperMushroom->Init(x * BLOCK_SIZE, y * BLOCK_SIZE);
+	newSuperMushroom->SpawnItem();
 	StageManager::GetInstance().superMushroom.push_back(newSuperMushroom);
+	RigidBody::collidables.push_back(newSuperMushroom);
 }
 
-void CreateFireFlower(float x, float y)
+void StageManager::CreateFireFlower(float x, float y)
 {
 	FireFlower* newFireFlower = new FireFlower();
 	newFireFlower->Init(x * BLOCK_SIZE, y * BLOCK_SIZE);
+	newFireFlower->SpawnItem();
 	StageManager::GetInstance().fireFlower.push_back(newFireFlower);
+	RigidBody::collidables.push_back(newFireFlower);
+
 }
 
-void CreateSuperStar(float x, float y)
+void StageManager::CreateSuperStar(float x, float y)
 {
 	SuperStar* newSuperStar = new SuperStar();
 	newSuperStar->Init(x * BLOCK_SIZE, y * BLOCK_SIZE);
+	newSuperStar->SpawnItem();
 	StageManager::GetInstance().superStar.push_back(newSuperStar);
+	RigidBody::collidables.push_back(newSuperStar);
+}
+
+//Axe button to clear the bridge
+void CreateAxe(float x, float y)
+{
+	Axe* newAxe = new Axe();
+	newAxe->Init(x * BLOCK_SIZE, y * BLOCK_SIZE);
+	StageManager::GetInstance().axe.push_back(newAxe);
+}
+
+//Moving platform (動いてる足場）
+void CreateMovingPlatform(float ax, float ay, float bx, float by)
+{
+	MovingPlatform* newMovingPlatform = new MovingPlatform();
+	newMovingPlatform->Init(ax * BLOCK_SIZE, ay * BLOCK_SIZE, bx * BLOCK_SIZE, by * BLOCK_SIZE);
+	StageManager::GetInstance().movingPlatform.push_back(newMovingPlatform);
 }
 
 
 vector<Collidable*> StageManager::GetCollidables()
 {
 	// returns all collidable blocks for mario to register
-	
+
 	vector<Collidable*> result;
 
-	
+	//ALL BLOCKS
 	for (auto& g : ground)
-	result.push_back(&g);
+		result.push_back(&g);
 	for (auto* block : overworld1_1Blocks) {
 		if (block->IsActive()) {
 			Collidable* physicsObject = dynamic_cast<Collidable*>(block);
@@ -225,7 +269,7 @@ vector<Collidable*> StageManager::GetCollidables()
 			}
 		}
 	}
-	
+
 	for (auto& g : underworld_ground)
 		result.push_back(&g);
 	for (auto* block : underworldBlocks) {
@@ -236,11 +280,26 @@ vector<Collidable*> StageManager::GetCollidables()
 			}
 		}
 	}
-	
+
 	for (auto* pipe : underWorldPipe) {
 		if (pipe->IsActive()) {
 			result.push_back(pipe); // Makes the pipe solid to Mario!
 		}
+	}
+
+	for (auto* a : axe)
+	{
+		result.push_back(a);
+	}
+
+	for (auto* b : bridge)
+	{
+		result.push_back(b);
+	}
+
+	for (auto* m : movingPlatform)
+	{
+		result.push_back(m);
 	}
 
 	//ENEMIES
@@ -252,6 +311,10 @@ vector<Collidable*> StageManager::GetCollidables()
 	for (auto* k : koopaTroopa)
 	{
 		result.push_back(k);
+	}
+	for (auto* b : bowser)
+	{
+		result.push_back(b);
 	}
 
 	//ITEMS
@@ -266,7 +329,7 @@ vector<Collidable*> StageManager::GetCollidables()
 	{
 		result.push_back(superM);
 	}
-	for (auto* fireF: fireFlower)
+	for (auto* fireF : fireFlower)
 	{
 		result.push_back(fireF);
 	}
@@ -292,10 +355,10 @@ void StageManager::Init(Stage stageNumber)
 {
 	isBridgeClearing = false;
 	isBossDefeat = false;
-	tex_brickParts = LoadGraph("data/image/brickpart.png");
 
 	world1_1Handle = LoadGraph("data/image/Fonts/1_1.png");
 	world1_4Handle = LoadGraph("data/image/Fonts/1_4.png");
+	tex_brickParts = LoadGraph("data/image/brickpart.png");
 	if (stageNumber == Stage::WORLD_1_1)
 	{
 		//Stage (ground1)
@@ -338,31 +401,13 @@ void StageManager::Init(Stage stageNumber)
 		//Stairs
 		CreateStairs(134, 9, 137, 12, false);
 
-
-
-		//// 2. Create the fire bar block
-		//FireBar* testFireBar = new FireBar();
-		//testFireBar->Init(Float2(448.0f, 640.0f), blockSpriteHandle, fireSpriteHandle, CLOCKWISE, 6);
-
-		//// FIX: Change 'blockList' to 'overworld1_1Blocks'
-		//// This seamlessly registers it into StageManager's active tracking loop!
-		//overworld1_1Blocks.push_back(testFireBar);
-
-		//// 2. Create the fire bar block
-		//FireBar* testFireBar2 = new FireBar();
-		//testFireBar2->Init(Float2(640.0f, 640.0f), blockSpriteHandle, fireSpriteHandle, COUNTERCLOCKWISE, 6);
-
-		//// FIX: Change 'blockList' to 'overworld1_1Blocks'
-		//// This seamlessly registers it into StageManager's active tracking loop!
-		//overworld1_1Blocks.push_back(testFireBar2);
-
 		for (int i = 0; i < totalOverworldBlocks; i++)
 		{
 			Float2 pixelPos;
 			pixelPos.x = world1_1data[i].gridX * 64.0f;
 			pixelPos.y = world1_1data[i].gridY * 64.0f;
 
-			
+
 			if (world1_1data[i].type == BlockType::BRICK)
 			{
 				BrickBlock* regularBrick = new BrickBlock();
@@ -384,8 +429,9 @@ void StageManager::Init(Stage stageNumber)
 			}
 			else if (world1_1data[i].type == BlockType::QUESTION)
 			{
+				QuestionBlockItem itemType = world1_1data[i].itemType;
 				QuestionBlock* qblock = new QuestionBlock();
-				qblock->Init(pixelPos, texQuestion, texHard);
+				qblock->Init(pixelPos, texQuestion, texHard, itemType);
 				overworld1_1Blocks.push_back(qblock);
 			}
 			else if (world1_1data[i].type == BlockType::HIDDEN)
@@ -484,11 +530,6 @@ void StageManager::Init(Stage stageNumber)
 		background.InitialImageAndSize(LoadGraph("data/image/1-1_background.png"));
 		background.pos.Set(0.0f, 0.0f);
 
-		//tmp
-		CreateSuperMushroom(5, 10);
-		CreateFireFlower(6, 10);
-		CreateSuperStar(7, 10);
-
 		// ゴールポールを X=12700 の位置に設置
 		// ※ Y座標(192.0f)は仮です。goal_pole.pngの画像の高さに合わせて、
 		// 床(Y=832)にぴったりくっつくように微調整してください。
@@ -509,13 +550,13 @@ void StageManager::Init(Stage stageNumber)
 		//Reset Camera
 		MainCamera.pos.Set(0.0f, 0.0f);
 		MainCamera.cameraPosXLimit = 10240 - SCREEN_W;
-		
+
 
 		//Set background
 		background.InitialImageAndSize(LoadGraph("data/image/1-4_background.png"));
 		SetBackgroundColor(0, 0, 0);
 
-		//Reset Stqage
+		//Reset Stage
 		int groundHandle = LoadGraph("data/image/ground_castle.png");
 		int tmpHandle = LoadGraph("data/image/tmp.png");
 		int bridgeHandle = LoadGraph("data/image/bridge.png");
@@ -560,7 +601,6 @@ void StageManager::Init(Stage stageNumber)
 
 		CreateGrounds(29, 10, 29, 14, groundHandle);
 		CreateGrounds(30, 11, 30, 14, groundHandle);
-		//CreateGrounds(30, 10, 30, 10, tmpHandle); //Temporary block
 		CreateGrounds(31, 10, 31, 14, groundHandle);
 
 		CreateGrounds(35, 9, 71, 14, groundHandle);
@@ -575,7 +615,11 @@ void StageManager::Init(Stage stageNumber)
 		CreateGrounds(123, 10, 127, 14, groundHandle);
 
 		//bridge
-		CreateGrounds(128, 10, 140, 10, bridgeHandle);
+		CreateBridge(128, 10, 140, 10, bridgeHandle);
+		//axe
+		CreateAxe(141, 8);
+		//Moving Platform
+		CreateMovingPlatform(137, 6, 139, 6);
 
 		//block
 		CreateGrounds(141, 9, 143, 14, groundHandle);
@@ -599,6 +643,9 @@ void StageManager::Init(Stage stageNumber)
 
 		//after the bridge
 		CreateGrounds(142, 3, 143, 5, groundHandle);
+
+		//ENEMIES
+		CreateBowser(138, 8);
 	}
 
 }
@@ -606,7 +653,7 @@ void StageManager::Init(Stage stageNumber)
 void StageManager::Update(Camera& camera)
 {
 
-	
+
 
 	if (currentzone == WorldZone::OVERWORLD) {
 		for (IBlock* b : overworld1_1Blocks) { b->Update(); }
@@ -618,7 +665,7 @@ void StageManager::Update(Camera& camera)
 		for (int i = 0; i < goomba.size(); i++)
 		{
 			goomba[i]->Update(camera);
-			if (MainMario.isStarMode)
+			if (MainMario.starEffect.isActive)
 			{
 				goomba[i]->isTrigger = true;
 			}
@@ -643,7 +690,7 @@ void StageManager::Update(Camera& camera)
 			koopaTroopa[i]->Update(camera, MainMario);
 
 
-			if (MainMario.isStarMode)
+			if (MainMario.starEffect.isActive)
 			{
 				koopaTroopa[i]->isTrigger = true;
 			}
@@ -668,6 +715,47 @@ void StageManager::Update(Camera& camera)
 		for (UnderWorldPipe* pipe : underWorldPipe)
 		{
 			pipe->Update();
+		}
+	}
+
+	for (int i = 0; i < bowser.size(); i++)
+	{
+		bowser[i]->Update(camera);
+
+		//disable collision when mario in star mode
+		if (MainMario.starEffect.isActive)
+		{
+			bowser[i]->isTrigger = true;
+		}
+		else
+		{
+			bowser[i]->isTrigger = false;
+		}
+
+		if (bowser[i]->state == EnemyState::DEAD)
+		{
+			// remove from collidables list too!
+			RigidBody::collidables.erase(
+				remove(RigidBody::collidables.begin(), RigidBody::collidables.end(), bowser[i]),
+				RigidBody::collidables.end()
+			);
+			bowser.erase(bowser.begin() + i);
+		}
+	}
+
+	//Bowser fire's projectile
+	for (int i = 0; i < bowserFire.size(); i++)
+	{
+		bowserFire[i]->Update();
+
+		if (!bowserFire[i]->isActive)
+		{
+			// remove from collidables list too!
+			RigidBody::collidables.erase(
+				remove(RigidBody::collidables.begin(), RigidBody::collidables.end(), bowserFire[i]),
+				RigidBody::collidables.end()
+			);
+			bowserFire.erase(bowserFire.begin() + i);
 		}
 	}
 	for (auto* part : brickParts) // ここを auto* に
@@ -707,6 +795,40 @@ void StageManager::Update(Camera& camera)
 			);
 			//remove coins from stage manager
 			overworld1_1Blocks.erase(overworld1_1Blocks.begin() + i);
+		}
+	}
+
+	//Moving platform
+	for (int i = 0; i < movingPlatform.size(); i++)
+	{
+		movingPlatform[i]->Update(MainMario);
+
+		if (!movingPlatform[i]->isActive)
+		{
+			// remove from collidables list too!
+			RigidBody::collidables.erase(
+				remove(RigidBody::collidables.begin(), RigidBody::collidables.end(),
+					dynamic_cast<Collidable*>(movingPlatform[i])),  //cast here
+				RigidBody::collidables.end()
+			);
+			//remove coins from stage manager
+			movingPlatform.erase(movingPlatform.begin() + i);
+		}
+	}
+
+	//deactivate axe
+	for (int i = 0; i < axe.size(); i++)
+	{
+		if (!axe[i]->isActive)
+		{
+			// remove from collidables list too!
+			RigidBody::collidables.erase(
+				remove(RigidBody::collidables.begin(), RigidBody::collidables.end(),
+					dynamic_cast<Collidable*>(axe[i])),  //cast here
+				RigidBody::collidables.end()
+			);
+			//remove coins from stage manager
+			axe.erase(axe.begin() + i);
 		}
 	}
 
@@ -779,12 +901,27 @@ void StageManager::Update(Camera& camera)
 
 	// ゴールポール
 	for (GoalPole* pole : goalPoles) { pole->Update(); }
+
+	//Clear bridge in 1-4
+	if (isBridgeClearing)
+	{
+		ClearBridge();
+	}
+
+	//camera limit in 1-4 until cutscene
+	if (currentStage == Stage::WORLD_1_4)
+	{
+		if (MainMario.GetState() != MarioState::CUTSCENE) camera.cameraPosXLimit = 126.5 * BLOCK_SIZE;
+		else
+		{
+
+			if(camera.cameraPosXLimit < 10240 - SCREEN_W && isBossDefeat) camera.cameraPosXLimit += 3.0f;
+		}
+	}
 }
 
 void StageManager::Render(Camera& camera)
 {
-
-
 	//ENEMIES
 	//Goomba
 	for (int i = 0; i < goomba.size(); i++)
@@ -798,7 +935,7 @@ void StageManager::Render(Camera& camera)
 	}
 
 	//ITEMS
-	for (Coin* coin: coins)
+	for (Coin* coin : coins)
 	{
 		if (coin->active)
 		{
@@ -848,6 +985,31 @@ void StageManager::Render(Camera& camera)
 	{
 		c->RenderGlobal(camera);
 	}
+
+	for (auto* b : bowser)
+	{
+		b->RenderGlobal(camera, MainMario);
+	}
+	for (auto* bf : bowserFire)
+	{
+		bf->RenderGlobal(camera);
+	}
+
+	for (auto* a : axe)
+	{
+		a->RenderGlobal(camera);
+	}
+
+	for (auto* b : bridge)
+	{
+		b->RenderGlobal(camera);
+	}
+
+	for (auto* m : movingPlatform)
+	{
+		m->RenderGlobal(camera);
+	}
+
 
 	if (currentzone == WorldZone::OVERWORLD)
 	{
@@ -905,6 +1067,16 @@ void StageManager::ClearStage()
 	for (auto* s : superStar) delete s;
 	for (auto* p : goalPoles) delete p;
 	for (auto* c : castles) delete c;
+	for (auto* b : bowser) delete b;
+	for (auto* bf : bowserFire) delete bf;
+	for (auto* a : axe) delete a;
+	for (auto* b : bridge) delete b;
+	for (auto* m : movingPlatform) delete m;
+	// --- ここを追加して破片のメモリを解放する ---
+	for (auto* part : brickParts)
+	{
+		delete part; // 動的生成したメモリを解放
+	}
 
 	// then clear the vectors
 	ground.clear();
@@ -921,13 +1093,43 @@ void StageManager::ClearStage()
 	fireFlower.clear();
 	superStar.clear();
 	goalPoles.clear();
-	// --- ここを追加して破片のメモリを解放する ---
-	for (auto* part : brickParts)
-	{
-		delete part; // 動的生成したメモリを解放
-	}
+	castles.clear();
+	bowser.clear();
+	bowserFire.clear();
+	axe.clear();
+	bridge.clear();
+	movingPlatform.clear();
+
 	brickParts.clear(); // ベクターを空にする
 
 	// clear collidables in RigidBody too!
 	RigidBody::collidables.clear();
+}
+
+void StageManager::ClearBridge()
+{
+	if (isBridgeClearing && !bridge.empty())
+	{
+		timerClearingBridgeInterval.Update();
+
+		if (timerClearingBridgeInterval.HitAndReset())
+		{
+			// remove from collidables list too!
+			RigidBody::collidables.erase(
+				remove(RigidBody::collidables.begin(), RigidBody::collidables.end(), bridge.back()),
+				RigidBody::collidables.end()
+			);
+
+			delete bridge.back();
+			bridge.pop_back();
+		}
+
+		if (bridge.empty())
+		{
+			isBridgeClearing = false; // done collapsing
+
+			float toadTargetX = 152 * BLOCK_SIZE;
+			MainMario.StartCutsceneWalk(toadTargetX, 3.0f);
+		}
+	}
 }

@@ -6,6 +6,7 @@
 #include "Camera.h"
 #include "Hit.h"
 #include  "CollectableItem.h"
+#include "Score.h"
 #include "Mario.h"
 
 class KoopaTroopa : public RigidBody, public Collidable, public Enemy
@@ -22,6 +23,8 @@ public:
 
 	bool isInShell = false;
 	bool isShellMoving = false;
+
+	void ToDeadState();
 
 	virtual void WaitForCamera(Camera& camera) override;
 	virtual void TakeDamage(RigidBody& attacker) override;

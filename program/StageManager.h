@@ -3,6 +3,7 @@
 #include "Mario.h"
 #include "Camera.h"
 #include <vector>
+#include "HelpfulFunc.h"
 
 #include "Collidable.h" //To check collision for every block
 
@@ -10,6 +11,8 @@
 #include "Ground.h"
 #include "IBlock.h"
 #include "Warp_Pipe.h"
+#include "Axe.h"
+#include "Moving_Platform.h"
 
 //ITEMS
 #include "Coin.h"
@@ -22,10 +25,13 @@
 //Enemies
 #include "Goomba.h"
 #include "Koopa_Troopa.h"
+#include "Bowser.h"
+#include "Bowser_Fire.h"
 
 #include "Goal_Pole.h"
 #include "Castle.h"
-
+#define WORLD1_1TIME 400
+#define WORLD1_4TIME 300
 using namespace std;
 
 enum class Stage
@@ -43,11 +49,7 @@ public:
 		return instance;
 	}
 
-	//All register blocks
-	//Ground （床）
-	vector<Ground> ground;
 
-	vector<Ground> underworld_ground;
 
 	// ゴールポール
 	vector<GoalPole*> goalPoles;
@@ -56,6 +58,8 @@ public:
 	//Enemy （敵）
 	vector<Goomba*> goomba;
 	vector<KoopaTroopa*> koopaTroopa;
+	vector<Bowser*> bowser;
+	vector<BowserFire*> bowserFire;
 
 	// returns all collidable blocks for mario to register
 	vector<Collidable*> GetCollidables();
@@ -69,10 +73,16 @@ public:
 	WorldZone currentzone;
 
 	//for all blocks
+	vector<Ground> ground;
+	vector<Ground> underworld_ground;
 	vector<IBlock*> overworld1_1Blocks;
 	vector<IBlock*> overworld1_4Blocks;
 	vector<IBlock*> underworldBlocks;
 	vector<IBlock*> globalBlocks;
+	vector<Ground*> bridge;
+	vector<Axe*> axe; //isTrigger true
+	vector<MovingPlatform*> movingPlatform;
+
 
 	//Collectable Item
 	vector<Coin*> coins;
@@ -81,12 +91,23 @@ public:
 	vector<FireFlower*> fireFlower;
 	vector<SuperStar*> superStar;
 
+
+	//Create Item method
+	void CreateSuperMushroom(float x, float y);
+	void CreateFireFlower(float x, float y);
+	void CreateSuperStar(float x, float y);
+
+
 	Stage currentStage{ Stage::WORLD_1_1 };
+
 	Image background;
 
-	bool isBridgeClearing;
+	//Bridge
+	Timer timerClearingBridgeInterval{ 0.1f };
+	bool isBridgeClearing; 
 	bool isBossDefeat; //true if boss defeated with fireballs
 	void ClearBridge();
+
 	//Cleanup all vectors
 	void ClearStage();
 

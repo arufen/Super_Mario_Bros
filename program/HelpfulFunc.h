@@ -74,7 +74,7 @@ public:
 	void AnimationUpdateLoop();
 	void AnimationUpdateOnce();
 	void PlayAnimation(); //only used for AnimationUpdateOnce
-	void AnimationRender(const float x, const float y);
+	void AnimationRender(const float x, const float y, bool reverseFlag);
 	void AnimationRenderCenter(bool reverseFlag = false);
 };
 

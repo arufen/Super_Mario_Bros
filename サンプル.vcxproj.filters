@@ -101,6 +101,21 @@
     </ClCompile>
     <ClCompile Include="program\Castle.cpp" />
     <ClCompile Include="program\Firebar.cpp" />
+    <ClCompile Include="program\Bowser.cpp">
+      <Filter>game</Filter>
+    </ClCompile>
+    <ClCompile Include="program\Bridge.cpp">
+      <Filter>game</Filter>
+    </ClCompile>
+    <ClCompile Include="program\Bowser_Fire.cpp">
+      <Filter>game</Filter>
+    </ClCompile>
+    <ClCompile Include="program\Axe.cpp">
+      <Filter>game</Filter>
+    </ClCompile>
+    <ClCompile Include="program\Moving_Platform.cpp">
+      <Filter>game</Filter>
+	</ClCompile>
     <ClCompile Include="program\Fonts.cpp">
       <Filter>system</Filter>
     </ClCompile>
@@ -210,6 +225,21 @@
     <ClInclude Include="program\Castle.h" />
     <ClInclude Include="program\CollectableItem.h" />
     <ClInclude Include="program\Firebar.h" />
+    <ClInclude Include="program\Bowser.h">
+      <Filter>game</Filter>
+    </ClInclude>
+    <ClInclude Include="program\Bridge.h">
+      <Filter>game</Filter>
+    </ClInclude>
+    <ClInclude Include="program\Bowser_Fire.h">
+      <Filter>game</Filter>
+    </ClInclude>
+    <ClInclude Include="program\Axe.h">
+      <Filter>game</Filter>
+    </ClInclude>
+    <ClInclude Include="program\Moving_Platform.h">
+      <Filter>game</Filter>
+	</ClInclude>
     <ClInclude Include="program\Brick_BlockParts.h">
       <Filter>game</Filter>
     </ClInclude>

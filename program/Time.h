@@ -11,6 +11,7 @@ private:
     bool isTimeStarted;    // 時間が進み始めたかどうかのフラグ
     bool isHurryBGMPlayed; // 残り100秒のBGMに切り替えたかどうかのフラグ
     bool isBGMStopped;     // タイムアップでBGMを停止したかどうかのフラグ
+    bool isConvertingTimeToScore = false;
 
 public:
     void Init();
@@ -23,4 +24,6 @@ public:
     int GetCount() const { return count; }
     bool IsTimeUp() const { return count <= 0; }
     void SetCount(int newCount) { count = newCount; }
+    void StartTimeBonusConversion() { isConvertingTimeToScore = true; }
+    bool IsConversionFinished() const { return !isConvertingTimeToScore && count == 0; }
 };
