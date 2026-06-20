@@ -102,7 +102,7 @@ void UnderWorldPipe::Init(Float2 startPos, int graphHandle)
 void UnderWorldPipe::OnHitSide(RigidBody& player)
 {
 	Mario* mario = dynamic_cast<Mario*>(&player);
-	if (mario != nullptr && mario->currentState != MarioState::WARPING)
+	if (mario != nullptr && mario->currentState != MarioState::WARPING && !mario->isJumping)
 	{
 		float targetY = this->pos.y + 64.0f;
 
