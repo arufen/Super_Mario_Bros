@@ -133,6 +133,7 @@ void Goomba::RenderGlobal(Camera& camera)
 void Goomba::TakeDamage(RigidBody& attacker) 
 {
 	state = EnemyState::DEAD;
+	MainScore.AddScore(100);
 
 	// “¥‚Ü‚ê‚½‚ÌSE‚ğÄ¶
 	SoundManager::GetInstance().PlaySE("Stomp");

@@ -6,6 +6,7 @@
 #include "Camera.h"
 #include "Hit.h"
 #include  "CollectableItem.h"
+#include "Score.h"
 #include "Mario.h"
 
 class KoopaTroopa : public RigidBody, public Collidable, public Enemy

@@ -30,7 +30,8 @@
 
 #include "Goal_Pole.h"
 #include "Castle.h"
-
+#define WORLD1_1TIME 400
+#define WORLD1_4TIME 300
 using namespace std;
 
 enum class Stage
@@ -90,6 +91,7 @@ public:
 	vector<FireFlower*> fireFlower;
 	vector<SuperStar*> superStar;
 
+
 	//Create Item method
 	void CreateSuperMushroom(float x, float y);
 	void CreateFireFlower(float x, float y);
@@ -109,7 +111,6 @@ public:
 	Timer timerShowText{ 2.0f };
 	int clearHandle;
 	bool turnOnText;
-
 
 	//Cleanup all vectors
 	void ClearStage();
@@ -133,4 +134,7 @@ private:
 	StageManager() : currentzone(WorldZone::OVERWORLD){}
 	~StageManager() {};
 	int tex_brickParts;
+
+	int world1_1Handle;
+	int world1_4Handle;
 };

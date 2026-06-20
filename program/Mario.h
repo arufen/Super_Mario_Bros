@@ -10,6 +10,7 @@
 #include "Brick_Block.h"
 #include "CollectableItem.h"
 #include "Hidden_Block.h"
+#include "Score.h"
 
 //Exclude macro from winspool.h
 #undef GetForm
@@ -125,7 +126,7 @@ public:
 	float warpTimer = 0.0f;
 
 	//item and score (アイテムとスコア)
-	int score = 0;
+	//int score = 0;
 	int coin = 0;
 
 	//スター状態の管理オブジェクト
@@ -151,6 +152,7 @@ public:
 
 	//for main thread
 	void Init();
+	void WarpPosition(float targetX, float targetY); // ワープ時の引き継ぎ用
 	void Update();
 	void Render();
 
@@ -170,10 +172,7 @@ public:
 	float goalPoleX = 0.0f;    // ポールのX座標
 	float goalCastleX = 0.0f;  // 城の入り口のX座標
 	float goalFloorY = 0.0f;   // 着地する床（土台）のY座標
-	int GetScore() const { return score; }
-
-	// Add score
-	void AddScore(int amount);
+	/*int GetScore() const { return score; }*/
 
 	//void Warping(float pipeY);
 

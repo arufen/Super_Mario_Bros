@@ -42,6 +42,7 @@ void Mario::ResolveCollision(Collidable& block)
 		if (item != nullptr && item->canCollect)
 		{
 			item->CollectItem(*this);
+			MainScore.AddScore(1000);
 		}
 
 		block.OnHitSide(*this);
@@ -382,6 +383,7 @@ void Mario::Init()
 	big_mario_turnImage.InitialImageAndSize(LoadGraph("data/image/mario/bigMario/bigmario_turn.png"));
 	bigmario_moveAnim.InitialAnimation(LoadGraph("data/image/mario/bigMario/bigmario_move.png"), 3, 10);
 	big_mario_fire_waitImage.InitialImageAndSize(LoadGraph("data/image/big_mario_fire_wait.png"));
+	
 
 	// 初期ステータスのセットアップ
 	currentForm = MarioForm::SMALL;
@@ -400,13 +402,29 @@ void Mario::Init()
 	RigidBody_collider.width -= COLLIDER_OFFSET;
 	RigidBody_collider.x += COLLIDER_OFFSET / 2;
 
-	score = 0;
 	coin = 0;
 
 	starEffect.Init();
 	debug_is_inivincible = false;
 }
+void Mario::WarpPosition(float targetX, float targetY)
+{
+	position.Set(targetX, targetY);
+	now_speed_x = 0.0f;
+	now_speed_y = 0.0f;
+	currentState = MarioState::NORMAL;
+	warpTimer = 0.0f;
 
+	// 現在の形態（チビか大きいか）に合わせてコライダーの高さを再設定
+	if (currentForm == MarioForm::SMALL) {
+		RigidBody_collider.height = small_mario_waitImage.sizeY;
+	}
+	else {
+		RigidBody_collider.height = big_mario_waitImage.sizeY;
+	}
+	RigidBody_collider.x = position.x + COLLIDER_OFFSET / 2;
+	RigidBody_collider.y = position.y;
+}
 // 毎フレームの更新処理（状態ごとの分岐と物理演算・入力処理）
 void Mario::Update()
 {
@@ -614,7 +632,19 @@ void Mario::Update()
 		now_speed_x = 0.0f;
 		now_speed_y = 0.0f;
 
-		small_mario_waitImage.pos = position;
+		//small_mario_waitImage.pos = position;
+		if (currentForm == MarioForm::SUPER)
+		{
+			big_mario_waitImage.pos = position;
+		}
+		else if (currentForm == MarioForm::FIRE)
+		{
+			big_mario_fire_waitImage.pos = position;
+		}
+		else // Default to SMALL
+		{
+			small_mario_waitImage.pos = position;
+		}
 
 		int scrX1 = (int)(RigidBody_collider.x - MainCamera.pos.x);
 		int scrY1 = (int)(RigidBody_collider.y - MainCamera.pos.y);
@@ -629,8 +659,6 @@ void Mario::Update()
 		{
 			if (SoundManager::GetInstance().IsPlayingBGM("HurryAction")) return;
 
-			currentState = MarioState::NORMAL;
-
 			if (currentWarpDir == WarpDir::DOWN)
 			{
 				StageManager::GetInstance().TransferWorldZone(WorldZone::UNDERWORLD);
@@ -639,6 +667,9 @@ void Mario::Update()
 			{
 				StageManager::GetInstance().TransferWorldZone(WorldZone::OVERWORLD);
 			}
+
+			currentState = MarioState::NORMAL;
+
 		}
 		return;
 	}
@@ -981,6 +1012,7 @@ void Mario::Jump(bool playSound)
 void Mario::AddCoin()
 {
 	coin++;
+	MainScore.AddScore(50);
 	SoundManager::GetInstance().PlaySE("Coin");
 }
 

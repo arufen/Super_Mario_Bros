@@ -7,6 +7,7 @@
 
 GoalPole::GoalPole() : isReached(false), maxFlagY(0.0f), isBGMPlayed(false), clearTimer(0.0f) {}
 
+extern GameTime MainTime;
 void GoalPole::Init(float x, float y)
 {
 	image.InitialImageAndSize(LoadGraph("data/image/goal_pole.png"));
@@ -72,6 +73,8 @@ void GoalPole::Update()
 				// クリアファンファーレを1回だけ再生
 				SoundManager::GetInstance().PlayBGMOnce("Stage1-1_Clear");
 				isBGMPlayed = true;
+
+				MainTime.StartTimeBonusConversion();
 			}
 		}
 	}
