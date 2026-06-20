@@ -95,7 +95,7 @@ public:
 	Image small_mario_waitImage;		// マリオの待機画像情報
 	Image small_mario_jumpImage;		// マリオのジャンプ画像情報
 	Image small_mario_deadImage;		// マリオの死亡画像情報
-	Image small_mario_goalpoleImage;	// ゴールポール用の画像情報
+	Animation small_mario_goalpoleAnim;	// ゴールポール用の画像情報
 	Animation small_mario_walkAnim;		// 歩きアニメーション管理オブジェクト
 	Image big_mario_waitImage;	// でかい状態のマリオの待機画像
 	Image big_mario_fire_waitImage;
@@ -170,6 +170,10 @@ public:
 	float goalPoleX = 0.0f;    // ポールのX座標
 	float goalCastleX = 0.0f;  // 城の入り口のX座標
 	float goalFloorY = 0.0f;   // 着地する床（土台）のY座標
+	int GetScore() const { return score; }
+
+	// Add score
+	void AddScore(int amount);
 
 	//void Warping(float pipeY);
 

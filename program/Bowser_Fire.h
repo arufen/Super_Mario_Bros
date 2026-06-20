@@ -18,6 +18,8 @@ public:
 	float direction;
 	bool isActive;
 	
+	bool hasPlayedSE = false;
+
 	//Method
 	void Deactivate();
 

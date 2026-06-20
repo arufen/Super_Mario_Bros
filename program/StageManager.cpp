@@ -354,6 +354,8 @@ void StageManager::Init(Stage stageNumber)
 {
 	isBridgeClearing = false;
 	isBossDefeat = false;
+
+	tex_brickParts = LoadGraph("data/image/brickpart.png");
 	if (stageNumber == Stage::WORLD_1_1)
 	{
 		//Stage (ground1)
@@ -539,6 +541,7 @@ void StageManager::Init(Stage stageNumber)
 	}
 	else if (stageNumber == Stage::WORLD_1_4)
 	{
+		
 		//Reset mario 
 		MainMario.position.Set(2 * BLOCK_SIZE, 5 * BLOCK_SIZE);
 
@@ -558,6 +561,7 @@ void StageManager::Init(Stage stageNumber)
 
 		int fireSpriteHandle = LoadGraph("data/image/firebarAnimation.png");
 		int blockSpriteHandle = LoadGraph("data/image/firebarblock.png");
+		clearHandle = LoadGraph("data/image/clear_text.png");
 
 		int totalOverworldBlocks = sizeof(world1_4data) / sizeof(BlockSpawnData);
 		for (int i = 0; i < totalOverworldBlocks; i++)
@@ -735,6 +739,15 @@ void StageManager::Update(Camera& camera)
 				RigidBody::collidables.end()
 			);
 			bowser.erase(bowser.begin() + i);
+
+			if(axe.empty()) // すでに斧が取られて無くなっているなら
+			{
+				SoundManager::GetInstance().StopBGM();
+				SoundManager::GetInstance().PlayBGMOnce("Stage1-4_Clear");
+
+				float toadTargetX = 152 * BLOCK_SIZE;
+				MainMario.StartCutsceneWalk(toadTargetX, 3.0f);
+			}
 		}
 	}
 
@@ -753,7 +766,13 @@ void StageManager::Update(Camera& camera)
 			bowserFire.erase(bowserFire.begin() + i);
 		}
 	}
-
+	for (auto* part : brickParts) // ここを auto* に
+	{
+		if (part != nullptr)
+		{
+			part->Update(); // .Update() から ->Update() に変更
+		}
+	}
 	//Coin
 	for (int i = 0; i < coins.size(); i++)
 	{
@@ -837,6 +856,22 @@ void StageManager::Update(Camera& camera)
 			superMushroom.erase(superMushroom.begin() + i);
 		}
 	}
+	//1up Mushroom
+	for (int i = 0; i < upMushroom.size(); i++)
+	{
+		//Update for moving
+		upMushroom[i]->Update();
+		if (!upMushroom[i]->active)
+		{
+			// remove from collidables list too!
+			RigidBody::collidables.erase(
+				remove(RigidBody::collidables.begin(), RigidBody::collidables.end(), upMushroom[i]),
+				RigidBody::collidables.end()
+			);
+			//remove coins from stage manager
+			upMushroom.erase(upMushroom.begin() + i);
+		}
+	}
 
 	//Fire flower
 	for (int i = 0; i < fireFlower.size(); i++)
@@ -884,12 +919,9 @@ void StageManager::Update(Camera& camera)
 	//camera limit in 1-4 until cutscene
 	if (currentStage == Stage::WORLD_1_4)
 	{
-		if (MainMario.GetState() != MarioState::CUTSCENE) camera.cameraPosXLimit = 126.5 * BLOCK_SIZE;
-		else
-		{
+		PlayCutscene();
 
-			if(camera.cameraPosXLimit < 10240 - SCREEN_W && isBossDefeat) camera.cameraPosXLimit += 3.0f;
-		}
+		
 	}
 }
 
@@ -923,6 +955,13 @@ void StageManager::Render(Camera& camera)
 			superM->RenderGlobal(camera);
 		}
 	}
+	for (UpMushroom* superM : upMushroom)
+	{
+		if (superM->active)
+		{
+			superM->RenderGlobal(camera);
+		}
+	}
 	for (FireFlower* fireF : fireFlower)
 	{
 		if (fireF->active)
@@ -936,6 +975,14 @@ void StageManager::Render(Camera& camera)
 		if (superS->active)
 		{
 			superS->RenderGlobal(camera);
+		}
+	}
+	for (auto* part : brickParts) // ここを auto* に
+	{
+		// 念のためアクティブな場合のみ描画
+		if (part != nullptr && part->IsActive())
+		{
+			part->Render(camera); // .Render() から ->Render() に変更
 		}
 	}
 
@@ -996,6 +1043,16 @@ void StageManager::Render(Camera& camera)
 	// ゴールポール
 	for (GoalPole* pole : goalPoles) { pole->RenderGlobal(camera); }
 
+	if (turnOnText)
+	{
+		timerShowText.Update();
+		bool fullText = timerShowText.TimerHit();
+		int offset = 0;
+		if (fullText) offset = 2000;
+		//set titled
+		DrawRectGraph(0, 200, 0, 0, 1024, 300 + offset, clearHandle, 1);
+	}
+
 }
 
 //Clear all objects in stage
@@ -1021,6 +1078,11 @@ void StageManager::ClearStage()
 	for (auto* a : axe) delete a;
 	for (auto* b : bridge) delete b;
 	for (auto* m : movingPlatform) delete m;
+	// --- ここを追加して破片のメモリを解放する ---
+	for (auto* part : brickParts)
+	{
+		delete part; // 動的生成したメモリを解放
+	}
 
 	// then clear the vectors
 	ground.clear();
@@ -1044,7 +1106,7 @@ void StageManager::ClearStage()
 	bridge.clear();
 	movingPlatform.clear();
 
-
+	brickParts.clear(); // ベクターを空にする
 
 	// clear collidables in RigidBody too!
 	RigidBody::collidables.clear();
@@ -1066,14 +1128,38 @@ void StageManager::ClearBridge()
 
 			delete bridge.back();
 			bridge.pop_back();
+
+			SoundManager::GetInstance().PlaySE("Bridge_Break");
 		}
 
 		if (bridge.empty())
 		{
 			isBridgeClearing = false; // done collapsing
 
-			float toadTargetX = 152 * BLOCK_SIZE;
-			MainMario.StartCutsceneWalk(toadTargetX, 3.0f);
+			if (bowser.empty() && !SoundManager::GetInstance().IsPlayingBGM("Stage1-4_Clear"))
+			{
+				SoundManager::GetInstance().StopBGM();
+				SoundManager::GetInstance().PlayBGMOnce("Stage1-4_Clear");
+
+				float toadTargetX = 152 * BLOCK_SIZE;
+				MainMario.StartCutsceneWalk(toadTargetX, 3.0f);
+			}
+		}
+	}
+}
+
+void StageManager::PlayCutscene()
+{
+	if (MainMario.GetState() != MarioState::CUTSCENE) MainCamera.cameraPosXLimit = 126.5 * BLOCK_SIZE;
+	else
+	{
+
+		if (MainCamera.cameraPosXLimit < 10240 - SCREEN_W && isBossDefeat) MainCamera.cameraPosXLimit += 5.0f;
+		else if (MainCamera.cameraPosXLimit >= 10240 - SCREEN_W)
+		{
+
+			turnOnText = true;
+			
 		}
 	}
 }
