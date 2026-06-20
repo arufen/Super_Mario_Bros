@@ -3,6 +3,7 @@
 #include "Camera.h"
 #include "Mario.h"
 #include "HelpfulFunc.h"
+#include "Brick_BlockParts.h"
 
 // Unified enum to handle all item states inside a brick
 enum class BrickBlockItem
@@ -56,3 +57,4 @@ private:
     int texActive;
     int texEmpty;
 };
+

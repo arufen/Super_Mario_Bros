@@ -168,6 +168,7 @@
     <ClCompile Include="program\Fireworks.cpp" />
     <ClCompile Include="program\Fire_Flower.cpp" />
     <ClCompile Include="program\Float2.cpp" />
+    <ClCompile Include="program\Fonts.cpp" />
     <ClCompile Include="program\Game.cpp" />
     <ClCompile Include="program\Game_Over.cpp" />
     <ClCompile Include="program\Goal_Pole.cpp" />
@@ -200,6 +201,7 @@
     <ClInclude Include="program\Bowser_Fire.h" />
     <ClInclude Include="program\Brick_Block.h" />
     <ClInclude Include="program\Bridge.h" />
+    <ClInclude Include="program\Brick_BlockParts.h" />
     <ClInclude Include="program\Camera.h" />
     <ClInclude Include="program\Castle.h" />
     <ClInclude Include="program\Coin.h" />
@@ -212,6 +214,7 @@
     <ClInclude Include="program\Fireworks.h" />
     <ClInclude Include="program\Fire_Flower.h" />
     <ClInclude Include="program\Float2.h" />
+    <ClInclude Include="program\Fonts.h" />
     <ClInclude Include="program\Game.h" />
     <ClInclude Include="program\Game_Over.h" />
     <ClInclude Include="program\Goal_Pole.h" />

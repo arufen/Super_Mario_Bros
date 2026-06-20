@@ -354,6 +354,8 @@ void StageManager::Init(Stage stageNumber)
 {
 	isBridgeClearing = false;
 	isBossDefeat = false;
+
+	tex_brickParts = LoadGraph("data/image/brickpart.png");
 	if (stageNumber == Stage::WORLD_1_1)
 	{
 		//Stage (ground1)
@@ -753,7 +755,13 @@ void StageManager::Update(Camera& camera)
 			bowserFire.erase(bowserFire.begin() + i);
 		}
 	}
-
+	for (auto* part : brickParts) // ここを auto* に
+	{
+		if (part != nullptr)
+		{
+			part->Update(); // .Update() から ->Update() に変更
+		}
+	}
 	//Coin
 	for (int i = 0; i < coins.size(); i++)
 	{
@@ -835,6 +843,22 @@ void StageManager::Update(Camera& camera)
 			);
 			//remove coins from stage manager
 			superMushroom.erase(superMushroom.begin() + i);
+		}
+	}
+	//1up Mushroom
+	for (int i = 0; i < upMushroom.size(); i++)
+	{
+		//Update for moving
+		upMushroom[i]->Update();
+		if (!upMushroom[i]->active)
+		{
+			// remove from collidables list too!
+			RigidBody::collidables.erase(
+				remove(RigidBody::collidables.begin(), RigidBody::collidables.end(), upMushroom[i]),
+				RigidBody::collidables.end()
+			);
+			//remove coins from stage manager
+			upMushroom.erase(upMushroom.begin() + i);
 		}
 	}
 
@@ -923,6 +947,13 @@ void StageManager::Render(Camera& camera)
 			superM->RenderGlobal(camera);
 		}
 	}
+	for (UpMushroom* superM : upMushroom)
+	{
+		if (superM->active)
+		{
+			superM->RenderGlobal(camera);
+		}
+	}
 	for (FireFlower* fireF : fireFlower)
 	{
 		if (fireF->active)
@@ -936,6 +967,14 @@ void StageManager::Render(Camera& camera)
 		if (superS->active)
 		{
 			superS->RenderGlobal(camera);
+		}
+	}
+	for (auto* part : brickParts) // ここを auto* に
+	{
+		// 念のためアクティブな場合のみ描画
+		if (part != nullptr && part->IsActive())
+		{
+			part->Render(camera); // .Render() から ->Render() に変更
 		}
 	}
 
@@ -1021,6 +1060,11 @@ void StageManager::ClearStage()
 	for (auto* a : axe) delete a;
 	for (auto* b : bridge) delete b;
 	for (auto* m : movingPlatform) delete m;
+	// --- ここを追加して破片のメモリを解放する ---
+	for (auto* part : brickParts)
+	{
+		delete part; // 動的生成したメモリを解放
+	}
 
 	// then clear the vectors
 	ground.clear();
@@ -1044,7 +1088,7 @@ void StageManager::ClearStage()
 	bridge.clear();
 	movingPlatform.clear();
 
-
+	brickParts.clear(); // ベクターを空にする
 
 	// clear collidables in RigidBody too!
 	RigidBody::collidables.clear();

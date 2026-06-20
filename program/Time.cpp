@@ -4,6 +4,7 @@
 #include "Sound.h"
 #include "StageManager.h"
 #include "Mario.h"
+#include "Fonts.h"
 
 // 外部にあるマリオの実体を参照する
 extern Mario MainMario;
@@ -110,16 +111,22 @@ void GameTime::Update()
 
 void GameTime::Render()
 {
-    // 画面解像度が大きいため、文字が小さくならないようフォントサイズを設定
-    SetFontSize(32);
+    //// 画面解像度が大きいため、文字が小さくならないようフォントサイズを設定
+    //SetFontSize(32);
 
-    // 右上に表示するための座標計算（右端から少し左、上から少し下）
-    int x = SCREEN_W - 100;
-    int y = 40;
+    //// 右上に表示するための座標計算（右端から少し左、上から少し下）
+    //int x = SCREEN_W - 100;
+    //int y = 40;
 
-    // 白文字で「400」のように3桁（%03d）で描画
-    DrawFormatString(x, y, GetColor(255, 255, 255), "%03d", count);
+    //// 白文字で「400」のように3桁（%03d）で描画
+    //DrawFormatString(x, y, GetColor(255, 255, 255), "%03d", count);
 
-    // 他の描画処理に影響を及ぼさないよう、フォントサイズをデフォルトに戻しておく
-    SetFontSize(16);
+    //// 他の描画処理に影響を及ぼさないよう、フォントサイズをデフォルトに戻しておく
+    //SetFontSize(16);
+    /*MarioFont::GetInstance().DrawMarioLabel(80, 20);
+    MarioFont::GetInstance().DrawNumber(80, 52, MainMario.GetScore(), 6);
+
+    MarioFont::GetInstance().DrawTimeLabel(SCREEN_W - 232, 20);
+    MarioFont::GetInstance().DrawWorldLabel(SCREEN_W - 482, 20);
+    MarioFont::GetInstance().DrawNumber(SCREEN_W - 200, 60, count, 3);*/
 }
