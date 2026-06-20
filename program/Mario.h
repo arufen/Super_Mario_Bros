@@ -88,7 +88,7 @@ public:
 	Image small_mario_waitImage;		// マリオの待機画像情報
 	Image small_mario_jumpImage;		// マリオのジャンプ画像情報
 	Image small_mario_deadImage;		// マリオの死亡画像情報
-	Image small_mario_goalpoleImage;	// ゴールポール用の画像情報
+	Animation small_mario_goalpoleAnim;	// ゴールポール用の画像情報
 	Animation small_mario_walkAnim;		// 歩きアニメーション管理オブジェクト
 	Image big_mario_waitImage;
 	Image big_mario_fire_waitImage;
