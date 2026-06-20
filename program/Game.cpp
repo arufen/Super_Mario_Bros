@@ -2,7 +2,6 @@
 #include "Game.h"
 #include "Camera.h"
 #include "Debug.h"
-#include "Map.h"
 #include "Mario.h"
 //#include "Brick_Block.h"
 //#include "Question_Block.h"
@@ -15,9 +14,6 @@
 using namespace std;
 
 extern Camera MainCamera;
-
-// マップ
-Map MainMap;
 
 // デバッグ用機・
 Debug MainDebug;
@@ -39,11 +35,6 @@ void GameInit()
 
 	// BGMを鳴らし始める
 	SoundManager::GetInstance().PlayBGM("Stage1");
-
-	MainMap.Init();
-
-	// マップの初期化
-	MainMap.Init();
 	
 	// マリオおよびデバッグシステムの初期化
 	MainMario.Init();
